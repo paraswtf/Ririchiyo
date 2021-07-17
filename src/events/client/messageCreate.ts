@@ -5,10 +5,10 @@ import Utils from '../../structures/Utils';
 import { database } from '../../config'
 import { Message } from 'discord.js';
 
-export default class MessageEvent extends BaseEvent<Client> {
+export default class ClientMessageCreateEvent extends BaseEvent<Client> {
     constructor() {
         super({
-            name: "message",
+            name: "messageCreate",
             category: "client",
         })
     }

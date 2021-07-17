@@ -5,9 +5,9 @@ import Commands from './Commands/Commands';
 import { CommandHandler } from './Commands/CommandHandler';
 import DB from '../structures/Data/Database';
 import path from 'path';
-import Manager from './Lavalink/LavalinkClient';
+import Shoukaku from '../structures/Shoukaku';
 
-import { discord, database, lavalinkOptions } from '../config';
+import { database, shoukakuNodes, shoukakuOptions } from '../config';
 
 export class Client extends DiscordClient {
     logger: Logger;
@@ -15,18 +15,14 @@ export class Client extends DiscordClient {
     events: Events<this>;
     commands: Commands;
     commandHandler: CommandHandler;
-    lavalink: Manager;
+    shoukaku: Shoukaku;
 
     constructor(options: ClientOptions) {
         super(options);
         Utils._init(this);
         this.logger = new Logger(this);
         this.db = new DB(database.uri, this);
-        this.lavalink = new Manager(Object.assign({ client: this }, lavalinkOptions));
-        //Add logger to ws and load ws events
-        Object.assign(
-            { events: new Events(null, Object.assign(this.ws, { logger: this.logger })).load(path.join(__dirname, "../events/ws")) }
-        );
+        this.shoukaku = new Shoukaku(this, shoukakuNodes, shoukakuOptions);
         this.events = new Events(null, this).load(path.join(__dirname, "../events/client"));
         this.commands = new Commands(null, this);
         this.commandHandler = new CommandHandler(this);
@@ -50,10 +46,6 @@ export class Client extends DiscordClient {
     private send(id: GuildResolvable, payload: any) {
         this.guilds.resolve(id)?.shard.send(payload);
     }
-}
-
-export interface ExtendedWebSocketManager extends WebSocketManager {
-    logger: Logger;
 }
 
 export default Client;

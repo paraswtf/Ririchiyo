@@ -29,6 +29,7 @@
     "deepmerge": "^4.2.2",
     "discord.js": "^13.0.0-dev.5ca97c9.1626480265",
     "mongodb": "^3.6.10",
+    "shoukaku": "github:Deivu/Shoukaku",
     "source-map-support": "^0.5.19"
   }
 }

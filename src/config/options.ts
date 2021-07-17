@@ -1,8 +1,6 @@
 import Client from "../structures/Client";
-import { ManagerOptions } from "../structures/Lavalink/LavalinkClient";
+import { ShoukakuNodeOptions, ShoukakuOptions } from "shoukaku";
 import credentials from "./credentials";
-
-export const lavalinkOptions: Partial<ManagerOptions> = {};
 
 export const owners = [
     {
@@ -21,3 +19,14 @@ export const shardingManagerOptions = {
     client: Client,
     clientOptions: {}
 }
+
+export const shoukakuNodes: ShoukakuNodeOptions[] = [
+    {
+        name: 'Local',
+        host: 'localhost',
+        port: 7001,
+        auth: 'youshallnotpass',
+    }
+]
+
+export const shoukakuOptions: ShoukakuOptions = {};

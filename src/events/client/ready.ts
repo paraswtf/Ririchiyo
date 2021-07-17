@@ -4,7 +4,7 @@ import Client from '../../structures/Client';
 import Utils from '../../structures/Utils';
 import { database } from '../../config'
 
-export default class ReadyEvent extends BaseEvent<Client> {
+export default class ClientReadyEvent extends BaseEvent<Client> {
     constructor() {
         super({
             name: "ready",
@@ -28,8 +28,6 @@ export default class ReadyEvent extends BaseEvent<Client> {
 
         //Connect to the database first
         await this.client.db.connect(database.name);
-        //Initialize lavalink client
-        this.client.lavalink.init();
         //Load all commands
         this.client.commands.load(path.join(__dirname, "../../commands"));
 
