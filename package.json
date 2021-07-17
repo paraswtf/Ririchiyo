@@ -1,0 +1,34 @@
+{
+  "name": "ririchiyo",
+  "version": "0.0.1",
+  "description": "A really cool discord.js music bot written in TypeScript.",
+  "main": "src/main/index.js",
+  "scripts": {
+    "tsc": "tsc",
+    "start:dev": "cd dist && node -r dotenv/config .",
+    "install:dev": "npm i --include=dev",
+    "build": "(if exist dist rmdir dist /S /Q) && mkdir dist && tsc && cd dist && mkdir logs && (if exist ..\\test_files cd ..\\test_files && xcopy *.* ..\\dist)",
+    "test": "npm run-script build && npm run-script start:dev"
+  },
+  "author": "Styxo",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/color": "^3.0.1",
+    "@types/mongodb": "^3.6.20",
+    "@types/node": "^15.12.2",
+    "@types/source-map-support": "^0.5.4",
+    "@types/uuid": "^8.3.1",
+    "dotenv": "^10.0.0",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "@sapphire/snowflake": "^1.3.5",
+    "axios": "^0.21.1",
+    "chalk": "^4.1.1",
+    "color": "^3.1.3",
+    "deepmerge": "^4.2.2",
+    "discord.js": "^13.0.0-dev.5ca97c9.1626480265",
+    "mongodb": "^3.6.10",
+    "source-map-support": "^0.5.19"
+  }
+}
