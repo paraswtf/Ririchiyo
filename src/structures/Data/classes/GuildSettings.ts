@@ -1,56 +1,56 @@
-import merge from 'deepmerge';
-import Guild from "./Guild";
-
-export const defaultData = [
-    {
-        clientId: undefined,
-        prefix: "r!"
-    }
-]
+import { Guild } from "./Guild";
+import { UpdateQuery } from 'mongodb';
+import { AllowedClientID, defaultData, GuildSettingsManager } from "./GuildSettingsManager";
+import { GuildMemberPermissionsManager, GuildRolePermissionsManager, GuildPermissionsData } from "./GuildPermissionsManager";
+import DBUtils from "../DBUtils";
 
 export class GuildSettings {
     // Class props //
     readonly guild: Guild;
-    readonly clientId: string;
-    readonly data: GuildSettingsData;
-    readonly query: QueryToSettings;
+    readonly manager: GuildSettingsManager;
+    readonly clientId: AllowedClientID;
+    readonly dbPath: string;
     // Class props //
+    // SubClasses //
+    readonly permissions: {
+        members: GuildMemberPermissionsManager,
+        roles: GuildRolePermissionsManager
+    };
+    // SubClasses //
 
-    constructor(guild: Guild, clientId: string) {
-        this.guild = guild;
+    constructor(manager: GuildSettingsManager, clientId: AllowedClientID) {
+        this.manager = manager;
+        this.guild = this.manager.guild;
         this.clientId = clientId;
-        this.data = merge(this.defaultData, this.guild.data.settings.find(d => d.clientId === clientId) || { clientId });
-        this.query = {
-            "_id": this.guild.id,
-            "premium.settings.clientId": this.clientId
-        };
+        this.dbPath = DBUtils.join(this.manager.dbPath, this.clientId);
+        this.permissions = {
+            members: new GuildMemberPermissionsManager(this),
+            roles: new GuildRolePermissionsManager(this)
+        }
     }
 
-    private get defaultData() {
-        return defaultData.find(d => d.clientId === this.clientId) || defaultData[0];
+    private async updateDB(path: string, value: any, op: keyof UpdateQuery<GuildSettingsData> = "$set") {
+        return await this.guild.db.collections.guilds.updateOne(this.guild.query, {
+            [op]: { [DBUtils.join(this.dbPath, path)]: value }
+        }, { upsert: true });
     }
 
     get prefix() {
-        return this.data.prefix;
+        return this.guild.data.settings[this.clientId].prefix;
     }
 
     async setPrefix(newPrefix?: string) {
-        if (this.data.prefix === newPrefix) return this.data.prefix;
+        if (this.prefix === newPrefix) return this.prefix;
+        if (!newPrefix) newPrefix = defaultData[this.clientId].prefix;
 
-        await this.guild.DB.collections.guilds.updateOne(this.query, {
-            $set: {
-                "settings.$.prefix": this.data.prefix
-            }
-        });
-        this.data.prefix = newPrefix || this.defaultData.prefix;
-        this.guild.data.settings[this.guild.data.settings.findIndex(d => d.clientId === this.clientId)].prefix = this.data.prefix;
-        return this.prefix;
+        await this.updateDB("prefix", newPrefix);
+        return this.guild.data.settings[this.clientId].prefix = newPrefix;
     }
 }
 
-export type QueryToSettings = { "_id": string, "premium.settings.clientId": string };
-
 export interface GuildSettingsData {
-    clientId: string,
-    prefix: string
+    prefix: string,
+    permissions: GuildPermissionsData
 }
+
+export default GuildSettings;

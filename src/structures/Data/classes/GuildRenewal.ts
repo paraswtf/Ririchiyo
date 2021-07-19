@@ -31,7 +31,7 @@ export class BaseGuildRenewal {
 
 
     async remove(data: RenewalRemoved) {
-        await this.guild.DB.collections.guilds.updateOne(
+        await this.guild.db.collections.guilds.updateOne(
             this.query,
             {
                 $set: {

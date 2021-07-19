@@ -9,8 +9,13 @@ import Client from '../Client';
 
 import {
     Guild,
-    GuildData
+    GuildData,
+    defaultData as defaultGuildData
 } from './classes/Guild';
+
+import {
+    Guild as DiscordGuild
+} from 'discord.js';
 
 export class DB {
     // Class props //
@@ -46,15 +51,24 @@ export class DB {
         }
     }
 
-    async getGuild(id: string): Promise<Guild> {
+    getDefaultGuild(): Guild {
         //if no cached instance exists create one
-        if (!this.cache.guilds.has(id)) this.cache.guilds.set(id,
-            new Guild(this,
-                await this.collections.guilds.findOne({ _id: id }) || { _id: id }
+        if (!this.cache.guilds.has("default")) this.cache.guilds.set("default", new Guild(this, null, defaultGuildData));
+        return this.cache.guilds.get("default")!;
+    }
+
+    async getGuild(guild: DiscordGuild | null = null): Promise<Guild> {
+        if (!guild) return this.getDefaultGuild();
+        //if no cached instance exists create one
+        if (!this.cache.guilds.has(guild.id)) this.cache.guilds.set(guild.id,
+            new Guild(
+                this,
+                guild,
+                await this.collections.guilds.findOne({ _id: guild.id }) || { _id: guild.id }
             )
         );
 
-        return this.cache.guilds.get(id)!;
+        return this.cache.guilds.get(guild.id)!;
     }
 }
 

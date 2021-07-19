@@ -59,10 +59,10 @@ export class CommandHandler {
         //Check all usable prefixes
         let usedPrefix = null;
         const prefixes = this.defaultPrefixes;
-        const guildData = await this.client.db.getGuild(msg.guild?.id || "default");
-        const guildSettingsData = guildData.settings.get();
+        const guildData = await this.client.db.getGuild(msg.guild);
+        const guildSettings = guildData.settings.getSettings();
         //Guild or DM prefix check
-        if (msg.content.startsWith(guildSettingsData.prefix)) usedPrefix = guildSettingsData.prefix;
+        if (msg.content.startsWith(guildSettings.prefix)) usedPrefix = guildSettings.prefix;
         //If message does not start with prefix and message is in a guild, add nickname to the prefixes array to check
         else if (msg.guild) {
             const nickname = msg.guild.members.resolve(this.client.user!.id!)?.nickname;
@@ -136,7 +136,9 @@ export class CommandHandler {
                 message: msg,
                 botPermissionsForChannel: permissions.permissions,
                 isInteraction: false,
-                isMessage: true
+                isMessage: true,
+                guildData,
+                guildSettings
             }))
         } catch (err) {
             this.client.logger.error(err.message || err);

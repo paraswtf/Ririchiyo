@@ -72,7 +72,7 @@ export class GuildPremium {
 
         const renewal = this.generateRenewal(expiresAt, userID, snowflake);
 
-        await this.guild.DB.collections.guilds.updateOne({ _id: this.guild.id }, { $push: { "premium.renewals": renewal.toJSON() } }, { upsert: true });
+        await this.guild.db.collections.guilds.updateOne({ _id: this.guild.id }, { $push: { "premium.renewals": renewal.toJSON() } }, { upsert: true });
         this.guild.data.premium.renewals.push(renewal.toJSON());
         this.renewals.push(renewal);
         return renewal;

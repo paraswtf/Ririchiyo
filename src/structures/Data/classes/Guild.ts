@@ -6,10 +6,11 @@ import {
     defaultData as defaultGuildPremiumData
 } from './GuildPremium';
 import {
-    GuildSettingsCollection,
+    GuildSettingsManager,
     GuildSettingsCollectionData,
     defaultData as defaultGuildSettingsData
-} from './GuildSettingsCollection';
+} from './GuildSettingsManager';
+import { Guild as DiscordGuild } from 'discord.js';
 
 export const defaultData = {
     _id: undefined,
@@ -22,19 +23,25 @@ export const defaultData = {
  */
 export class Guild {
     // Class props //
-    readonly DB: DB;
+    readonly db: DB;
+    readonly dbPath: string;
+    readonly query: GuildQuery;
     readonly data: GuildData;
+    readonly discordGuild: DiscordGuild | null;
     readonly id: string;
     readonly premium: GuildPremium;
-    readonly settings: GuildSettingsCollection;
+    readonly settings: GuildSettingsManager;
     // Class props //
 
-    constructor(DB: DB, data: Partial<GuildData>) {
-        this.DB = DB;
+    constructor(db: DB, discordGuild: DiscordGuild | null, data: Partial<GuildData>) {
+        this.db = db;
+        this.discordGuild = discordGuild;
+        this.dbPath = "";
         this.data = merge(defaultData, data);
+        this.query = { _id: this.data._id };
         this.id = this.data._id;
         this.premium = new GuildPremium(this);
-        this.settings = new GuildSettingsCollection(null, this);
+        this.settings = new GuildSettingsManager(null, this);
     }
 }
 
@@ -43,5 +50,9 @@ export interface GuildData {
     premium: GuildPremiumData,
     settings: GuildSettingsCollectionData
 }
+
+export interface GuildQuery {
+    _id: string
+};
 
 export default Guild;

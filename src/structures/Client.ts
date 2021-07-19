@@ -1,4 +1,4 @@
-import { Client as DiscordClient, ClientOptions, GuildResolvable, WebSocketManager } from 'discord.js';
+import { Client as DiscordClient, ClientOptions, Collection, GuildResolvable, WebSocketManager } from 'discord.js';
 import { Utils, Logger } from './Utils';
 import Events from './Events/Events';
 import Commands from './Commands/Commands';
@@ -8,6 +8,7 @@ import path from 'path';
 import Shoukaku from '../structures/Shoukaku';
 
 import { database, shoukakuNodes, shoukakuOptions } from '../config';
+import Dispatcher from './Shoukaku/Dispatcher';
 
 export class Client extends DiscordClient {
     logger: Logger;
@@ -16,6 +17,7 @@ export class Client extends DiscordClient {
     commands: Commands;
     commandHandler: CommandHandler;
     shoukaku: Shoukaku;
+    dispatchers: Collection<string, Dispatcher>;
 
     constructor(options: ClientOptions) {
         super(options);
@@ -23,6 +25,7 @@ export class Client extends DiscordClient {
         this.logger = new Logger(this);
         this.db = new DB(database.uri, this);
         this.shoukaku = new Shoukaku(this, shoukakuNodes, shoukakuOptions);
+        this.dispatchers = new Collection();
         this.events = new Events(null, this).load(path.join(__dirname, "../events/client"));
         this.commands = new Commands(null, this);
         this.commandHandler = new CommandHandler(this);
