@@ -6,7 +6,9 @@ import {
     User,
     TextChannel,
     DMChannel,
-    GuildMember
+    GuildMember,
+    MessagePayload,
+    ReplyMessageOptions
 } from "discord.js";
 import { Guild as GuildData } from "../Data/classes/Guild";
 import { GuildSettings } from "../Data/classes/Guild/settings/GuildSettings";
@@ -44,6 +46,10 @@ export class InteractionCTX extends BaseCTX {
         this.author = options.message.user;
         this.member = options.message.member as GuildMember | null;
     }
+
+    async reply(options: Parameters<this['message']['reply']>['0']) {
+        return await this.message.reply(options);
+    }
 }
 
 export class MessageCTX extends BaseCTX {
@@ -58,6 +64,18 @@ export class MessageCTX extends BaseCTX {
         this.message = options.message;
         this.author = options.message.author;
         this.member = options.message.member;
+    }
+
+    async reply(options: Parameters<this['message']['reply']>['0']) {
+        if (this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) return await this.message.reply(
+            Object.assign(options, { allowedMentions: { repliedUser: false } })
+        );
+
+        if (typeof options === "string") options += this.message.author.toString();
+        else if ((options as ReplyMessageOptions).content) (options as ReplyMessageOptions).content += this.message.author.toString();
+        else Object.assign(options, { content: this.message.author.toString() });
+
+        return await this.message.channel.send(options);
     }
 }
 

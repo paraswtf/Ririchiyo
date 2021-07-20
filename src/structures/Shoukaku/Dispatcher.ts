@@ -1,7 +1,6 @@
 import { Guild, StageChannel, TextChannel, VoiceChannel } from "discord.js";
 import { ShoukakuFilter, ShoukakuGroupedFilterOptions, ShoukakuJoinOptions, ShoukakuPlayOptions, ShoukakuSocket, ShoukakuTrack } from "shoukaku";
 import Utils, { CustomError } from "../Utils";
-import { RirichiyoFilter } from "./RirichiyoFilter";
 
 export class Dispatcher {
     readonly guild: Guild;

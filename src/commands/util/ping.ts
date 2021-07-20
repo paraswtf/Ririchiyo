@@ -24,7 +24,7 @@ export default class PingCommand extends BaseCommand {
             color: ThemeUtils.colors.get("loading")!.rgbNumber()
         })
 
-        const pingMessage = await ctx.message.reply({ embeds: [pingEmbed] }).catch((err) => this.client.logger.error(new CustomError(err)));
+        const pingMessage = await ctx.reply({ embeds: [pingEmbed] }).catch(this.client.logger.error);
         if (!pingMessage) return;
 
         //The delay between the message being sent and it being recieved by the bot

@@ -5,6 +5,7 @@ import { GuildPermissionsManager, GuildPermissionsData } from "./permissions";
 import DBUtils from "../../../DBUtils";
 import { GuildMember, Role } from "discord.js";
 import dot from 'dot-prop';
+import { GuildMusicSettings } from "./music";
 
 export class GuildSettings {
     // Class props //
@@ -18,6 +19,7 @@ export class GuildSettings {
         members: GuildPermissionsManager<GuildMember>,
         roles: GuildPermissionsManager<Role>
     };
+    readonly music: GuildMusicSettings;
     // SubClasses //
 
     constructor(manager: GuildSettingsManager, clientId: AllowedClientID) {
@@ -28,7 +30,8 @@ export class GuildSettings {
         this.permissions = {
             members: new GuildPermissionsManager(this, "members"),
             roles: new GuildPermissionsManager(this, "roles")
-        }
+        };
+        this.music = new GuildMusicSettings(this);
     }
 
     private async updateDB(path: string, value: any, op: keyof UpdateQuery<GuildSettingsData> = "$set") {

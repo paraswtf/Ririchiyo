@@ -54,7 +54,7 @@ export class GuildMusicFiltersManager {
     }
 
     get volume(): number {
-        return this.getCache("", defaultGuildMusicFiltersSettingsData.volume);
+        return this.getCache("volume", defaultGuildMusicFiltersSettingsData.volume);
     }
 
     async setVolume(value: number) {
