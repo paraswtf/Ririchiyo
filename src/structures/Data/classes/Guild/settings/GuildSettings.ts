@@ -4,6 +4,7 @@ import { AllowedClientID, defaultGuildSettingsData, GuildSettingsManager } from 
 import { GuildPermissionsManager, GuildPermissionsData } from "./permissions";
 import DBUtils from "../../../DBUtils";
 import { GuildMember, Role } from "discord.js";
+import dot from 'dot-prop';
 
 export class GuildSettings {
     // Class props //
@@ -14,8 +15,8 @@ export class GuildSettings {
     // Class props //
     // SubClasses //
     readonly permissions: {
-        members: GuildPermissionsManager<"members", GuildMember>,
-        roles: GuildPermissionsManager<"roles", Role>
+        members: GuildPermissionsManager<GuildMember>,
+        roles: GuildPermissionsManager<Role>
     };
     // SubClasses //
 
@@ -36,16 +37,25 @@ export class GuildSettings {
         }, { upsert: true });
     }
 
+    private updateCache(path: string, value: any, op: "set" | "delete" = "set") {
+        return dot[op](this.guild.data, DBUtils.join(this.dbPath, path), value);
+    }
+
+    private getCache<T>(path: string, defaultValue: T): T {
+        return dot.get(this.guild.data, DBUtils.join(this.dbPath, path), defaultValue);
+    }
+
     get prefix() {
-        return this.guild.data.settings[this.clientId].prefix;
+        return this.getCache("prefix", defaultGuildSettingsData[this.clientId].prefix);
     }
 
     async setPrefix(newPrefix?: string) {
         if (this.prefix === newPrefix) return this.prefix;
         if (!newPrefix) newPrefix = defaultGuildSettingsData[this.clientId].prefix;
 
-        await this.updateDB("prefix", newPrefix);
-        return this.guild.data.settings[this.clientId].prefix = newPrefix;
+        await this.updateDB("prefix", null, '$unset');
+        this.updateCache("prefix", newPrefix);
+        return this;
     }
 }
 

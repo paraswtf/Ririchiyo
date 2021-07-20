@@ -78,10 +78,6 @@ export class GuildPremium {
         if (this.isInvalid) throw new Error("Not enabled.");
         return await this.latestRenewal.invalidate(data);
     }
-
-    async test() {
-        return this.addRenewal(1312313, {});
-    }
 }
 
 export interface generateRenewalOptions {

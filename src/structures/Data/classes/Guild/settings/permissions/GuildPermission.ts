@@ -1,4 +1,4 @@
-import Guild from '../..';
+import Guild, { GuildData } from '../..';
 import { BitField, GuildMember, Role } from 'discord.js';
 import { InternalPermissions, InternalPermissionResolvable } from '../../../../../Utils/InternalPermissions';
 import { GuildSettings, GuildSettingsData } from '../GuildSettings';
@@ -6,22 +6,23 @@ import { GuildPermissionsManager, GuildPermissionsData } from '.';
 import { owners } from '../../../../../../config';
 import { UpdateQuery } from 'mongodb';
 import DBUtils from '../../../../DBUtils';
+import dot from 'dot-prop';
 
 export const defaultGuildPermissionData = {
     allowed: 0,
     denied: 0
 }
 
-export class GuildPermission<FOR extends keyof GuildSettingsData['permissions'], ENTITY extends (GuildMember | Role)> {
+export class GuildPermission<ENTITY extends (GuildMember | Role)> {
     // Class props //
     readonly guild: Guild;
     readonly settings: GuildSettings;
-    readonly manager: GuildPermissionsManager<FOR, ENTITY>;
+    readonly manager: GuildPermissionsManager<ENTITY>;
     readonly entity: ENTITY;
     readonly dbPath: string;
     // Class props //
 
-    constructor(manager: GuildPermissionsManager<FOR, ENTITY>, entity: ENTITY) {
+    constructor(manager: GuildPermissionsManager<ENTITY>, entity: ENTITY) {
         this.guild = manager.settings.guild;
         this.settings = manager.settings;
         this.manager = manager;
@@ -29,14 +30,22 @@ export class GuildPermission<FOR extends keyof GuildSettingsData['permissions'],
         this.dbPath = DBUtils.join(this.manager.dbPath, this.entity.id);
     }
 
-    private get data() {
-        return this.guild.data.settings[this.settings.clientId].permissions[this.manager.forKey][this.entity.id] ?? defaultGuildPermissionData;
-    }
-
     private async updateDB(path: string, value: any, op: keyof UpdateQuery<GuildPermissionData> = "$set") {
         return await this.guild.db.collections.guilds.updateOne(this.guild.query, {
             [op]: { [DBUtils.join(this.dbPath, path)]: value }
         }, { upsert: true });
+    }
+
+    private updateCache(path: string, value: any, op: "set" | "delete" = "set") {
+        return dot[op](this.guild.data, DBUtils.join(this.dbPath, path), value);
+    }
+
+    private getCache<T>(path: string, defaultValue: T): T {
+        return dot.get(this.guild.data, DBUtils.join(this.dbPath, path), defaultValue);
+    }
+
+    private get data() {
+        return this.getCache("", defaultGuildPermissionData);
     }
 
     get allowed(): Readonly<BitField<string>> {
@@ -79,9 +88,8 @@ export class GuildPermission<FOR extends keyof GuildSettingsData['permissions'],
             denied: new InternalPermissions(this.denied).remove(permission).bitfield
         }
 
-        this.guild.data.settings[this.settings.clientId].permissions[this.manager.forKey][this.entity.id] = updated;
-
         await this.updateDB("", updated);
+        this.updateCache("", updated);
 
         return this;
     }
@@ -92,9 +100,8 @@ export class GuildPermission<FOR extends keyof GuildSettingsData['permissions'],
             denied: new InternalPermissions(this.denied).add(permission).bitfield
         }
 
-        const c = this.guild.data.settings[this.settings.clientId].permissions[this.manager.forKey];
-
         await this.updateDB("", updated);
+        this.updateCache("", updated);
 
         return this;
     }
@@ -109,14 +116,12 @@ export class GuildPermission<FOR extends keyof GuildSettingsData['permissions'],
 
         //If the value is not empty
         if (updated.allowed !== 0 || updated.denied !== 0) {
-            this.guild.data.settings[this.settings.clientId].permissions[this.manager.forKey][this.entity.id] = updated;
-
             await this.updateDB("", updated);
+            this.updateCache("", updated);
         }
         else {
-            delete this.guild.data.settings[this.settings.clientId].permissions[this.manager.forKey][this.entity.id];
-
             await this.updateDB("", null, "$unset");
+            this.updateCache("", null, "delete");
         }
 
         return this;
