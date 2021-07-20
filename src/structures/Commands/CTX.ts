@@ -9,7 +9,7 @@ import {
     GuildMember
 } from "discord.js";
 import { Guild as GuildData } from "../Data/classes/Guild";
-import { GuildSettings } from "../Data/classes/GuildSettings";
+import { GuildSettings } from "../Data/classes/Guild/settings/GuildSettings";
 import Utils from "../Utils";
 
 export class BaseCTX {

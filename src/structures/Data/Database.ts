@@ -10,7 +10,7 @@ import Client from '../Client';
 import {
     Guild,
     GuildData,
-    defaultData as defaultGuildData
+    defaultGuildData
 } from './classes/Guild';
 
 import {

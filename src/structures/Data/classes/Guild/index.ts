@@ -1,19 +1,19 @@
-import DB from '../Database';
+import DB from '../../Database';
 import merge from 'deepmerge';
 import {
     GuildPremium,
     GuildPremiumData,
-    defaultData as defaultGuildPremiumData
-} from './GuildPremium';
+    defaultGuildPremiumData
+} from './premium';
 import {
     GuildSettingsManager,
     GuildSettingsCollectionData,
-    defaultData as defaultGuildSettingsData
-} from './GuildSettingsManager';
+    defaultGuildSettingsData
+} from './settings';
 import { Guild as DiscordGuild } from 'discord.js';
 
-export const defaultData = {
-    _id: undefined,
+export const defaultGuildData = {
+    _id: "default",
     premium: defaultGuildPremiumData,
     settings: defaultGuildSettingsData
 }
@@ -37,7 +37,7 @@ export class Guild {
         this.db = db;
         this.discordGuild = discordGuild;
         this.dbPath = "";
-        this.data = merge(defaultData, data);
+        this.data = merge(defaultGuildData, data);
         this.query = { _id: this.data._id };
         this.id = this.data._id;
         this.premium = new GuildPremium(this);

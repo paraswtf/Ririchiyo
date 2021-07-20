@@ -29,6 +29,7 @@ export default class SummonCommand extends BaseCommand {
         let dispatcher = this.client.dispatchers.get(ctx.guild.id);
 
         if (dispatcher && !meVoiceChannel) {
+            //If this wasn't an internal call, send message
             if (!opts) {
                 const reconnectedEmbed = new MessageEmbed()
                     .setDescription(`**Reconnected to your voice channel!**`)
@@ -40,13 +41,15 @@ export default class SummonCommand extends BaseCommand {
                     .setColor(ThemeUtils.getClientColor(ctx.guild))
                 await ctx.message.reply({ embeds: [reconnectedEmbed] }).catch(this.client.logger.error);
             }
-            //dispatcher.player?.connect();
+            //Reconnect
+            await dispatcher.connect();
+
             return new Success(FLAG.RESPAWNED);
         }
 
-        dispatcher = new Dispatcher(ctx.guild, res.authorVoiceChannel!);
+        dispatcher = new Dispatcher(ctx.guild, { voiceChannel: res.authorVoiceChannel! });
 
-        await dispatcher.connect({ deaf: true });
+        await dispatcher.connect();
 
         // //apply guild settings to player
         // switch (ctx.guildSettings.music.loop) {

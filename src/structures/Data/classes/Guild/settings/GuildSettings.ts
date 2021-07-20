@@ -1,8 +1,9 @@
-import { Guild } from "./Guild";
+import { Guild } from "..";
 import { UpdateQuery } from 'mongodb';
-import { AllowedClientID, defaultData, GuildSettingsManager } from "./GuildSettingsManager";
-import { GuildMemberPermissionsManager, GuildRolePermissionsManager, GuildPermissionsData } from "./GuildPermissionsManager";
-import DBUtils from "../DBUtils";
+import { AllowedClientID, defaultGuildSettingsData, GuildSettingsManager } from ".";
+import { GuildPermissionsManager, GuildPermissionsData } from "./permissions";
+import DBUtils from "../../../DBUtils";
+import { GuildMember, Role } from "discord.js";
 
 export class GuildSettings {
     // Class props //
@@ -13,8 +14,8 @@ export class GuildSettings {
     // Class props //
     // SubClasses //
     readonly permissions: {
-        members: GuildMemberPermissionsManager,
-        roles: GuildRolePermissionsManager
+        members: GuildPermissionsManager<"members", GuildMember>,
+        roles: GuildPermissionsManager<"roles", Role>
     };
     // SubClasses //
 
@@ -24,8 +25,8 @@ export class GuildSettings {
         this.clientId = clientId;
         this.dbPath = DBUtils.join(this.manager.dbPath, this.clientId);
         this.permissions = {
-            members: new GuildMemberPermissionsManager(this),
-            roles: new GuildRolePermissionsManager(this)
+            members: new GuildPermissionsManager(this, "members"),
+            roles: new GuildPermissionsManager(this, "roles")
         }
     }
 
@@ -41,7 +42,7 @@ export class GuildSettings {
 
     async setPrefix(newPrefix?: string) {
         if (this.prefix === newPrefix) return this.prefix;
-        if (!newPrefix) newPrefix = defaultData[this.clientId].prefix;
+        if (!newPrefix) newPrefix = defaultGuildSettingsData[this.clientId].prefix;
 
         await this.updateDB("prefix", newPrefix);
         return this.guild.data.settings[this.clientId].prefix = newPrefix;
@@ -50,7 +51,10 @@ export class GuildSettings {
 
 export interface GuildSettingsData {
     prefix: string,
-    permissions: GuildPermissionsData
+    permissions: {
+        members: GuildPermissionsData,
+        roles: GuildPermissionsData
+    }
 }
 
 export default GuildSettings;

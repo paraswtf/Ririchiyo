@@ -53,8 +53,8 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 
 ## Contributing
 
-Before **creating an issue**, please ensure that it hasn't already been reported/suggested, and double-check the [F.A.Q](https://www.ririchiyo.xyz/faq).   
-And if you have a question, please ask it in the [Discord server](https://discord.atlanta-bot.fr/) instead of opening an issue.
+Before **creating an issue**, please ensure that it hasn't already been reported/suggested, and double-check the [F.A.Q](https://discord.styxo.codes/).   
+And if you have a question, please ask it in the [Discord server](https://discord.styxo.codes/) instead of opening an issue.
 If you wish to contribute to the Ririchiyo codebase or documentation, feel free to fork the repository and submit a pull request!
 
 ## License 

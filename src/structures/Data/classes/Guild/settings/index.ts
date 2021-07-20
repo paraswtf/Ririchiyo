@@ -1,7 +1,7 @@
 import { Collection } from "discord.js";
-import Guild from "./Guild";
+import Guild from "..";
 import { GuildSettings, GuildSettingsData } from "./GuildSettings";
-import DBUtils from "../DBUtils";
+import DBUtils from "../../../DBUtils";
 
 const client_831406931205292053: GuildSettingsData = {
     prefix: "r!",
@@ -11,11 +11,11 @@ const client_831406931205292053: GuildSettingsData = {
     }
 }
 
-export const defaultData = {
+export const defaultGuildSettingsData = {
     "831406931205292053": client_831406931205292053
 };
 
-export type GuildSettingsCollectionData = typeof defaultData;
+export type GuildSettingsCollectionData = typeof defaultGuildSettingsData;
 export type AllowedClientID = keyof GuildSettingsCollectionData;
 
 export class GuildSettingsManager extends Collection<string, GuildSettings> {
@@ -38,3 +38,7 @@ export class GuildSettingsManager extends Collection<string, GuildSettings> {
         return super.get(clientId)!;
     }
 }
+
+
+//Export basically everything
+export * from './GuildSettings';
