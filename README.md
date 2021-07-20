@@ -3,14 +3,14 @@
 
 <br>
 
-# Installation and testing
+## Installation and testing
 **NPM** :
 
 ```
 npm run install:dev
 npm test
 ```
-# Configuration
+## Configuration
 **`.env`**
 ```txt
 DISCORD_TOKEN=YourAweSomeTokenHere
@@ -25,11 +25,8 @@ DATABASE_NAME=ririchiyo
 
 **`structures/Data/classes`** - [default values for fetched data]
 
----
 ## Commands:
-#
-< To Be Updated! >
-#
+
 > ### `play`
 > Play a track using Spotify/YouTube/Soundcloud link or a song title.
 > #### Example:
@@ -46,8 +43,26 @@ DATABASE_NAME=ririchiyo
 > ```
 > ---
 
+## Selfhosting
+
+You may selfhost (AKA run your own instance of) this bot under the following circumstances:
+- Your instance (referred to as a "clone") must be **private**.
+- As such, your clone must not be listed on any sort of public bot listing.
+- You cannot accept any form of payment for the premium features that you provide while slef hosting this bot.
+- You understand that no support will be provided to aid you in self-hosting.
+
+## Contributing
+
+Before **creating an issue**, please ensure that it hasn't already been reported/suggested, and double-check the [F.A.Q](https://www.ririchiyo.xyz/faq).   
+And if you have a question, please ask it in the [Discord server](https://discord.atlanta-bot.fr/) instead of opening an issue.
+If you wish to contribute to the Ririchiyo codebase or documentation, feel free to fork the repository and submit a pull request!
+
+## License 
+
+Ririchiyo is licensed under the GPL 3.0 license. See the file `LICENSE` for more information. If you plan to use any part of this source code in your own bot, I would be grateful if you would include some form of credit somewhere.
 
 ## Contributors
+
 👤 [**TheStyxo**](https://styxo.codes)
 
 - Author
