@@ -66,7 +66,7 @@ export class PermissionUtils {
                     embeds: [EmbedUtils.embedifyString(options.ctx.guild, noPermsMessage.content!, { isError: true })]
                 };
 
-                options.ctx.message.reply(noPermsMessage);
+                options.ctx.reply(noPermsMessage);
             }
             else if (
                 options.channelToSendMessage

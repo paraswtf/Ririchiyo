@@ -1,7 +1,7 @@
 import BaseCommand from "./BaseCommand";
 import Client from "../Client";
 import { owners } from "../../config";
-import { MessageCTX } from './CTX';
+import { BaseCTX, InteractionCTX, MessageCTX } from './CTX';
 import {
     Collection,
     TextChannel,
@@ -102,16 +102,28 @@ export class CommandHandler {
             || (!msg.guild && !command.allowDMCommand)
         ) return;
 
-        //Check if bot has required permissions to run the command
-        const permissions = await PermissionUtils.handlePermissionsForChannel(msg.channel as TextChannel, {
-            userToDM: msg.author,
+        //Create the ctx
+        const ctx = new MessageCTX({
+            args: args.length ? args : null,
             message: msg,
+            botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(msg.channel as TextChannel),
+            isInteraction: false,
+            isMessage: true,
+            guildData,
+            guildSettings
+        });
+
+        //Check if bot has required permissions to run the command
+        const permissions = await PermissionUtils.handlePermissionsForChannel(ctx.channel, {
+            userToDM: msg.author,
+            ctx,
             requiredPermissions: command.botPermsRequired
         });
         if (!permissions.hasAll) return;
 
+
         //Handle owner only commands
-        if (command.ownerOnly && !owners.find(o => o.id === msg.author.id)) return await msg.reply({
+        if (command.ownerOnly && !owners.find(o => o.id === msg.author.id)) return await ctx.reply({
             embeds: [EmbedUtils.embedifyString(msg.guild, "This command can only be used by the bot owners!", { isError: true })]
         }).catch(this.client.logger.error);
 
@@ -119,7 +131,7 @@ export class CommandHandler {
         const cooldown = this.checkCooldown(recievedAt, command, msg.author.id);
         if (cooldown) {
             if (permissions.permissions.has('MANAGE_MESSAGES') && msg.deletable) await msg.delete().catch(this.client.logger.error);
-            return await msg.reply({
+            return await ctx.reply({
                 embeds: [EmbedUtils.embedifyString(msg.guild, `Please wait ${(cooldown.timeLeft / 1000).toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`, { isError: true })]
             }).then(msg => setTimeout(() => msg.delete(), cooldown.timeLeft - recievedAt)).catch(this.client.logger.error);
         };
@@ -131,18 +143,10 @@ export class CommandHandler {
         }
 
         try {
-            command.run(new MessageCTX({
-                args: args.length ? args : null,
-                message: msg,
-                botPermissionsForChannel: permissions.permissions,
-                isInteraction: false,
-                isMessage: true,
-                guildData,
-                guildSettings
-            }))
+            command.run(ctx)
         } catch (err) {
-            this.client.logger.error(err.message || err);
-            await msg.reply(
+            this.client.logger.error(err);
+            await ctx.reply(
                 permissions.permissions.has('EMBED_LINKS')
                     ? { embeds: [EmbedUtils.embedifyString(msg.guild, this.errorMessage, { isError: true })] }
                     : this.errorMessage
