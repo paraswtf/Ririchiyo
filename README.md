@@ -14,8 +14,7 @@ npm test
 **`.env`**
 ```txt
 DISCORD_TOKEN=YourAweSomeTokenHere
-DATABASE_URI=mongodb://localhost:27017/
-DATABASE_NAME=ririchiyo
+MONGODB_URI=mongodb://user:pass@mongodb.host.com:27017/myDB
 ```
 **`config/colors.ts`** - To change the appearance of the embeds and general colors.
 
@@ -27,19 +26,12 @@ DATABASE_NAME=ririchiyo
 
 ## Commands:
 
-> ### `play`
-> Play a track using Spotify/YouTube/Soundcloud link or a song title.
-> #### Example:
-> ```
-> t!play https://youtu.be/dQw4w9WgXcQ
-> ```
-
 > ---
-> ### `play`
-> Play a track using Spotify/YouTube/Soundcloud link or a song title.
+> ### `ping`
+> View the discordAPI connection stats.
 > #### Example:
 > ```
-> t!play https://youtu.be/dQw4w9WgXcQ
+> r!ping
 > ```
 > ---
 

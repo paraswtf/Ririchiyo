@@ -6,8 +6,6 @@ import {
     Collection as DBCollection
 } from 'mongodb';
 import Client from '../Client';
-import RedisClient from 'ioredis';
-import redisJSONClient from 'redis-json';
 import {
     Guild,
     GuildData,
@@ -17,7 +15,6 @@ import {
 import {
     Guild as DiscordGuild
 } from 'discord.js';
-import { DispatcherJSON } from '../Shoukaku/Dispatcher';
 
 export class DB {
     // Class props //
