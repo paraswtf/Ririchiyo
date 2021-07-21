@@ -1,4 +1,4 @@
-import DBUtils from "../../../../DBUtils";
+import DBUtils, { BaseData } from "../../../../DBUtils";
 import { UpdateQuery } from "mongodb";
 import {
     Collection,
@@ -18,7 +18,7 @@ export const defaultGuildPermissionsData = {
     roles: {}
 }
 
-export class GuildPermissionsManager<ENTITY extends (GuildMember | Role)> {
+export class GuildPermissionsManager<ENTITY extends (GuildMember | Role)> extends BaseData {
     // Class props //
     readonly guild: Guild;
     readonly settings: GuildSettings;
@@ -28,21 +28,12 @@ export class GuildPermissionsManager<ENTITY extends (GuildMember | Role)> {
     // Class props //
 
     constructor(settings: GuildSettings, forKey: keyof GuildSettingsData['permissions']) {
+        super();
         this.guild = settings.guild;
         this.settings = settings;
         this.forKey = forKey;
         this.dbPath = DBUtils.join(this.settings.dbPath, "permissions", this.forKey);
         this.cache = new Collection();
-    }
-
-    private async updateDB(path: string, value: any, op: keyof UpdateQuery<GuildPermissionData> = "$set") {
-        return await this.guild.db.collections.guilds.updateOne(this.guild.query, {
-            [op]: { [DBUtils.join(this.dbPath, path)]: value }
-        }, { upsert: true });
-    }
-
-    private updateCache(path: string, value: any, op: "set" | "delete" = "set") {
-        return dot[op](this.guild.data, DBUtils.join(this.dbPath, path), value);
     }
 
     getFor(entity: ENTITY) {

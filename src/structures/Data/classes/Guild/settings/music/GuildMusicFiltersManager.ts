@@ -4,7 +4,7 @@ import { ShoukakuGroupedFilterOptions } from "shoukaku";
 import { GuildMusicSettings } from ".";
 import { GuildSettings } from "..";
 import { Guild } from "../..";
-import DBUtils from "../../../../DBUtils";
+import DBUtils, { BaseData } from "../../../../DBUtils";
 import { CustomError } from "../../../../../Utils";
 
 export const defaultGuildMusicFiltersSettingsData: GuildMusicFiltersSettingsData
@@ -14,7 +14,7 @@ export const defaultGuildMusicFiltersSettingsData: GuildMusicFiltersSettingsData
     volume: 70,
 }
 
-export class GuildMusicFiltersManager {
+export class GuildMusicFiltersManager extends BaseData {
     // Class props //
     readonly guild: Guild;
     readonly settings: GuildSettings;
@@ -23,24 +23,11 @@ export class GuildMusicFiltersManager {
     // Class props //
 
     constructor(musicSettings: GuildMusicSettings) {
+        super();
         this.guild = musicSettings.guild;
         this.settings = musicSettings.settings;
         this.musicSettings = musicSettings;
         this.dbPath = DBUtils.join(this.musicSettings.dbPath, "filters");
-    }
-
-    private async updateDB(path: string, value: any, op: keyof UpdateQuery<GuildMusicFiltersSettingsData> = "$set") {
-        return await this.guild.db.collections.guilds.updateOne(this.guild.query, {
-            [op]: { [DBUtils.join(this.dbPath, path)]: value }
-        }, { upsert: true });
-    }
-
-    private updateCache(path: string, value: any, op: "set" | "delete" = "set") {
-        return dot[op](this.guild.data, DBUtils.join(this.dbPath, path), value);
-    }
-
-    private getCache<T>(path: string, defaultValue: T): T {
-        return dot.get(this.guild.data, DBUtils.join(this.dbPath, path), defaultValue);
     }
 
     get grouped() {

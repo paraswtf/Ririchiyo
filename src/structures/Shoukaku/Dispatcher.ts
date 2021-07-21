@@ -1,6 +1,7 @@
 import { Guild, StageChannel, TextChannel, VoiceChannel } from "discord.js";
-import { ShoukakuFilter, ShoukakuGroupedFilterOptions, ShoukakuJoinOptions, ShoukakuPlayOptions, ShoukakuSocket, ShoukakuTrack } from "shoukaku";
+import { ShoukakuGroupedFilterOptions, ShoukakuPlayOptions, ShoukakuTrack } from "shoukaku";
 import Utils, { CustomError } from "../Utils";
+import Queue from "./Queue";
 
 export class Dispatcher {
     readonly guild: Guild;
@@ -8,6 +9,7 @@ export class Dispatcher {
     textChannel?: DispatcherTextChannel;
     loopState: DispatcherLoopState;
     readonly filters: ShoukakuGroupedFilterOptions;
+    readonly queue: Queue;
 
     get player() {
         return Utils.client.shoukaku.players.get(this.guild.id);
@@ -18,6 +20,7 @@ export class Dispatcher {
         this.guild = guild;
         this.voiceChannel = options.voiceChannel;
         this.textChannel = options.textChannel;
+        this.queue = new Queue();
         this.filters = options.filters ?? {};
         this.loopState = options.loopState ?? "DISABLED";
     }

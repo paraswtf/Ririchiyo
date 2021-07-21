@@ -2,12 +2,12 @@ import { Guild } from "..";
 import { UpdateQuery } from 'mongodb';
 import { AllowedClientID, defaultGuildSettingsData, GuildSettingsManager } from ".";
 import { GuildPermissionsManager, GuildPermissionsData } from "./permissions";
-import DBUtils from "../../../DBUtils";
+import DBUtils, { BaseData } from "../../../DBUtils";
 import { GuildMember, Role } from "discord.js";
 import dot from 'dot-prop';
 import { GuildMusicSettings } from "./music";
 
-export class GuildSettings {
+export class GuildSettings extends BaseData {
     // Class props //
     readonly guild: Guild;
     readonly manager: GuildSettingsManager;
@@ -23,6 +23,7 @@ export class GuildSettings {
     // SubClasses //
 
     constructor(manager: GuildSettingsManager, clientId: AllowedClientID) {
+        super();
         this.manager = manager;
         this.guild = this.manager.guild;
         this.clientId = clientId;
@@ -32,20 +33,6 @@ export class GuildSettings {
             roles: new GuildPermissionsManager(this, "roles")
         };
         this.music = new GuildMusicSettings(this);
-    }
-
-    private async updateDB(path: string, value: any, op: keyof UpdateQuery<GuildSettingsData> = "$set") {
-        return await this.guild.db.collections.guilds.updateOne(this.guild.query, {
-            [op]: { [DBUtils.join(this.dbPath, path)]: value }
-        }, { upsert: true });
-    }
-
-    private updateCache(path: string, value: any, op: "set" | "delete" = "set") {
-        return dot[op](this.guild.data, DBUtils.join(this.dbPath, path), value);
-    }
-
-    private getCache<T>(path: string, defaultValue: T): T {
-        return dot.get(this.guild.data, DBUtils.join(this.dbPath, path), defaultValue);
     }
 
     get prefix() {

@@ -5,7 +5,7 @@ import { GuildSettings, GuildSettingsData } from '../GuildSettings';
 import { GuildPermissionsManager, GuildPermissionsData } from '.';
 import { owners } from '../../../../../../config';
 import { UpdateQuery } from 'mongodb';
-import DBUtils from '../../../../DBUtils';
+import DBUtils, { BaseData } from '../../../../DBUtils';
 import dot from 'dot-prop';
 
 export const defaultGuildPermissionData = {
@@ -13,7 +13,7 @@ export const defaultGuildPermissionData = {
     denied: 0
 }
 
-export class GuildPermission<ENTITY extends (GuildMember | Role)> {
+export class GuildPermission<ENTITY extends (GuildMember | Role)> extends BaseData {
     // Class props //
     readonly guild: Guild;
     readonly settings: GuildSettings;
@@ -23,25 +23,12 @@ export class GuildPermission<ENTITY extends (GuildMember | Role)> {
     // Class props //
 
     constructor(manager: GuildPermissionsManager<ENTITY>, entity: ENTITY) {
+        super();
         this.guild = manager.settings.guild;
         this.settings = manager.settings;
         this.manager = manager;
         this.entity = entity;
         this.dbPath = DBUtils.join(this.manager.dbPath, this.entity.id);
-    }
-
-    private async updateDB(path: string, value: any, op: keyof UpdateQuery<GuildPermissionData> = "$set") {
-        return await this.guild.db.collections.guilds.updateOne(this.guild.query, {
-            [op]: { [DBUtils.join(this.dbPath, path)]: value }
-        }, { upsert: true });
-    }
-
-    private updateCache(path: string, value: any, op: "set" | "delete" = "set") {
-        return dot[op](this.guild.data, DBUtils.join(this.dbPath, path), value);
-    }
-
-    private getCache<T>(path: string, defaultValue: T): T {
-        return dot.get(this.guild.data, DBUtils.join(this.dbPath, path), defaultValue);
     }
 
     private get data() {
