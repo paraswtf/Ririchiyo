@@ -1,7 +1,7 @@
 import {
     AnyTrack,
     validateTrackOrTrackArray
-} from "./Track";
+} from "./RirichiyoTrack";
 
 export class Queue extends Array<AnyTrack> {
     /** The approximate duration of the queue. */
