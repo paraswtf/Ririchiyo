@@ -7,7 +7,7 @@ export class Dispatcher {
     voiceChannel: DispatcherVoiceChannel;
     textChannel?: DispatcherTextChannel;
     loopState: DispatcherLoopState;
-    filters: ShoukakuGroupedFilterOptions;
+    readonly filters: ShoukakuGroupedFilterOptions;
 
     get player() {
         return Utils.client.shoukaku.players.get(this.guild.id);
@@ -46,6 +46,24 @@ export class Dispatcher {
         if (!this.player) return new CustomError("The player does not exist for some reason... You sure bruh?");
         return await this.player.playTrack(track, options);
     }
+
+    getJsonData(): DispatcherJSON {
+        return {
+            guildID: this.guild.id,
+            voiceChannelID: this.voiceChannel.id,
+            textChannelID: this.textChannel?.id,
+            loopState: this.loopState,
+            filters: this.filters
+        }
+    }
+}
+
+export interface DispatcherJSON {
+    guildID: string,
+    voiceChannelID: string,
+    textChannelID?: string,
+    loopState: DispatcherLoopState,
+    filters: ShoukakuGroupedFilterOptions
 }
 
 export interface DispatcherOptions {

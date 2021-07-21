@@ -17,13 +17,12 @@ import {
 import {
     Guild as DiscordGuild
 } from 'discord.js';
+import { DispatcherJSON } from '../Shoukaku/Dispatcher';
 
 export class DB {
     // Class props //
     client: Client;
     mongoClient: MongoClient;
-    redisClient: RedisClient.Redis;
-    redisJSONClient: redisJSONClient<any>;
     connection?: DBConnection;
     cache: Cache;
     collections!: Collections;
@@ -32,8 +31,6 @@ export class DB {
     constructor(uriOptions: DBURIOptions, client: Client, options: MongoClientOptions = {}) {
         this.client = client;
         this.mongoClient = new MongoClient(uriOptions.mongoDBURI, Object.assign({ useUnifiedTopology: true }, options));
-        this.redisClient = new RedisClient(uriOptions.redisURI, { keyPrefix: this.client.user!.id! });
-        this.redisJSONClient = new redisJSONClient(this.redisClient);
         this.cache = {
             guilds: new Collection()
         }
@@ -74,8 +71,6 @@ export class DB {
 
         return this.cache.guilds.get(guild.id)!;
     }
-
-    async setDispatcherData() { }
 }
 
 export interface Collections {
@@ -87,8 +82,7 @@ export interface Cache {
 }
 
 export interface DBURIOptions {
-    mongoDBURI: string,
-    redisURI: string
+    mongoDBURI: string
 }
 
 export default DB;

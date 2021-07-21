@@ -7,7 +7,7 @@ import DB from '../structures/Data/Database';
 import path from 'path';
 import Shoukaku from '../structures/Shoukaku';
 
-import { mongodb, redis, shoukakuNodes, shoukakuOptions } from '../config';
+import { mongodb, shoukakuNodes, shoukakuOptions } from '../config';
 import Dispatcher from './Shoukaku/Dispatcher';
 
 export class Client extends DiscordClient {
@@ -23,10 +23,7 @@ export class Client extends DiscordClient {
         super(options);
         Utils._init(this);
         this.logger = new Logger(this);
-        this.db = new DB({
-            mongoDBURI: mongodb.uri,
-            redisURI: redis.uri
-        }, this);
+        this.db = new DB({ mongoDBURI: mongodb.uri }, this);
         this.shoukaku = new Shoukaku(this, shoukakuNodes, shoukakuOptions);
         this.dispatchers = new Collection();
         this.events = new Events(null, this).load(path.join(__dirname, "../events/client"));
