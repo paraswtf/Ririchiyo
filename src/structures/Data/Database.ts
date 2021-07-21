@@ -6,7 +6,8 @@ import {
     Collection as DBCollection
 } from 'mongodb';
 import Client from '../Client';
-
+import RedisClient from 'ioredis';
+import redisJSONClient from 'redis-json';
 import {
     Guild,
     GuildData,
@@ -21,29 +22,32 @@ export class DB {
     // Class props //
     client: Client;
     mongoClient: MongoClient;
+    redisClient: RedisClient.Redis;
+    redisJSONClient: redisJSONClient<any>;
     connection?: DBConnection;
     cache: Cache;
     collections!: Collections;
     // Class props //
 
-    constructor(uri: string, client: Client, options: MongoClientOptions = {}) {
-        if (!uri) throw new TypeError("No uri provided to connect.");
-        this.mongoClient = new MongoClient(uri, Object.assign({ useUnifiedTopology: true }, options));
+    constructor(uriOptions: DBURIOptions, client: Client, options: MongoClientOptions = {}) {
         this.client = client;
+        this.mongoClient = new MongoClient(uriOptions.mongoDBURI, Object.assign({ useUnifiedTopology: true }, options));
+        this.redisClient = new RedisClient(uriOptions.redisURI, { keyPrefix: this.client.user!.id! });
+        this.redisJSONClient = new redisJSONClient(this.redisClient);
         this.cache = {
             guilds: new Collection()
         }
     }
 
-    async connect(databaseName: string): Promise<DBConnection> {
+    async connect(): Promise<DBConnection> {
         try {
             await this.mongoClient.connect();
-            const connection = this.mongoClient.db(databaseName);
+            const connection = this.mongoClient.db();
             this.collections = {
                 guilds: connection.collection(`guilds`)
             };
             this.connection = connection;
-            this.client.logger.info(`Database connected: ${databaseName}`);
+            this.client.logger.info(`Database connected: ${connection.databaseName}`);
 
             return connection;
         } catch {
@@ -70,6 +74,8 @@ export class DB {
 
         return this.cache.guilds.get(guild.id)!;
     }
+
+    async setDispatcherData() { }
 }
 
 export interface Collections {
@@ -78,6 +84,11 @@ export interface Collections {
 
 export interface Cache {
     guilds: Collection<Guild['id'], Guild>
+}
+
+export interface DBURIOptions {
+    mongoDBURI: string,
+    redisURI: string
 }
 
 export default DB;

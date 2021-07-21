@@ -2,7 +2,7 @@ import path from 'path';
 import BaseEvent from '../../structures/Events/BaseEvent';
 import Client from '../../structures/Client';
 import Utils from '../../structures/Utils';
-import { database } from '../../config'
+import { mongodb } from '../../config'
 
 export default class ClientReadyEvent extends BaseEvent<Client> {
     constructor() {
@@ -27,7 +27,7 @@ export default class ClientReadyEvent extends BaseEvent<Client> {
         // presenceUpdater.run();
 
         //Connect to the database first
-        await this.client.db.connect(database.name);
+        await this.client.db.connect();
         //Load all commands
         this.client.commands.load(path.join(__dirname, "../../commands"));
 

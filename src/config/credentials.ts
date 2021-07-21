@@ -1,10 +1,23 @@
-export const discord = {
+export const discord: DiscordCredentials = {
     token: process.env.DISCORD_TOKEN as string
-}
+} as const
 
-export const database = {
-    uri: process.env.DATABASE_URI as string,
-    name: process.env.DATABASE_NAME as string,
-}
+export const mongodb: MongoDBCredentials = {
+    uri: process.env.MONGODB_URI as string
+} as const
 
-export default { discord, database };
+export const redis: RedisCredentials = {
+    uri: process.env.REDIS_URI as string,
+} as const
+
+export default { discord, mongodb, redis };
+
+export interface DiscordCredentials {
+    readonly token: string
+}
+export interface MongoDBCredentials {
+    readonly uri: string
+}
+export interface RedisCredentials {
+    readonly uri: string
+}
