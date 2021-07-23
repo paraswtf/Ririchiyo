@@ -18,7 +18,8 @@
         "sourceMap": true,
         "esModuleInterop": true,
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "useUnknownInCatchVariables": false
     },
     "include": [
         "src",
