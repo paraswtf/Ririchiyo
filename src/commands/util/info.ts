@@ -1,4 +1,4 @@
-import { MessageEmbed, Permissions, User, UserResolvable } from 'discord.js';
+import { MessageEmbed, Permissions } from 'discord.js';
 import { inviteGenerateOptions, OwnerObject, owners } from '../../config';
 import BaseCommand from '../../structures/Commands/BaseCommand';
 import { MessageCTX, InteractionCTX } from '../../structures/Commands/CTX'

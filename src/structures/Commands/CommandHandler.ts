@@ -104,6 +104,7 @@ export class CommandHandler {
 
         //Create the ctx
         const ctx = new MessageCTX({
+            recievedAt,
             args: args.length ? args : null,
             message: msg,
             botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(msg.channel as TextChannel),

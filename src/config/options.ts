@@ -17,21 +17,31 @@ export const owners: OwnerObject[] = [
     }
 ];
 
+export const clientOptions: Client['options'] = {
+    intents: [
+        "GUILDS",
+        "GUILD_VOICE_STATES",
+        "GUILD_MESSAGES",
+        "DIRECT_MESSAGES",
+        "GUILD_MESSAGE_REACTIONS",
+        "DIRECT_MESSAGE_REACTIONS"
+    ],
+    presence: {
+        activities: [
+            {
+                type: 1,
+                name: "How to Human..."
+            }
+        ]
+    }
+}
+
 export const shardingManagerOptions: SharderOptions = {
     token: credentials.discord.token,
     shardCount: 4,
     clusterCount: 2,
     client: Client,
-    clientOptions: {
-        intents: [
-            "GUILDS",
-            "GUILD_VOICE_STATES",
-            "GUILD_MESSAGES",
-            "DIRECT_MESSAGES",
-            "GUILD_MESSAGE_REACTIONS",
-            "DIRECT_MESSAGE_REACTIONS"
-        ]
-    }
+    clientOptions
 }
 
 export const shoukakuNodes: ShoukakuNodeOptions[] = [

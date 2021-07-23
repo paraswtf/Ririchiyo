@@ -1,8 +1,6 @@
 import path from 'path';
 import BaseEvent from '../../structures/Events/BaseEvent';
 import Client from '../../structures/Client';
-import Utils from '../../structures/Utils';
-import { mongodb } from '../../config'
 
 export default class ClientReadyEvent extends BaseEvent<Client> {
     constructor() {
@@ -13,24 +11,48 @@ export default class ClientReadyEvent extends BaseEvent<Client> {
     }
 
     async run(client: Client) {
-
-        // const presenceUpdater = {
-        //     run: async function () {
-        //         try {
-        //             await client.user?.setActivity({ name: Utils.config.shardingManagerOptions.clientOptions?.presence?.activity?.name, type: Utils.config.shardingManagerOptions.clientOptions?.presence?.activity?.type });
-        //         } catch (err) {
-        //             client.logger.error(err);
-        //         }
-        //         setTimeout(() => this.run(), 1800000);
-        //     }
-        // }
-        // presenceUpdater.run();
-
         //Connect to the database first
         await this.client.db.connect();
+
         //Load all commands
         this.client.commands.load(path.join(__dirname, "../../commands"));
 
-        client.logger.info("Client ready!");
+        //Run the presence updater
+        new PresenceUpdater(this.client, 300).run();
+
+        //Finally log that the cliend ready event has completed
+        this.client.logger.info("Client ready!");
     }
 }
+
+export class PresenceUpdater {
+    private readonly client: Client;
+    private readonly timeoutSeconds: number;
+    private activityIndex = 0;
+    private readonly activityGenerators: ActivityGenerator[];
+
+    constructor(client: Client, timeoutSeconds: number) {
+        this.client = client;
+        this.timeoutSeconds = timeoutSeconds;
+        this.activityGenerators = [
+            () => {
+                const guildData = this.client.db.getDefaultGuild();
+                return { type: 2, name: `${guildData.settings.getSettings().prefix}help` };
+            },
+            () => ({ type: 2, name: "/help" })
+        ]
+    }
+
+    run() {
+        try {
+            if (++this.activityIndex >= this.activityGenerators.length) this.activityIndex = 0;
+            this.client.user.setActivity(this.activityGenerators[this.activityIndex]());
+            this.client.logger.log("Client presence updated!");
+        } catch (err) {
+            this.client.logger.error(err);
+        }
+        setTimeout(() => this.run(), 1000 * this.timeoutSeconds);
+    }
+}
+
+export type ActivityGenerator = () => { type: number, name: string, url?: string };

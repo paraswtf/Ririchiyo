@@ -15,6 +15,7 @@ import { GuildSettings } from "../Data/classes/Guild/settings/GuildSettings";
 import Utils from "../Utils";
 
 export class BaseCTX {
+    recievedAt: number;
     client = Utils.client;
     args: string[] | null;
     guild: Guild | null;
@@ -24,6 +25,7 @@ export class BaseCTX {
     botPermissionsForChannel: Readonly<Permissions>;
 
     constructor(options: InteractionCTXOptions | MessageCTXOptions) {
+        this.recievedAt = options.recievedAt;
         this.args = options.args;
         this.guild = options.message.guild;
         this.guildData = options.guildData;
@@ -81,6 +83,7 @@ export class MessageCTX extends BaseCTX {
 
 
 export interface BaseCTXOptions {
+    recievedAt: number,
     //command: BaseCommand,
     args: string[] | null,
     guildData: GuildData,

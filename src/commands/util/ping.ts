@@ -27,17 +27,27 @@ export default class PingCommand extends BaseCommand {
         const pingMessage = await ctx.reply({ embeds: [pingEmbed] }).catch(this.client.logger.error);
         if (!pingMessage) return;
 
+        //The delay between the message being recieved and the command execution
+        const internalDelay = Math.round(previousDate - ctx.recievedAt);
         //The delay between the message being sent and it being recieved by the bot
-        const internalDelay = Math.round(ctx.message.createdTimestamp - previousDate);
-        //The delay between the message being sent and it being recieved by the bot
-        const restLatency = Math.round(Date.now() - previousDate);
+        const restLatency = Math.round(Date.now() - ctx.recievedAt);
         //The previous heartbeat ping of the shard
-        const wsPing = Math.round((ctx.message.guild?.shard || ctx.message.client.ws).ping);
+        const wsPing = Math.round(ctx.message.createdTimestamp - ctx.recievedAt);
+        //The client heartbeat interval
+        const heartbeat = Math.round((ctx.message.guild?.shard || ctx.message.client.ws).ping);
         //The average ping of all WebSocketShards
         const clusterPing = Math.round(this.client.ws.ping);
 
         pingEmbed.setTitle(`${CustomEmojiUtils.get("ping_pong")} Pong!`)
-            .setDescription(`**Internal delay:** \`${internalDelay}ms\`\n**Rest latency:** \`${restLatency}ms\`\n**Heartbeat:** \`${wsPing}ms\`\n**Cluster ping:** \`${clusterPing}ms\``)
+            .setDescription(
+                [
+                    `**Rest latency:** \`${restLatency}ms\``,
+                    `**WebSocket latency:** \`${wsPing}ms\``,
+                    `**Internal delay:** \`${internalDelay}ms\``,
+                    `**Heartbeat:** \`${heartbeat}ms\``,
+                    `**Cluster avg:** \`${clusterPing}ms\``
+                ].join("\n")
+            )
             .setColor(ThemeUtils.colors.get("success")!.rgbNumber());
         await pingMessage.edit({ embeds: [pingEmbed] }).catch(this.client.logger.error);
     }

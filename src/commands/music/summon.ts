@@ -1,7 +1,6 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil, Error, Success, FLAG } from '../../structures/Utils/MusicUtil';
-import InternalPermissions from '../../structures/Utils/InternalPermissions';
 import { Guild, MessageEmbed } from 'discord.js';
 import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
 import Dispatcher from '../../structures/Shoukaku/Dispatcher';
