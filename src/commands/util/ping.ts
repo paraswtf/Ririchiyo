@@ -1,7 +1,7 @@
 import { MessageEmbed, Permissions } from 'discord.js';
 import BaseCommand from '../../structures/Commands/BaseCommand';
 import { MessageCTX, InteractionCTX } from '../../structures/Commands/CTX'
-import { CustomEmojiUtils, CustomError, ThemeUtils } from '../../structures/Utils';
+import { CustomEmojiUtils, ThemeUtils } from '../../structures/Utils';
 
 export default class PingCommand extends BaseCommand {
     constructor() {

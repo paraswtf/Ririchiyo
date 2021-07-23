@@ -1,4 +1,4 @@
-import { Client as DiscordClient, ClientOptions, Collection, GuildResolvable, WebSocketManager } from 'discord.js';
+import { Client as DiscordClient, ClientOptions, ClientUser, Collection, GuildResolvable, ShardClientUtil } from 'discord.js';
 import { Utils, Logger } from './Utils';
 import Events from './Events/Events';
 import Commands from './Commands/Commands';
@@ -18,6 +18,8 @@ export class Client extends DiscordClient {
     commandHandler: CommandHandler;
     shoukaku: Shoukaku;
     dispatchers: Collection<string, Dispatcher>;
+    user!: ClientUser;
+    shard!: ShardClientUtil;
 
     constructor(options: ClientOptions) {
         super(options);

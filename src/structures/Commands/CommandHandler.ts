@@ -142,16 +142,14 @@ export class CommandHandler {
             if (msg.mentions.members) msg.mentions.members?.delete(msg.client.user!.id);
         }
 
-        try {
-            command.run(ctx)
-        } catch (err) {
+        await command.run(ctx).catch(async (err) => {
             this.client.logger.error(err);
             await ctx.reply(
                 permissions.permissions.has('EMBED_LINKS')
                     ? { embeds: [EmbedUtils.embedifyString(msg.guild, this.errorMessage, { isError: true })] }
                     : this.errorMessage
             ).catch(this.client.logger.error);
-        }
+        }).catch(this.client.logger.error);
     }
 
     // async handleInteraction(interaction: CommandInteraction, recievedAt: number) {
