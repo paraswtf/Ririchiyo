@@ -5,7 +5,7 @@ import merge from 'deepmerge';
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
-import Client from '../Client';
+import RirichiyoClient from '../RirichiyoClient';
 import { Logger } from '../Utils';
 
 export interface EventLoadOpts {
@@ -15,7 +15,7 @@ export interface EventLoadOpts {
     }
 }
 
-export class Events<T extends EventEmitter & { logger: Logger } = Client> extends Collection<string, BaseEvent<T>> {
+export class Events<T extends EventEmitter & { logger: Logger } = RirichiyoClient> extends Collection<string, BaseEvent<T>> {
     /** The bot client */
     client!: T;
     options: EventLoadOpts = { exclude: { events: [], categories: [] } };

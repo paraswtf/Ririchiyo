@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { ShardingManager } from '..';
 import { ClientOptions } from 'discord.js';
-import Client from '../../Client';
+import Client from '../../RirichiyoClient';
 import { ShardClientUtil } from '../Sharding/ShardClientUtil';
 import { IPCEvents } from '../Util/Constants';
 import * as Util from '../Util/Util';

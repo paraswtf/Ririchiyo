@@ -1,5 +1,5 @@
 import BaseCommand from "./BaseCommand";
-import Client from "../Client";
+import RirichiyoClient from "../RirichiyoClient";
 import { owners } from "../../config";
 import { BaseCTX, InteractionCTX, MessageCTX } from './CTX';
 import {
@@ -13,11 +13,11 @@ import {
 } from "../Utils";
 
 export class CommandHandler {
-    client: Client;
+    client: RirichiyoClient;
     cooldowns: Collection<string, Collection<string, number>>;
     errorMessage: string;
 
-    constructor(client: Client) {
+    constructor(client: RirichiyoClient) {
         this.client = client;
         this.cooldowns = new Collection();
         this.errorMessage = `There was an error executing that command, please try again.\nIf this error persists, please report this issue on our support server- [ririchiyo.xyz/support](https://youtu.be/dQw4w9WgXcQ)`;//${Utils.config.settings.info.supportServerURL}

@@ -1,5 +1,5 @@
 import { Util } from 'discord.js';
-import Client from '../../Client';
+import Client from '../../RirichiyoClient';
 import { ClusterIPC } from '../IPC/ClusterIPC';
 import { IPCEvents } from '../Util/Constants';
 import { SendOptions } from 'veza';

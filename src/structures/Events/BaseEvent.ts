@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
-import Client from '../Client';
+import RirichiyoClient from '../RirichiyoClient';
 
-export class BaseEvent<T extends EventEmitter = Client> {
+export class BaseEvent<T extends EventEmitter = RirichiyoClient> {
     name: string;
     category: string;
     public readonly client!: T;

@@ -1,5 +1,5 @@
 import { ClientOptions } from 'discord.js';
-import Client from '../../Client';
+import Client from '../../RirichiyoClient';
 import { MasterIPC } from '../IPC/MasterIPC';
 import { Cluster } from '../Cluster/Cluster';
 import { http, SharderEvents } from '../Util/Constants';

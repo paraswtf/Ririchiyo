@@ -1,15 +1,15 @@
-import Client from '../Client';
+import RirichiyoClient from '../RirichiyoClient';
 import { Snowflake } from '@sapphire/snowflake';
 
 export class Utils {
-    public static readonly client: Client;
+    public static readonly client: RirichiyoClient;
     public static readonly snowflake = new Snowflake(new Date('2005-08-07T00:00:00.000Z'));
 
     /**
      * Initialize this class
-     * @param {Client} client the discord.js bot client 
+     * @param {RirichiyoClient} client the discord.js bot client 
      */
-    public static _init(client: Client) {
+    public static _init(client: RirichiyoClient) {
         return Object.assign(this, { client });
     }
 

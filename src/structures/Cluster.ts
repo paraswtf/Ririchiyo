@@ -1,9 +1,9 @@
 import { BaseCluster, ShardingManager } from './Sharder';
-import Client from './Client';
+import RirichiyoClient from './RirichiyoClient';
 import { discord } from '../config';
 
 export abstract class CustomBaseCluster extends BaseCluster {
-    client!: Client;
+    client!: RirichiyoClient;
 }
 
 export class Cluster extends CustomBaseCluster {

@@ -1,8 +1,8 @@
 import BaseEvent from '../../structures/Events/BaseEvent';
-import Client from '../../structures/Client';
+import RirichiyoClient from '../../structures/RirichiyoClient';
 import { Message } from 'discord.js';
 
-export default class ClientMessageCreateEvent extends BaseEvent<Client> {
+export default class ClientMessageCreateEvent extends BaseEvent<RirichiyoClient> {
     constructor() {
         super({
             name: "messageCreate",
@@ -10,7 +10,7 @@ export default class ClientMessageCreateEvent extends BaseEvent<Client> {
         })
     }
 
-    async run(client: Client, msg: Message) {
+    async run(client: RirichiyoClient, msg: Message) {
         if (!msg.author.bot) this.client.commandHandler.handleMessage(msg, Date.now());
     }
 }

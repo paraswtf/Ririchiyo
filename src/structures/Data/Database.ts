@@ -5,7 +5,7 @@ import {
     MongoClientOptions,
     Collection as DBCollection
 } from 'mongodb';
-import Client from '../Client';
+import RirichiyoClient from '../RirichiyoClient';
 import {
     Guild,
     GuildData,
@@ -18,14 +18,14 @@ import {
 
 export class DB {
     // Class props //
-    client: Client;
+    client: RirichiyoClient;
     mongoClient: MongoClient;
     connection?: DBConnection;
     cache: Cache;
     collections!: Collections;
     // Class props //
 
-    constructor(uriOptions: DBURIOptions, client: Client, options: MongoClientOptions = {}) {
+    constructor(uriOptions: DBURIOptions, client: RirichiyoClient, options: MongoClientOptions = {}) {
         this.client = client;
         this.mongoClient = new MongoClient(uriOptions.mongoDBURI, Object.assign({ useUnifiedTopology: true }, options));
         this.cache = {

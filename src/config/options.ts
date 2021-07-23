@@ -1,4 +1,4 @@
-import Client from "../structures/Client";
+import Client from "../structures/RirichiyoClient";
 import { ShoukakuNodeOptions, ShoukakuOptions } from "shoukaku";
 import credentials from "./credentials";
 import { SharderOptions } from "../structures/Sharder";
@@ -25,15 +25,7 @@ export const clientOptions: Client['options'] = {
         "DIRECT_MESSAGES",
         "GUILD_MESSAGE_REACTIONS",
         "DIRECT_MESSAGE_REACTIONS"
-    ],
-    presence: {
-        activities: [
-            {
-                type: 1,
-                name: "How to Human..."
-            }
-        ]
-    }
+    ]
 }
 
 export const shardingManagerOptions: SharderOptions = {

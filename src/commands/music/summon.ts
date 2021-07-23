@@ -32,7 +32,7 @@ export default class SummonCommand extends BaseCommand {
             if (!opts) {
                 const reconnectedEmbed = new MessageEmbed()
                     .setDescription(`**Reconnected to your voice channel!**`)
-                    .addField("Player Voice Channel", `${CustomEmojiUtils.get("voice_channel_icon_normal")} ${`<#${res.authorVoiceChannel?.id}>` || "unknown"}`)
+                    .addField("Player Voice Channel", `${`<#${res.authorVoiceChannel?.id}>` || "unknown"}`)
                     .addField("Player Text Channel", `<#${ctx.channel.id}>`)
                     .addField("Volume", `${dispatcher.player?.filters.volume}%`, true)
                     .addField("Loop", `${dispatcher.loopState}`, true)
@@ -57,12 +57,10 @@ export default class SummonCommand extends BaseCommand {
         //Send embed
         if (!opts) {
             const joinedEmbed = new MessageEmbed()
-                .setDescription(`**Joined your voice channel!**`)
-                .addField("Player Voice Channel", `${CustomEmojiUtils.get("voice_channel_icon_normal")} ${`<#${res.authorVoiceChannel?.id}>` || "unknown"}`)
-                .addField("Player Text Channel", `<#${ctx.channel.id}>`)
-                .addField("Volume", `${dispatcher.player?.filters.volume}%`, true)
-                .addField("Loop", `${dispatcher.loopState}`, true)
-                .addField("Volume limit", `${ctx.guildSettings.music.maxVolumeLimit}`, true)
+                .setDescription(`**Joined ${`<#${res.authorVoiceChannel?.id}>` || "your voice channel"}**`)
+                .addField("Volume", `\`${dispatcher.player?.filters.volume}%\``, true)
+                .addField("Loop", `\`${dispatcher.loopState}\``, true)
+                .addField("Volume limit", `\`${ctx.guildSettings.music.maxVolumeLimit}%\``, true)
                 .setColor(ThemeUtils.getClientColor(ctx.guild))
             await ctx.reply({ embeds: [joinedEmbed] }).catch(this.client.logger.error);
         }
@@ -82,7 +80,7 @@ export default class SummonCommand extends BaseCommand {
         });
         if (res.isError) return res;
 
-        const authorVCperms = res.authorVoiceChannel?.permissionsFor(res.authorVoiceChannel!.client.user!);
+        const authorVCperms = res.authorVoiceChannel?.permissionsFor(res.authorVoiceChannel.client.user!);
 
         if (!authorVCperms || !authorVCperms.has("VIEW_CHANNEL")) {
             await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `${CustomEmojiUtils.get("voice_channel_icon_error_locked")} I don't have permissions to view your channel!`, { isError: true })] });

@@ -1,8 +1,8 @@
 import path from 'path';
 import BaseEvent from '../../structures/Events/BaseEvent';
-import Client from '../../structures/Client';
+import RirichiyoClient from '../../structures/RirichiyoClient';
 
-export default class ClientReadyEvent extends BaseEvent<Client> {
+export default class ClientReadyEvent extends BaseEvent<RirichiyoClient> {
     constructor() {
         super({
             name: "ready",
@@ -10,7 +10,7 @@ export default class ClientReadyEvent extends BaseEvent<Client> {
         })
     }
 
-    async run(client: Client) {
+    async run(client: RirichiyoClient) {
         //Connect to the database first
         await this.client.db.connect();
 
@@ -26,12 +26,12 @@ export default class ClientReadyEvent extends BaseEvent<Client> {
 }
 
 export class PresenceUpdater {
-    private readonly client: Client;
+    private readonly client: RirichiyoClient;
     private readonly timeoutSeconds: number;
     private activityIndex = 0;
     private readonly activityGenerators: ActivityGenerator[];
 
-    constructor(client: Client, timeoutSeconds: number) {
+    constructor(client: RirichiyoClient, timeoutSeconds: number) {
         this.client = client;
         this.timeoutSeconds = timeoutSeconds;
         this.activityGenerators = [

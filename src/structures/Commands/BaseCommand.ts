@@ -1,4 +1,4 @@
-import Client from '../Client';
+import RirichiyoClient from '../RirichiyoClient';
 import { Permissions } from 'discord.js';
 import { ApplicationCommandOption } from 'discord.js';
 import {
@@ -47,7 +47,7 @@ export class BaseCommand {
     botPermsRequired: CommandProps['botPermsRequired'];
     ownerOnly: boolean;
     /** The bot client */
-    public readonly client!: Client;
+    public readonly client!: RirichiyoClient;
     /** FilePath */
     public readonly filePath!: string;
 
@@ -69,7 +69,7 @@ export class BaseCommand {
     }
 
     get slashCommandData(): ApplicationCommandOption | undefined { return undefined }
-    init(client: Client, filePath: string): any { Object.assign(this, { client, filePath }) };
+    init(client: RirichiyoClient, filePath: string): any { Object.assign(this, { client, filePath }) };
     async run(ctx: InteractionCTX | MessageCTX, opts?: any): Promise<any> { };
     getUsage(guildPrefix: string): string | void { };
     getUsageExamples(guildPrefix: string): string | void { };

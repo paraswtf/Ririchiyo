@@ -1,14 +1,14 @@
 import { isMaster } from 'cluster';
-import { Client } from '../Client';
+import RirichiyoClient from '../RirichiyoClient';
 import chalk from 'chalk';
 import CustomError from './CustomError';
 
 export class Logger {
     // Class props //
-    client: Client;
+    client: RirichiyoClient;
     // Class props //
 
-    constructor(client: Client) {
+    constructor(client: RirichiyoClient) {
         this.client = client;
     }
 

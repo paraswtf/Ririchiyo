@@ -3,14 +3,14 @@ import { Utils, Logger } from './Utils';
 import Events from './Events/Events';
 import Commands from './Commands/Commands';
 import { CommandHandler } from './Commands/CommandHandler';
-import DB from '../structures/Data/Database';
+import DB from './Data/Database';
 import path from 'path';
-import Shoukaku from '../structures/Shoukaku';
+import Shoukaku from './Shoukaku';
 
 import { mongodb, shoukakuNodes, shoukakuOptions } from '../config';
 import Dispatcher from './Shoukaku/Dispatcher';
 
-export class Client extends DiscordClient {
+export class RirichiyoClient extends DiscordClient {
     logger: Logger;
     db: DB;
     events: Events<this>;
@@ -53,4 +53,4 @@ export class Client extends DiscordClient {
     }
 }
 
-export default Client;
+export default RirichiyoClient;
