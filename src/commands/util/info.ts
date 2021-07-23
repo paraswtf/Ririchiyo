@@ -10,8 +10,9 @@ export default class InfoCommand extends BaseCommand {
     constructor() {
         super({
             name: "info",
+            aliases: ['i', 'inf'],
             category: "util",
-            description: "Displays some information about the bot",
+            description: "Displays information about the bot",
             allowSlashCommand: true,
             allowMessageCommand: true,
             allowGuildCommand: true,

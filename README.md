@@ -28,10 +28,21 @@ MONGODB_URI=mongodb://user:pass@mongodb.host.com:27017/myDB
 
 > ---
 > ### `ping`
-> View the discordAPI connection stats.
+> Displays bot connection stats.
+> #### Aliases: `none`
 > #### Example:
 > ```
 > r!ping
+> ```
+> ---
+
+> ---
+> ### `info`
+> Displays information about the bot.
+> #### Aliases: `i, inf`
+> #### Example:
+> ```
+> r!info
 > ```
 > ---
 
