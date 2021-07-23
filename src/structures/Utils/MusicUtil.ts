@@ -8,7 +8,7 @@ import Dispatcher from "../Shoukaku/Dispatcher";
 
 export class MusicUtil {
     private static async sendError(error: string, ctx: MessageCTX | InteractionCTX) {
-        return await ctx.message.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, error, { isError: true })] });
+        return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, error, { isError: true })] });
     }
 
     public static canPerformAction(options: CanPerformActionrOptions): Success | Error {
