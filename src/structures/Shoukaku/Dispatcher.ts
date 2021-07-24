@@ -35,7 +35,7 @@ export class Dispatcher {
             }, options)).then(p => p.setGroupedFilters(this.filters)).catch(e => {
                 throw new CustomError(e)
             });
-        else this.player.voiceConnection.attemptReconnect({ voiceChannelID: this.voiceChannel.id });
+        else await this.player.voiceConnection.attemptReconnect({ voiceChannelID: this.voiceChannel.id, forceReconnect: true });
         return this;
     }
 
