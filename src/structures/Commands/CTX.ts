@@ -70,18 +70,37 @@ export class MessageCTX extends BaseCTX {
         this.isEdit = options.isEdit;
     }
 
-    async reply(options: Parameters<this['message']['reply']>['0'], allowEdits = true) {
-        if (this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) {
-            if (typeof options === "string") options += this.message.author.toString();
+    async reply(options: Parameters<this['message']['reply']>['0'], allowEdit = true) {
+        //Handle no read message history permission, append a mention if no read message history permission
+        if (!this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) {
+            if (typeof options === "string") options += this.message.author.toString() + ", ";
             else if ((options as ReplyMessageOptions).content) (options as ReplyMessageOptions).content += this.message.author.toString();
             else Object.assign(options, { content: this.message.author.toString() });
         } else Object.assign(options, { allowedMentions: { repliedUser: false } });
 
-        if (this.isEdit && this.message.previousResponse?.responseMessage && !this.message.previousResponse.responseMessage.deleted && allowEdits)
-            return await this.message.previousResponse.responseMessage.edit(options);
+        let msg: Message;
 
-        if (this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) return await this.message.reply(options);
-        else return await this.message.channel.send(options);
+        //If this is an edit then just edit and return
+        if (allowEdit &&
+            this.isEdit &&
+            this.message.previousCommandResponse &&
+            this.message.previousCommandResponse.responseMessage &&
+            !this.message.previousCommandResponse.responseMessage.deleted)
+            return await this.message.previousCommandResponse.responseMessage.edit(options);
+
+        //If there was no editable message/allowEdit was disabled, send a message.
+        else if (this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) msg = await this.message.reply(options);
+        else msg = await this.message.channel.send(options);
+
+        //If allowEdit is enabled, set the previousCommandResponse property to the sent message.
+        if (allowEdit) {
+            if (this.message.previousCommandResponse) {
+                Object.assign(this.message.previousCommandResponse, { responseMessage: msg })
+            } else this.message.previousCommandResponse = { responseMessage: msg };
+        }
+
+        //Finally return the message
+        return msg;
     }
 }
 

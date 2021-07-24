@@ -10,16 +10,16 @@ export default class ClientMessageUpdateEvent extends BaseEvent<RirichiyoClient>
         })
     }
 
-    async run(client: RirichiyoClient, msg: Message) {
+    async run(client: RirichiyoClient, _: Message, msg: Message) {
         client.logger.log("edited");
         //Filter unnessacary edit events
-        if (msg.author.bot || !msg.previousResponse || msg.previousResponse.responseMessage?.deleted) return;
+        if (msg.author.bot || !msg.previousCommandResponse || msg.previousCommandResponse.responseMessage?.deleted) return;
         this.client.commandHandler.handleMessage(msg, Date.now(), true);
     }
 }
 
 export class MessageExtension {
-    previousResponse?: PreviousResponse
+    previousCommandResponse?: PreviousResponse
 }
 
 declare module 'discord.js' {
