@@ -37,6 +37,7 @@
     "ioredis": "^4.27.6",
     "mongodb": "^3.6.10",
     "node-fetch": "^2.6.1",
+    "paste.gg": "^1.0.4",
     "redis-json": "^6.0.1",
     "shoukaku": "github:Deivu/Shoukaku",
     "source-map-support": "^0.5.19",
