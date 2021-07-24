@@ -55,7 +55,7 @@ export class CommandHandler {
         return false;
     }
 
-    async handleMessage(msg: Message, recievedAt: number) {
+    async handleMessage(msg: Message, recievedAt: number, isEdit: boolean = false) {
         //Check all usable prefixes
         let usedPrefix = null;
         const prefixes = this.defaultPrefixes;
@@ -100,6 +100,7 @@ export class CommandHandler {
             || !command.allowMessageCommand
             || (msg.guild && !command.allowGuildCommand)
             || (!msg.guild && !command.allowDMCommand)
+            || (isEdit && !command.editable)
         ) return;
 
         //Create the ctx
@@ -111,7 +112,8 @@ export class CommandHandler {
             isInteraction: false,
             isMessage: true,
             guildData,
-            guildSettings
+            guildSettings,
+            isEdit
         });
 
         //Check if bot has required permissions to run the command

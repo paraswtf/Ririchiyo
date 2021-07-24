@@ -60,24 +60,28 @@ export class MessageCTX extends BaseCTX {
     message: Message;
     author: User;
     member: GuildMember | null;
+    isEdit: boolean;
 
     constructor(options: MessageCTXOptions) {
         super(options);
         this.message = options.message;
         this.author = options.message.author;
         this.member = options.message.member;
+        this.isEdit = options.isEdit;
     }
 
-    async reply(options: Parameters<this['message']['reply']>['0']) {
-        if (this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) return await this.message.reply(
-            Object.assign(options, { allowedMentions: { repliedUser: false } })
-        );
+    async reply(options: Parameters<this['message']['reply']>['0'], allowEdits = true) {
+        if (this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) {
+            if (typeof options === "string") options += this.message.author.toString();
+            else if ((options as ReplyMessageOptions).content) (options as ReplyMessageOptions).content += this.message.author.toString();
+            else Object.assign(options, { content: this.message.author.toString() });
+        } else Object.assign(options, { allowedMentions: { repliedUser: false } });
 
-        if (typeof options === "string") options += this.message.author.toString();
-        else if ((options as ReplyMessageOptions).content) (options as ReplyMessageOptions).content += this.message.author.toString();
-        else Object.assign(options, { content: this.message.author.toString() });
+        if (this.isEdit && this.message.previousResponse?.responseMessage && !this.message.previousResponse.responseMessage.deleted && allowEdits)
+            return await this.message.previousResponse.responseMessage.edit(options);
 
-        return await this.message.channel.send(options);
+        if (this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) return await this.message.reply(options);
+        else return await this.message.channel.send(options);
     }
 }
 
@@ -100,8 +104,9 @@ export interface InteractionCTXOptions extends BaseCTXOptions {
 
 export interface MessageCTXOptions extends BaseCTXOptions {
     message: Message,
-    isInteraction: false
-    isMessage: true
+    isInteraction: false,
+    isMessage: true,
+    isEdit: boolean
 }
 
 export type DMMessageCTX = MessageCTX & { guild: null, member: null };
