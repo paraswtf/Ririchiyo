@@ -29,6 +29,14 @@ export class Utils {
     public static firstLetterCaps(string: string): string {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
+
+    public static formatString(template: string, ...args: any[]) {
+        return template.substr(0).replace(/\{\{|\}\}|\{(\d+)\}/g, (m, n) => {
+            if (m === "{{") return "{";
+            if (m === "}}") return "}";
+            return args[n];
+        });
+    };
 }
 
 export type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<infer ElementType> ? ElementType : never;
