@@ -11,7 +11,7 @@ export default class SummonCommand extends BaseCommand {
             name: "summon",
             aliases: ["j", "join"],
             category: "music",
-            description: "Make the bot join your voice channel.",
+            description: "Make the bot join your voice channel",
             allowSlashCommand: true,
             allowMessageCommand: true,
             allowGuildCommand: true,
