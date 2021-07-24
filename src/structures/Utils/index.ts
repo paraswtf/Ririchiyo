@@ -30,6 +30,11 @@ export class Utils {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
+    /**
+    * Insert variables in a template string, returns a new string
+    * @param {string} template The template string
+    * @param {any[]} args The arguments to add to the string
+    */
     public static formatString(template: string, ...args: any[]) {
         return template.substr(0).replace(/\{\{|\}\}|\{(\d+)\}/g, (m, n) => {
             if (m === "{{") return "{";
