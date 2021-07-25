@@ -25,8 +25,64 @@ export class Queue extends Array<AnyTrack> {
     }
 
     /** The index of the current track */
-    public currentIndex: number = 0;
+    public readonly currentIndex: number = 0;
 
+    /** The loop state of the queue */
+    public readonly loopState: QueueLoopState = "DISABLED";
+
+    /** Handle incrementing to the next track */
+    next(force = false) {
+        switch (force ? "DISABLED" : this.loopState) {
+            /** In case of force = true, this will be used */
+            //This runs for "DISABLED" as well as force = true
+            default: {
+                //If the length of queue is greater than the currently set index, increment the current index, so at most the currentIndex can be 1 higher than the amount of tracks
+                if (this.length > this.currentIndex)
+                    //@ts-expect-error Increment the current index, readonly as to not let it change from outside without errors
+                    ++this.currentIndex
+                break;
+            }
+
+
+            /** Below cases will run only when force = false */
+
+            case "QUEUE": {
+                //If the length of queue is greater than the currently set index+1 (so that the queue goes to the first track in queue loop if there's no next track)
+                if (this.length > this.currentIndex + 1)
+                    //@ts-expect-error Increment the current index, readonly as to not let it change from outside without errors
+                    ++this.currentIndex
+                //@ts-expect-error Change the current index to 0 if the queue has ended and next, readonly as to not let it change from outside without errors
+                else this.currentIndex = 0;
+                break;
+            }
+
+            case "TRACK": {
+                //Do nothing in case of track loop
+                break;
+            }
+        }
+    }
+
+    /** Set the queue loop state */
+    setLoopState(loopState: QueueLoopState) {
+        switch (loopState) {
+            case "QUEUE":
+                //@ts-expect-error The loopState is readonly as to not let it change from outside without errors
+                this.loopState = "QUEUE";
+                break;
+
+            case "TRACK":
+                //@ts-expect-error The loopState is readonly as to not let it change from outside without errors
+                this.loopState = "TRACK";
+                break;
+
+            default:
+                //@ts-expect-error The loopState is readonly as to not let it change from outside without errors
+                this.loopState = "DISABLED";
+                break
+        }
+        return this.loopState;
+    }
 
     /** Adds a track to the end of queue */
     public add(track: AnyTrack | AnyTrack[], index?: number): void {
@@ -77,5 +133,7 @@ function randomizeArray<T>(arr: T[]): T[] {
     }
     return arr;
 }
+
+export type QueueLoopState = "DISABLED" | "QUEUE" | "TRACK";
 
 export default Queue;
