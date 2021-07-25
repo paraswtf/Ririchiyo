@@ -25,7 +25,15 @@ export const clientOptions: Client['options'] = {
         "DIRECT_MESSAGES",
         "GUILD_MESSAGE_REACTIONS",
         "DIRECT_MESSAGE_REACTIONS"
-    ]
+    ],
+    presence: {
+        activities: [
+            {
+                type: 0,
+                name: "Starting big-brain.exe"
+            }
+        ]
+    }
 }
 
 export const shardingManagerOptions: SharderOptions = {
@@ -38,10 +46,10 @@ export const shardingManagerOptions: SharderOptions = {
 
 export const shoukakuNodes: ShoukakuNodeOptions[] = [
     {
-        name: 'Local',
+        name: 'DEV',
         host: 'localhost',
-        port: 7001,
-        auth: 'youshallnotpass',
+        port: 9000,
+        auth: 'youshallnotpassdev',
     }
 ]
 
