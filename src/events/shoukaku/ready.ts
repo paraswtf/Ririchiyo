@@ -9,7 +9,7 @@ export default class ShoukakuReadyEvent extends BaseEvent<Shoukaku> {
         })
     }
 
-    async run(client: Shoukaku) {
-        client.logger.info("Shoukaku ready!");
+    async run(emitter: Shoukaku) {
+        emitter.logger.info("Shoukaku ready!");
     }
 }

@@ -10,7 +10,7 @@ export default class ClientMessageCreateEvent extends BaseEvent<RirichiyoClient>
         })
     }
 
-    async run(client: RirichiyoClient, msg: Message) {
-        if (!msg.author.bot) this.client.commandHandler.handleMessage(msg, Date.now());
+    async run(emitter: RirichiyoClient, msg: Message) {
+        if (!msg.author.bot) this.emitter.commandHandler.handleMessage(msg, Date.now());
     }
 }

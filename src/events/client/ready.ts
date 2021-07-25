@@ -10,18 +10,18 @@ export default class ClientReadyEvent extends BaseEvent<RirichiyoClient> {
         })
     }
 
-    async run(client: RirichiyoClient) {
+    async run(emitter: RirichiyoClient) {
         //Connect to the database first
-        await this.client.db.connect();
+        await this.emitter.db.connect();
 
         //Load all commands
-        this.client.commands.load(path.join(__dirname, "../../commands"));
+        this.emitter.commands.load(path.join(__dirname, "../../commands"));
 
         //Run the presence updater
-        new PresenceUpdater(this.client, 300).run();
+        new PresenceUpdater(this.emitter, 300).run();
 
         //Finally log that the cliend ready event has completed
-        this.client.logger.info("Client ready!");
+        this.emitter.logger.info("Client ready!");
     }
 }
 

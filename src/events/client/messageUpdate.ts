@@ -10,9 +10,9 @@ export default class ClientMessageUpdateEvent extends BaseEvent<RirichiyoClient>
         })
     }
 
-    async run(client: RirichiyoClient, _: Message, msg: Message) {
+    async run(emitter: RirichiyoClient, _: Message, msg: Message) {
         //Filter unnessacary edit events
         if (msg.author.bot || !msg.previousCommandResponse || msg.previousCommandResponse.responseMessage?.deleted) return;
-        this.client.commandHandler.handleMessage(msg, Date.now(), true);
+        this.emitter.commandHandler.handleMessage(msg, Date.now(), true);
     }
 }

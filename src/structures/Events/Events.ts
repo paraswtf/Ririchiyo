@@ -17,13 +17,13 @@ export interface EventLoadOpts {
 
 export class Events<T extends EventEmitter & { logger: Logger } = RirichiyoClient> extends Collection<string, BaseEvent<T>> {
     /** The bot client */
-    client!: T;
+    emitter!: T;
     options: EventLoadOpts = { exclude: { events: [], categories: [] } };
     //Class Props//
 
-    constructor(entries?: readonly ([string, BaseEvent<T>])[] | null, client?: T) {
+    constructor(entries?: readonly ([string, BaseEvent<T>])[] | null, emitter?: T) {
         super(entries);
-        if (client) this.client = client;
+        if (emitter) this.emitter = emitter;
     }
 
     load(dir: string = "", options?: EventLoadOpts) {
@@ -51,18 +51,18 @@ export class Events<T extends EventEmitter & { logger: Logger } = RirichiyoClien
 
             const evt = new Event() as BaseEvent<T>;
             if (this.options.exclude && this.options.exclude.events && this.options.exclude.events.includes(evt.name) || this.options.exclude && this.options.exclude.categories && this.options.exclude.categories.includes(evt.category)) return;
-            evt.init(this.client, filePath);
+            evt.init(this.emitter, filePath);
 
             let isReload = false;
             if (this.has(evt.name)) {
-                this.client.removeListener(evt.name, this.get(evt.name)!.run);
+                this.emitter.removeListener(evt.name, this.get(evt.name)!.run);
                 isReload = true
             };
 
             this.set(evt.name, evt);
-            this.client.on(evt.name, evt.run.bind(evt, this.client));
+            this.emitter.on(evt.name, evt.run.bind(evt, this.emitter));
 
-            if (this.client.logger) this.client.logger.log(`${isReload ? "Rel" : "L"}oaded event from ${chalk.underline(filePath)} -> [${evt.category}|${evt.name}]`);
+            if (this.emitter.logger) this.emitter.logger.log(`${isReload ? "Rel" : "L"}oaded event from ${chalk.underline(filePath)} -> [${evt.category}|${evt.name}]`);
             else console.log(`${isReload ? "Rel" : "L"}oaded event from ${chalk.underline(filePath)} -> [${evt.category}|${evt.name}]`);
         }
 
@@ -74,11 +74,11 @@ export class Events<T extends EventEmitter & { logger: Logger } = RirichiyoClien
 
         const evt = this.get(name)!;
 
-        this.client.removeListener(evt.name, evt.run)
+        this.emitter.removeListener(evt.name, evt.run)
 
         this.delete(evt.name);
 
-        if (this.client.logger) this.client.logger.log(`Unoaded event from ${chalk.underline(evt.filePath)} -> [${evt.category}|${evt.name}]`);
+        if (this.emitter.logger) this.emitter.logger.log(`Unoaded event from ${chalk.underline(evt.filePath)} -> [${evt.category}|${evt.name}]`);
         else console.log(`Unoaded event from ${chalk.underline(evt.filePath)} -> [${evt.category}|${evt.name}]`);
     }
 }
