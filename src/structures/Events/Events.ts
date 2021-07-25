@@ -15,15 +15,19 @@ export interface EventLoadOpts {
     }
 }
 
-export class Events<T extends EventEmitter & { logger: Logger } = RirichiyoClient> extends Collection<string, BaseEvent<T>> {
+export class Events<T extends EventEmitter & { logger?: Logger } = RirichiyoClient> extends Collection<string, BaseEvent<T>> {
     /** The bot client */
-    emitter!: T;
+    readonly emitter!: T;
+    readonly logger?: Logger;
     options: EventLoadOpts = { exclude: { events: [], categories: [] } };
     //Class Props//
 
-    constructor(entries?: readonly ([string, BaseEvent<T>])[] | null, emitter?: T) {
+    constructor(entries?: readonly ([string, BaseEvent<T>])[] | null, emitter?: T, logger?: Logger) {
         super(entries);
-        if (emitter) this.emitter = emitter;
+        if (emitter) {
+            this.emitter = emitter;
+            this.logger = emitter.logger || logger
+        }
     }
 
     load(dir: string = "", options?: EventLoadOpts) {
@@ -62,7 +66,7 @@ export class Events<T extends EventEmitter & { logger: Logger } = RirichiyoClien
             this.set(evt.name, evt);
             this.emitter.on(evt.name, evt.run.bind(evt, this.emitter));
 
-            if (this.emitter.logger) this.emitter.logger.log(`${isReload ? "Rel" : "L"}oaded event from ${chalk.underline(filePath)} -> [${evt.category}|${evt.name}]`);
+            if (this.logger) this.logger.log(`${isReload ? "Rel" : "L"}oaded event from ${chalk.underline(filePath)} -> [${evt.category}|${evt.name}]`);
             else console.log(`${isReload ? "Rel" : "L"}oaded event from ${chalk.underline(filePath)} -> [${evt.category}|${evt.name}]`);
         }
 
@@ -78,8 +82,12 @@ export class Events<T extends EventEmitter & { logger: Logger } = RirichiyoClien
 
         this.delete(evt.name);
 
-        if (this.emitter.logger) this.emitter.logger.log(`Unoaded event from ${chalk.underline(evt.filePath)} -> [${evt.category}|${evt.name}]`);
+        if (this.logger) this.logger.log(`Unoaded event from ${chalk.underline(evt.filePath)} -> [${evt.category}|${evt.name}]`);
         else console.log(`Unoaded event from ${chalk.underline(evt.filePath)} -> [${evt.category}|${evt.name}]`);
+    }
+
+    removeAllListeners() {
+        this.emitter.removeAllListeners();
     }
 }
 
