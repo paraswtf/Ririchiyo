@@ -1,9 +1,8 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil, Error, Success, FLAG } from '../../structures/Utils/MusicUtil';
-import { Guild, MessageEmbed } from 'discord.js';
+import { MessageEmbed } from 'discord.js';
 import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
-import Dispatcher from '../../structures/Shoukaku/Dispatcher';
 
 export default class SummonCommand extends BaseCommand {
     constructor() {
@@ -31,36 +30,27 @@ export default class SummonCommand extends BaseCommand {
             //If this wasn't an internal call, send message
             if (!opts) {
                 const reconnectedEmbed = new MessageEmbed()
-                    .setDescription(`**Reconnected to your voice channel!**`)
-                    .addField("Player Voice Channel", `${`<#${res.authorVoiceChannel?.id}>` || "unknown"}`)
-                    .addField("Player Text Channel", `<#${ctx.channel.id}>`)
-                    .addField("Volume", `${dispatcher.player?.filters.volume}%`, true)
-                    .addField("Loop", `${dispatcher.loopState}`, true)
-                    .addField("Volume limit", `${ctx.guildSettings.music.maxVolumeLimit}`, true)
+                    .setDescription(`**Reconnecting to ${`<#${res.authorVoiceChannel?.id}>` || "your voice channel"}**`)
                     .setColor(ThemeUtils.getClientColor(ctx.guild))
                 await ctx.reply({ embeds: [reconnectedEmbed] }).catch(this.client.logger.error);
             }
             //Reconnect
-            await dispatcher.connect();
+            await dispatcher.attemptReconnect(res.authorVoiceChannel!.id);
 
             return new Success(FLAG.RESPAWNED);
         }
 
-        dispatcher = new Dispatcher(ctx.guild, {
-            voiceChannel: res.authorVoiceChannel!,
+        dispatcher = await this.client.dispatchers.create({
+            guildID: ctx.guild.id,
+            voiceChannelID: res.authorVoiceChannel!.id,
             loopState: ctx.guildSettings.music.loopState,
-            filters: ctx.guildSettings.music.filters.grouped
+            filterOptions: ctx.guildSettings.music.filters.grouped
         });
-
-        await dispatcher.connect();
 
         //Send embed
         if (!opts) {
             const joinedEmbed = new MessageEmbed()
                 .setDescription(`**Joined ${`<#${res.authorVoiceChannel?.id}>` || "your voice channel"}**`)
-                .addField("Volume", `\`${dispatcher.player?.filters.volume}%\``, true)
-                .addField("Loop", `\`${dispatcher.loopState}\``, true)
-                .addField("Volume limit", `\`${ctx.guildSettings.music.maxVolumeLimit}%\``, true)
                 .setColor(ThemeUtils.getClientColor(ctx.guild))
             await ctx.reply({ embeds: [joinedEmbed] }).catch(this.client.logger.error);
         }

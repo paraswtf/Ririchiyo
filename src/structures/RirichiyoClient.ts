@@ -8,7 +8,7 @@ import path from 'path';
 import Shoukaku from './Shoukaku';
 
 import { mongodb, shoukakuNodes, shoukakuOptions } from '../config';
-import Dispatcher from './Shoukaku/Dispatcher';
+import { DispatcherManager } from './Shoukaku/Dispatcher';
 
 export class RirichiyoClient extends DiscordClient {
     logger: Logger;
@@ -17,7 +17,7 @@ export class RirichiyoClient extends DiscordClient {
     commands: Commands;
     commandHandler: CommandHandler;
     shoukaku: Shoukaku;
-    dispatchers: Collection<string, Dispatcher>;
+    dispatchers: DispatcherManager;
     user!: ClientUser;
     shard!: ShardClientUtil;
 
@@ -27,7 +27,7 @@ export class RirichiyoClient extends DiscordClient {
         this.logger = new Logger(this);
         this.db = new DB({ mongoDBURI: mongodb.uri }, this);
         this.shoukaku = new Shoukaku(this, shoukakuNodes, shoukakuOptions);
-        this.dispatchers = new Collection();
+        this.dispatchers = new DispatcherManager();
         this.events = new Events(null, this).load(path.join(__dirname, "../events/client"));
         this.commands = new Commands(null, this);
         this.commandHandler = new CommandHandler(this);
