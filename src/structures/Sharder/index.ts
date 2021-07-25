@@ -6,8 +6,3 @@ export { IPCResult, ShardClientUtil } from './Sharding/ShardClientUtil';
 export { CloseEvent, SessionObject, SharderOptions, ShardingManager } from './Sharding/ShardingManager';
 export { http, IPCEvents, SharderEvents, version } from './Util/Constants';
 export * from './Util/Util';
-
-import { ShardClientUtil as CustomShardClientUtil } from './Sharding/ShardClientUtil';
-declare module 'discord.js' {
-	interface ShardClientUtil extends Omit<CustomShardClientUtil, 'client'> { }
-}

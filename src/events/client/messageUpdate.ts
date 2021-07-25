@@ -16,15 +16,3 @@ export default class ClientMessageUpdateEvent extends BaseEvent<RirichiyoClient>
         this.client.commandHandler.handleMessage(msg, Date.now(), true);
     }
 }
-
-export class MessageExtension {
-    previousCommandResponse?: PreviousResponse
-}
-
-declare module 'discord.js' {
-    interface Message extends MessageExtension { }
-}
-
-export interface PreviousResponse {
-    responseMessage?: Message
-}

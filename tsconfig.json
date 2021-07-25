@@ -23,6 +23,7 @@
     },
     "include": [
         "src",
+        "typings",
         "config",
         "package.json",
         "process.json"
