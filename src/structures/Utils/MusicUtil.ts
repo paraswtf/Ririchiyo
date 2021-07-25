@@ -21,7 +21,6 @@ export class MusicUtil {
             vcMemberAmtForAllPerms,
             noDispatcherRequired,
             isSpawnAttempt,
-            sendError,
             allowViewOnly
         } = Object.assign({
             vcMemberAmtForAllPerms: 2,
@@ -36,31 +35,31 @@ export class MusicUtil {
         const { channel: memberVc } = member.voice;
 
         if (!noDispatcherRequired && !dispatcher) {
-            if (sendError && ctx) this.sendError("There is nothing playing right now!", ctx);
+            if (ctx) this.sendError("There is nothing playing right now!", ctx);
             return new Error(FLAG.NO_DISPATCHER, memberPermissions);
         }
 
         if (dispatcher && botVc) {
             if (!memberVc) {
                 if (isSpawnAttempt) {
-                    if (sendError && ctx) this.sendError("Already playing in a different channel!", ctx);
+                    if (ctx) this.sendError("Already playing in a different channel!", ctx);
                     return new Error(FLAG.DISPATCHER_ALREADY_EXISTS, memberPermissions);
                 }
-                if (sendError && ctx) this.sendError("You need to be in the same voice channel as the bot to use that command!", ctx);
+                if (ctx) this.sendError("You need to be in the same voice channel as the bot to use that command!", ctx);
                 return new Error(FLAG.NO_AUTHOR_CHANNEL_AND_DISPATCHER_EXISTS, memberPermissions);
             }
             else {
                 if (memberVc.id !== botVc.id) {
                     if (isSpawnAttempt) {
-                        if (sendError && ctx) this.sendError("Already playing in a different channel!", ctx);
+                        if (ctx) this.sendError("Already playing in a different channel!", ctx);
                         return new Error(FLAG.DISPATCHER_ALREADY_EXISTS, memberPermissions);
                     }
-                    if (sendError && ctx) this.sendError("You need to be in the same voice channel as the bot to use that command!", ctx);
+                    if (ctx) this.sendError("You need to be in the same voice channel as the bot to use that command!", ctx);
                     return new Error(FLAG.DISPATCHER_IN_DIFFERENT_CHANNEL, memberPermissions);
                 }
                 else {
                     if (isSpawnAttempt) {
-                        if (sendError && ctx) this.sendError("Already playing in your voice channel!", ctx);
+                        if (ctx) this.sendError("Already playing in your voice channel!", ctx);
                         return new Error(FLAG.DISPATCHER_ALREADY_EXISTS_SAME_CHANNEL, memberPermissions);
                     }
                     const vcMemberCount = memberVc.members.filter(m => !m.user.bot).size;
@@ -69,7 +68,7 @@ export class MusicUtil {
                     if (hasPerms) return new Success(FLAG.HAS_PERMS, memberPermissions, memberVc, dispatcher);
                     else {
                         if (vcMemberCount > vcMemberAmtForAllPerms) {
-                            if (sendError && ctx) this.sendError(`You dont have \`${missingPerms.join("`, `")}\` permission${missingPerms.length > 1 ? `s` : ``} to do that!\nBeing alone in the channel works too!`, ctx);
+                            if (ctx) this.sendError(`You dont have \`${missingPerms.join("`, `")}\` permission${missingPerms.length > 1 ? `s` : ``} to do that!\nBeing alone in the channel works too!`, ctx);
                             return new Error(FLAG.NO_PERMS_AND_NOT_ALONE, memberPermissions);
                         }
                         return new Success(FLAG.NO_PERMS_BUT_ALONE, memberPermissions, memberVc, dispatcher);
@@ -82,7 +81,7 @@ export class MusicUtil {
             const hasPerms = !missingPerms || missingPerms.length === 0;
             if (hasPerms) {
                 if (isSpawnAttempt && !memberVc) {
-                    if (sendError && ctx) this.sendError("You need to be in a voice channel to use that command!", ctx);
+                    if (ctx) this.sendError("You need to be in a voice channel to use that command!", ctx);
                     return new Error(FLAG.NO_VOICE_CHANNEL, memberPermissions);
                 }
                 if (isSpawnAttempt) return new Success(FLAG.HAS_PERMS_TO_SPAWN_DISPATCHER, memberPermissions, memberVc!);
@@ -91,13 +90,13 @@ export class MusicUtil {
             else {
                 if (isSpawnAttempt) {
                     if (!memberVc) {
-                        if (sendError && ctx) this.sendError("You need to be in a voice channel to use that command!", ctx);
+                        if (ctx) this.sendError("You need to be in a voice channel to use that command!", ctx);
                         return new Error(FLAG.NO_VOICE_CHANNEL, memberPermissions);
                     }
                     else {
                         const vcMemberCount = memberVc.members.filter(m => !m.user.bot).size;
                         if (vcMemberCount > vcMemberAmtForAllPerms) {
-                            if (sendError && ctx) this.sendError(`You dont have \`${missingPerms.join("`, `")}\` permission${missingPerms.length > 1 ? `s` : ``} to do that!\nBeing alone in the channel works too!`, ctx);
+                            if (ctx) this.sendError(`You dont have \`${missingPerms.join("`, `")}\` permission${missingPerms.length > 1 ? `s` : ``} to do that!\nBeing alone in the channel works too!`, ctx);
                             return new Error(FLAG.NO_PERMS_TO_SPAWN_DISPATCHER, memberPermissions);
                         }
                         return new Success(FLAG.NO_PERMS_BUT_ALONE, memberPermissions, memberVc);
@@ -106,7 +105,7 @@ export class MusicUtil {
                 else {
                     if (allowViewOnly) return new Success(FLAG.VIEW_ONLY, memberPermissions);
                     else {
-                        if (sendError && ctx) this.sendError("There is nothing playing right now!", ctx);
+                        if (ctx) this.sendError("There is nothing playing right now!", ctx);
                         return new Error(FLAG.NO_PERMS_AND_NO_DISPATCHER, memberPermissions);
                     }
                 }
@@ -124,7 +123,6 @@ export interface CanPerformActionrOptions {
     vcMemberAmtForAllPerms?: number,
     noDispatcherRequired?: boolean,
     isSpawnAttempt?: boolean,
-    sendError?: boolean,
     allowViewOnly?: boolean
 }
 
