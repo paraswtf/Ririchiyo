@@ -11,7 +11,7 @@ export const defaultGuildMusicFiltersSettingsData: GuildMusicFiltersSettingsData
     & {
         volume: number
     } = {
-    volume: 70,
+    volume: 0.7,
 }
 
 export class GuildMusicFiltersManager extends BaseData {
@@ -45,7 +45,7 @@ export class GuildMusicFiltersManager extends BaseData {
     }
 
     async setVolume(value: number) {
-        if (value < 0 || value > 1000) throw new CustomError("Volume value must be between 0 and 1000");
+        if (value < 0 || value > 500) throw new CustomError("Volume value must be between 0 and 1000");
         await this.updateDB("volume", value);
         this.updateCache("volume", value);
         return this;
