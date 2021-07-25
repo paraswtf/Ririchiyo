@@ -12,6 +12,10 @@
   },
   "author": "Styxo",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheStyxo/Ririchiyo"
+  },
   "devDependencies": {
     "@types/color": "^3.0.1",
     "@types/ioredis": "^4.26.6",
