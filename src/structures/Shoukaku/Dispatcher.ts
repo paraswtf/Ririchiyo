@@ -30,7 +30,7 @@ export class Dispatcher {
     //Important values
     readonly client: RirichiyoClient;
     readonly guild: Guild;
-    textChannel: (TextChannel & { guild: Guild }) | null = null;
+    textChannel: (TextChannel & { guild: Guild });
     //The shoukaku player
     readonly player!: ShoukakuPlayer;
     //The dispatcher queue
@@ -49,7 +49,8 @@ export class Dispatcher {
         this.guild = guild;
 
         //Resolve and set the text channel
-        if (options.textChannelID) this.textChannel = this.guild.channels.resolve(options.textChannelID) as this['textChannel'];
+        this.textChannel = this.guild.channels.resolve(options.textChannelID) as this['textChannel'];
+        if (!this.textChannel) throw new CustomError("TextChannel not found, cannot create a dispatcher.");
 
         //Initialize player related values
         this.queue = new Queue();
@@ -111,12 +112,12 @@ export type SearchRes = Omit<ShoukakuTrackList, 'tracks'> & {
 
 export interface DispatcherOptions {
     guildID: ID,
-    textChannelID?: ID
+    textChannelID: ID
 }
 
 export interface DispatcherCreateOptions {
     guildID: ID,
-    textChannelID?: ID,
+    textChannelID: ID,
     voiceChannelID: ID,
     filterOptions?: ShoukakuGroupedFilterOptions,
     loopState?: QueueLoopState,

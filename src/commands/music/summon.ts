@@ -43,6 +43,7 @@ export default class SummonCommand extends BaseCommand {
         dispatcher = await this.client.dispatchers.create({
             guildID: ctx.guild.id,
             voiceChannelID: res.authorVoiceChannel!.id,
+            textChannelID: ctx.channel.id,
             loopState: ctx.guildSettings.music.loopState,
             filterOptions: ctx.guildSettings.music.filters.grouped
         });
