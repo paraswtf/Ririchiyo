@@ -50,7 +50,8 @@ export class InteractionCTX extends BaseCTX {
     }
 
     async reply(options: Parameters<this['message']['reply']>['0']) {
-        return await this.message.reply(options);
+        await this.message.reply(options);
+        return null;
     }
 }
 
