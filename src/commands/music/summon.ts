@@ -1,7 +1,7 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil, Error, Success, FLAG } from '../../structures/Utils/MusicUtil';
-import { MessageEmbed } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
 
 export default class SummonCommand extends BaseCommand {
@@ -27,15 +27,30 @@ export default class SummonCommand extends BaseCommand {
         let dispatcher = this.client.dispatchers.get(ctx.guild.id);
 
         if (dispatcher && !meVoiceChannel) {
+            let reconnectingMessage: Message | null = null;
             //If this wasn't an internal call, send message
             if (!opts) {
                 const reconnectedEmbed = new MessageEmbed()
                     .setDescription(`**Reconnecting to ${`<#${res.authorVoiceChannel?.id}>` || "your voice channel"}**`)
-                    .setColor(ThemeUtils.getClientColor(ctx.guild))
-                await ctx.reply({ embeds: [reconnectedEmbed] }).catch(this.client.logger.error);
+                    .setColor(ThemeUtils.colors.get("loading")!.rgbNumber())
+                reconnectingMessage = await ctx.reply({ embeds: [reconnectedEmbed] });
             }
             //Reconnect
-            await dispatcher.attemptReconnect(res.authorVoiceChannel!.id);
+            await dispatcher.attemptReconnect(res.authorVoiceChannel!.id).catch(error => {
+                this.client.logger.error(error);
+                if (reconnectingMessage?.editable) {
+                    reconnectingMessage.edit({
+                        embeds: [
+                            new MessageEmbed()
+                                .setDescription(
+                                    `**Failed while reconnecting to ${`<#${res.authorVoiceChannel?.id}>` || "your voice channel"}**${typeof error?.message === "string"
+                                        ? `\n\`Error: ${error.message}\``
+                                        : ""}`
+                                ).setColor(ThemeUtils.colors.get('error')!.rgbNumber())
+                        ]
+                    })
+                }
+            });
 
             return new Success(FLAG.RESPAWNED);
         }
@@ -53,7 +68,7 @@ export default class SummonCommand extends BaseCommand {
             const joinedEmbed = new MessageEmbed()
                 .setDescription(`**Joined ${`<#${res.authorVoiceChannel?.id}>` || "your voice channel"}**`)
                 .setColor(ThemeUtils.getClientColor(ctx.guild))
-            await ctx.reply({ embeds: [joinedEmbed] }).catch(this.client.logger.error);
+            await ctx.reply({ embeds: [joinedEmbed] });
         }
 
         return new Success(FLAG.NULL, undefined, res.authorVoiceChannel, dispatcher);
