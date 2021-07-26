@@ -64,7 +64,10 @@ export class Dispatcher {
             deaf: options.deaf ?? true
         }).then(p => p.setGroupedFilters(options.filterOptions)).catch(e => { throw new CustomError(e) });
         Object.assign(this, {
-            player: Object.assign(player, { events: new Events(null, player, this.client.logger).load(join(__dirname, "../../events/player")) })
+            player: Object.assign(player, {
+                dispatcher: this,
+                events: new Events(null, player, this.client.logger).load(join(__dirname, "../../events/player"))
+            })
         });
         if (options.loopState) this.queue.setLoopState(options.loopState);
         return this;
@@ -87,7 +90,7 @@ export class Dispatcher {
     }
 
     async search(query: string, member: GuildMember, returnSearchList = false): Promise<SearchRes | null> {
-        const res = await this.client.shoukaku.getNode().rest.resolve(query, "youtubemusic").catch(this.client.logger.error);
+        const res = await this.client.shoukaku.getNode().rest.resolve(query, "youtube").catch(this.client.logger.error);
         if (!res) return null;
 
         switch (res.type) {
@@ -122,6 +125,11 @@ export interface DispatcherCreateOptions {
     filterOptions?: ShoukakuGroupedFilterOptions,
     loopState?: QueueLoopState,
     deaf?: boolean
+}
+
+export interface ExtendedShoukakuPlayer extends ShoukakuPlayer {
+    dispatcher: Dispatcher,
+    events: Events
 }
 
 export default Dispatcher;
