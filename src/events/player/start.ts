@@ -1,7 +1,11 @@
-import { ShoukakuPlayer } from 'shoukaku';
 import BaseEvent from '../../structures/Events/BaseEvent';
+import { ExtendedShoukakuPlayer } from '../../structures/Shoukaku/Dispatcher';
+import { PlayerStartEvent as StartEventData } from 'shoukaku';
 
-export default class PlayerStartEvent extends BaseEvent<ShoukakuPlayer> {
+/** 
+ * Emitted when the Lavalink Server sends a TrackStartEvent, Optional.
+ */
+export default class PlayerStartEvent extends BaseEvent<ExtendedShoukakuPlayer> {
     constructor() {
         super({
             name: "start",
@@ -9,7 +13,8 @@ export default class PlayerStartEvent extends BaseEvent<ShoukakuPlayer> {
         })
     }
 
-    async run(emitter: ShoukakuPlayer, data: any) {
+    async run(player: ExtendedShoukakuPlayer, data: StartEventData) {
+        console.log(this.name);
         console.log(data);
     }
 }
