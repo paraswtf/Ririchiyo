@@ -1,5 +1,7 @@
 import { Collection, Guild, GuildMember, StageChannel, TextChannel, VoiceChannel } from "discord.js";
+import { join } from "path";
 import { ShoukakuGroupedFilterOptions, ShoukakuPlayer, ShoukakuPlayOptions, ShoukakuTrack, ShoukakuTrackList } from "shoukaku";
+import Events from "../Events/Events";
 import RirichiyoClient from "../RirichiyoClient";
 import Utils, { CustomError, ID } from "../Utils";
 import Queue, { QueueLoopState } from "./Queue";
@@ -54,14 +56,14 @@ export class Dispatcher {
     }
 
     async init(options: DispatcherCreateOptions) {
+        const player = await this.client.shoukaku.getNode().joinVoiceChannel({
+            guildID: this.guild.id,
+            voiceChannelID: options.voiceChannelID,
+            mute: false,
+            deaf: options.deaf ?? true
+        }).then(p => p.setGroupedFilters(options.filterOptions)).catch(e => { throw new CustomError(e) });
         Object.assign(this, {
-            player: await this.client.shoukaku.getNode()
-                .joinVoiceChannel({
-                    guildID: this.guild.id,
-                    voiceChannelID: options.voiceChannelID,
-                    mute: false,
-                    deaf: options.deaf ?? true
-                }).then(p => p.setGroupedFilters(options.filterOptions)).catch(e => { throw new CustomError(e) })
+            player: Object.assign(player, { events: new Events(null, player, this.client.logger).load(join(__dirname, "../../events/player")) })
         });
         if (options.loopState) this.queue.setLoopState(options.loopState);
         return this;
