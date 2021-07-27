@@ -35,8 +35,15 @@ export class GuildMusicSettings extends BaseData {
     }
 
     async setLoopState(state: GuildMusicSettingsLoopState = "DISABLED") {
-        this.updateDB("loopState", state);
-        return this.updateCache("loopState", state);
+        if (state === defaultGuildMusicSettingsData.loopState) {
+            await this.updateDB("loopState", null, "$unset");
+            this.updateCache("loopState", null, "delete");
+        }
+        else {
+            await this.updateDB("loopState", state);
+            this.updateCache("loopState", state);
+        }
+        return this;
     }
 
     get stayConnected(): boolean {
@@ -44,8 +51,14 @@ export class GuildMusicSettings extends BaseData {
     }
 
     async setStayConnected(value: boolean) {
-        await this.updateDB("stayConnected", value);
-        this.updateCache("stayConnected", value);
+        if (value === defaultGuildMusicSettingsData.stayConnected) {
+            await this.updateDB("stayConnected", null, "$unset");
+            this.updateCache("stayConnected", null, "delete");
+        }
+        else {
+            await this.updateDB("stayConnected", value);
+            this.updateCache("stayConnected", value);
+        }
         return this;
     }
 }
