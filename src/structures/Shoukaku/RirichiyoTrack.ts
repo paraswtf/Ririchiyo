@@ -8,6 +8,8 @@ export const THUMBNAIL_SIZES: ThumbnailSize[] = ["0", "1", "2", "3", "default", 
 export const validateTrack = (track: any) => track && track instanceof RirichiyoTrack;
 export const validateTrackOrTrackArray = (track: any | any[]) => track && (validateTrack(track) || (Array.isArray(track) && track.every(t => validateTrack(t))));
 export const escapeRegExp = (str: string): string => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+export const maxTrackTitleDisplayLength = 39;
+
 
 export class RirichiyoTrack {
     id: string;
@@ -42,7 +44,7 @@ export class RirichiyoTrack {
             this.isLive = this.data.info.isStream;
             this.ytURL = this.data.info.uri;
             this.identifier = this.data.info.identifier;
-            this.displayTitle = this.title!.length > 45 ? this.title!.substring(0, 45) + "..." : this.title!;
+            this.displayTitle = this.title!.length > maxTrackTitleDisplayLength ? this.title!.substring(0, maxTrackTitleDisplayLength) + "..." : this.title!;
             this.displayOriginURL = this.ytURL!;
             this.displayURL = this.ytURL!;
             this.displayDuration = this.duration!;
@@ -50,7 +52,7 @@ export class RirichiyoTrack {
         } else {
             this.isResolved = false;
             this.unresolvedTrackData = data as UnresolvedTrackData;
-            this.displayTitle = this.unresolvedTrackData.title.length > 45 ? this.unresolvedTrackData.title.substring(0, 45) + "..." : this.unresolvedTrackData.title;
+            this.displayTitle = this.unresolvedTrackData.title.length > maxTrackTitleDisplayLength ? this.unresolvedTrackData.title.substring(0, maxTrackTitleDisplayLength) + "..." : this.unresolvedTrackData.title;
             this.displayOriginURL = this.unresolvedTrackData.originURL;
             this.displayURL = this.unresolvedTrackData.originURL;
             this.displayDuration = this.unresolvedTrackData.duration;
@@ -69,7 +71,7 @@ export class RirichiyoTrack {
         this.isLive = data.info.isStream;
         this.ytURL = data.info.uri;
         this.identifier = data.info.identifier;
-        this.displayTitle = this.title!.length > 45 ? this.title!.substring(0, 45) + "..." : this.title!;
+        this.displayTitle = this.title!.length > maxTrackTitleDisplayLength ? this.title!.substring(0, maxTrackTitleDisplayLength) + "..." : this.title!;
         this.displayURL = this.ytURL!;
         this.displayDuration = this.duration!;
         this.displayArtist = this.channelName!;
