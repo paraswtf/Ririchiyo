@@ -178,7 +178,7 @@ export class InactivityChecker {
             )) this.times > 1 ? this.dispatcher.player.emit("playerInactivity") : ++this.times;
         }
         else this.times = 0;
-        if (!this._stop) setTimeout(() => this.run(), 600000);
+        if (!this._stop) setTimeout(() => this.run(), 500000);
     }
 
     public stop() {
