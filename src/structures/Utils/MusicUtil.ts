@@ -151,7 +151,7 @@ export enum FLAG {
 
 export class Error {
     // Class props //
-    error: FLAG;
+    flag: FLAG;
     memberPerms: InternalPermissions;
     missingPerms?: string[]
     isPermsError = false;
@@ -159,8 +159,8 @@ export class Error {
     readonly isError = true;
     // Class props //
 
-    constructor(error: FLAG, memberPerms?: InternalPermissions, missingPerms?: string[]) {
-        this.error = error;
+    constructor(flag: FLAG, memberPerms?: InternalPermissions, missingPerms?: string[]) {
+        this.flag = flag;
         this.memberPerms = memberPerms || new InternalPermissions(0);
         if (missingPerms && missingPerms.length > 0) {
             this.isPermsError = true;
@@ -171,15 +171,15 @@ export class Error {
 
 export class Success {
     // Class props //
-    error: FLAG;
+    flag: FLAG;
     memberPerms: InternalPermissions;
     authorVoiceChannel?: VoiceChannel | StageChannel;
     dispatcher?: Dispatcher;
     readonly isSuccess = true;
     readonly isError = false;
     // Class props //
-    constructor(error: FLAG, memberPerms?: InternalPermissions, authorVoiceChannel?: VoiceChannel | StageChannel, dispatcher?: Dispatcher) {
-        this.error = error;
+    constructor(flag: FLAG, memberPerms?: InternalPermissions, authorVoiceChannel?: VoiceChannel | StageChannel, dispatcher?: Dispatcher) {
+        this.flag = flag;
         this.memberPerms = memberPerms || new InternalPermissions(0);
         this.authorVoiceChannel = authorVoiceChannel;
         this.dispatcher = dispatcher;
