@@ -3,6 +3,7 @@ import {
     Permissions,
     Message,
     CommandInteraction,
+    MessageComponentInteraction,
     User,
     TextChannel,
     DMChannel,
@@ -38,7 +39,7 @@ export class BaseCTX {
 export class InteractionCTX extends BaseCTX {
     readonly isInteraction = true;
     readonly isMessage = false;
-    message: CommandInteraction
+    message: CommandInteraction | MessageComponentInteraction
     author: User;
     member: GuildMember | null;
 
@@ -117,7 +118,7 @@ export interface BaseCTXOptions {
 }
 
 export interface InteractionCTXOptions extends BaseCTXOptions {
-    message: CommandInteraction,
+    message: CommandInteraction | MessageComponentInteraction,
     isInteraction: true
     isMessage: false
 }
