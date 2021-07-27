@@ -33,6 +33,8 @@ export interface CommandProps {
     ownerOnly?: boolean;
     /** If the edit event should be passed */
     editable?: boolean;
+    /** If the command can be used with a message component interaction */
+    allowMessageCommponentInteraction?: boolean
 }
 
 export class BaseCommand {
@@ -49,6 +51,7 @@ export class BaseCommand {
     botPermsRequired: CommandProps['botPermsRequired'];
     ownerOnly: boolean;
     editable: boolean;
+    allowMessageCommponentInteraction: boolean;
     /** The bot client */
     public readonly client!: RirichiyoClient;
     /** FilePath */
@@ -56,7 +59,22 @@ export class BaseCommand {
 
 
     constructor(options?: CommandProps) {
-        const { name, aliases, category, description, cooldown, hidden, allowSlashCommand, allowMessageCommand, allowGuildCommand, allowDMCommand, botPermsRequired, ownerOnly, editable } = check(options);
+        const {
+            name,
+            aliases,
+            category,
+            description,
+            cooldown,
+            hidden,
+            allowSlashCommand,
+            allowMessageCommand,
+            allowGuildCommand,
+            allowDMCommand,
+            botPermsRequired,
+            ownerOnly,
+            editable,
+            allowMessageCommponentInteraction
+        } = check(options);
         this.name = name;
         this.aliases = aliases;
         this.category = category;
@@ -70,6 +88,7 @@ export class BaseCommand {
         this.botPermsRequired = botPermsRequired;
         this.ownerOnly = ownerOnly ?? false;
         this.editable = editable ?? false;
+        this.allowMessageCommponentInteraction = allowMessageCommponentInteraction ?? false;
     }
 
     get slashCommandData(): ApplicationCommandOption | undefined { return undefined }
@@ -110,6 +129,8 @@ function check(options?: CommandProps): CommandProps {
     if (typeof options.ownerOnly !== 'undefined' && typeof options.ownerOnly !== 'boolean') throw new TypeError("Command option 'ownerOnly' must be of type 'boolean'.");
 
     if (typeof options.editable !== 'undefined' && typeof options.editable !== 'boolean') throw new TypeError("Command option 'editable' must be of type 'boolean'.");
+
+    if (typeof options.allowMessageCommponentInteraction !== 'undefined' && typeof options.allowMessageCommponentInteraction !== 'boolean') throw new TypeError("Command option 'allowMessageCommponentInteraction' must be of type 'boolean'.");
 
     return options;
 }
