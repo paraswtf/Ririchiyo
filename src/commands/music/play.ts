@@ -4,7 +4,7 @@ import { MusicUtil, Error, Success, FLAG } from '../../structures/Utils/MusicUti
 import { Util as DCUtil, MessageEmbed } from 'discord.js';
 import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
 
-export default class pLAYCommand extends BaseCommand {
+export default class PlayCommand extends BaseCommand {
     constructor() {
         super({
             name: "play",
