@@ -13,6 +13,13 @@ export default class PlayingMessage {
     readonly track: ResolvedTrack;
     message?: Message;
     doNotSend: boolean = false;
+    components = [
+        new MessageButton().setCustomId("shuffle").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("shuffle").identifier),
+        new MessageButton().setCustomId("back").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("previous_track").identifier),
+        new MessageButton().setCustomId("pause").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("play_or_pause").identifier),
+        new MessageButton().setCustomId("next").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("next_track").identifier),
+        new MessageButton().setCustomId("loop").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("loop").identifier)
+    ]
     // Class props //
 
     constructor(manager: PlayingMessageManager, track: ResolvedTrack) {
@@ -26,6 +33,9 @@ export default class PlayingMessage {
         const playingEmbed = new MessageEmbed({
             title: `${CustomEmojiUtils.get("musical_notes")} Started playing! ${CustomEmojiUtils.get("animated_playing")}`,
             description: `**[${DCUtil.escapeMarkdown(this.track.displayTitle)}](${this.track.displayURL})**\n\`Added by - \`${this.track.requester}\` \``,
+            image: {
+                url: "https://cdn.discordapp.com/attachments/756541902202863740/780739509704327198/1920x1_TP.png"
+            },
             color: ThemeUtils.getClientColor(this.manager.dispatcher.guild)
         });
 
@@ -46,13 +56,7 @@ export default class PlayingMessage {
             components: [
                 {
                     type: 1,
-                    components: [
-                        new MessageButton().setCustomId("shuffle").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("shuffle").identifier),
-                        new MessageButton().setCustomId("back").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("previous_track").identifier),
-                        new MessageButton().setCustomId("playpause").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("play_or_pause").identifier),
-                        new MessageButton().setCustomId("next").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("next_track").identifier),
-                        new MessageButton().setCustomId("loop").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("loop").identifier)
-                    ]
+                    components: this.components
                 }
             ]
         };
@@ -67,6 +71,22 @@ export default class PlayingMessage {
         if (!this.message) return;
 
         if (this.doNotSend) return this.delete();
+    }
+
+    async setPause(value: boolean) {
+        this.components[2] = new MessageButton()
+            .setCustomId(value ? "resume" : "pause")
+            .setStyle(value ? "SECONDARY" : "PRIMARY")
+            .setEmoji(CustomEmojiUtils.get("play_or_pause").identifier);
+
+        await this.message?.edit({
+            components: [
+                {
+                    type: 1,
+                    components: this.components
+                }
+            ]
+        });
     }
 
     delete() {
