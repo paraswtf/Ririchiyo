@@ -5,7 +5,9 @@ import { BaseCTX, InteractionCTX, MessageCTX } from './CTX';
 import {
     Collection,
     TextChannel,
-    Message
+    Message,
+    CommandInteraction,
+    MessageComponentInteraction
 } from "discord.js";
 import {
     EmbedUtils,
@@ -155,51 +157,63 @@ export class CommandHandler {
         }).catch(this.client.logger.error);
     }
 
-    // async handleInteraction(interaction: CommandInteraction, recievedAt: number) {
-    //     const command = this.client.commands.get(interaction.command.name);
-    //     if (!command || !command.allowSlashCommand || (interaction.guild && !command.allowGuildCommand) || (!interaction.guild && !command.allowDMCommand)) return;
+    async handleComponentInteraction(interaction: MessageComponentInteraction, recievedAt: number) {
+        //Find the requested command
+        const command = this.client.commands.get(interaction.customId);
 
-    //     //Check bot permissions
-    //     const permissions = interaction.guild ? await Utils.getClientPermissionsForChannel(interaction.channel as TextChannel, interaction.author) : new Permissions(6479666752);
-    //     if (!permissions) return;
-    //     //if (!permissions.has("EMBED_LINKS")) return await msg.lineReplyNoMention("I don't have permissions to embed links in this channel!"); //Not required maybe discord gives all perms for interactions for now
+        //Check if command exists and meets the requirements to run
+        if (
+            !command
+            || !command.allowMessageCommponentInteraction
+            || (interaction.guild && !command.allowGuildCommand)
+            || (!interaction.guild && !command.allowDMCommand)
+        ) return;
 
-    //     //Handle owner only commands
-    //     if (command.ownerOnly && !Utils.config.owners.find(u => u.id === interaction.author.id)) return await interaction.lineReplyNoMention(Utils.embedifyString(interaction.guild, "This command can only be used by the bot owners!", true)).catch((err) => this.client.logger.error(err.message || err));
+        const guildData = await this.client.db.getGuild(interaction.guild);
+        const guildSettings = guildData.settings.getSettings();
 
-    //     //Handle cooldown
-    //     const cooldown = this.checkCooldown(recievedAt, command, interaction.author.id);
-    //     if (cooldown) {
-    //         return await interaction.lineReplyNoMention(Utils.embedifyString(interaction.guild, `Please wait ${(cooldown.timeLeft / 1000).toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`, true))
-    //             .then(msg => msg.delete({ timeout: cooldown.timeLeft - recievedAt }).catch((err) => this.client.logger.error(err.message || err)));
-    //     };
+        //Create the ctx
+        const ctx = new InteractionCTX({
+            recievedAt,
+            args: null,
+            message: interaction,
+            botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel),
+            isInteraction: true,
+            isMessage: false,
+            guildData,
+            guildSettings,
+        });
 
-    //     //Check if the bot has all permissions for executing the command
-    //     if (command.botPermsRequired) {
-    //         const missingPerms = permissions.missing(command.botPermsRequired);
-    //         if (missingPerms.length) return await interaction.lineReplyNoMention(Utils.embedifyString(interaction.guild, Utils.generateNoPermsMessage(missingPerms), true)).catch((err) => this.client.logger.error(err.message || err));
-    //     }
+        //Check if bot has required permissions to run the command
+        const permissions = await PermissionUtils.handlePermissionsForChannel(ctx.channel, {
+            userToDM: interaction.user,
+            ctx,
+            requiredPermissions: command.botPermsRequired
+        });
+        if (!permissions.hasAll) return;
 
-    //     //Process args and command name
-    //     const args = interaction.command.options?.map(o => o.value) || null;
+        //Handle owner only commands
+        if (command.ownerOnly && !owners.find(o => o.id === interaction.user.id)) return await ctx.reply({
+            embeds: [EmbedUtils.embedifyString(interaction.guild, "This command can only be used by the bot owners!", { isError: true })]
+        }).catch(this.client.logger.error);
 
-    //     try {
-    //         command.run(new CTX({
-    //             args,
-    //             //guildData: GuildData,
-    //             guildSettings: interaction.guild ? await this.client.db.getGuildSettings(interaction.guild.id) : null,
-    //             //userData: UserData,
-    //             botPermissionsForChannel: permissions,
-    //             recievedAt,
-    //             message: interaction,
-    //             usedCommandName: command.name,
-    //             usedPrefix: "/"
-    //         }))
-    //     } catch (err) {
-    //         this.client.logger.error(err.message || err);
-    //         await interaction.lineReplyNoMention(permissions.has('EMBED_LINKS') ? Utils.embedifyString(interaction.guild, this.errorMessage, true) : this.errorMessage).catch((err) => this.client.logger.error(err.message || err));
-    //     }
-    // }
+        //Handle cooldown
+        const cooldown = this.checkCooldown(recievedAt, command, interaction.user.id);
+        if (cooldown) {
+            return await ctx.reply({
+                embeds: [EmbedUtils.embedifyString(interaction.guild, `Please wait ${(cooldown.timeLeft / 1000).toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`, { isError: true })]
+            }).then(msg => setTimeout(() => msg.delete(), cooldown.timeLeft - recievedAt)).catch(this.client.logger.error);
+        };
+
+        await command.run(ctx).catch(async (err) => {
+            this.client.logger.error(err);
+            await ctx.reply(
+                permissions.permissions.has('EMBED_LINKS')
+                    ? { embeds: [EmbedUtils.embedifyString(interaction.guild, this.errorMessage, { isError: true })] }
+                    : this.errorMessage
+            ).catch(this.client.logger.error);
+        }).catch(this.client.logger.error);
+    }
 }
 
 export type CooldownCheckResponse = false | { timeLeft: number };
