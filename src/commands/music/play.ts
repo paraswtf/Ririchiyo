@@ -45,7 +45,7 @@ export default class pLAYCommand extends BaseCommand {
 
         //If no player summon one
         if (!dispatcherExists) {
-            res = await this.client.commands.get("summon")!.run(ctx) as Success | Error;
+            res = await this.client.commands.get("summon")!.run(ctx, res) as Success | Error;
             if (res.isError) return res;
         }
 
@@ -60,7 +60,8 @@ export default class pLAYCommand extends BaseCommand {
 
         dispatcher.queue.add(searchRes.tracks);
 
-        if (dispatcher.queue.length > 0) {
+        //If this is not the first song added to the queue then only send the added message else send the playing message in the start event
+        if (dispatcher.queue.length > 1) {
             const queuedEmbed = new MessageEmbed().setColor(ThemeUtils.getClientColor(ctx.guild));
 
             switch (searchRes.type) {
