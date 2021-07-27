@@ -41,7 +41,7 @@ export default class PlayingMessage {
         */
         if (this.doNotSend) return;
 
-        this.message = await this.manager.dispatcher.textChannel.send({
+        const options = {
             embeds: [playingEmbed],
             components: [
                 {
@@ -55,7 +55,14 @@ export default class PlayingMessage {
                     ]
                 }
             ]
-        }).catch(Utils.client.logger.error);
+        };
+
+        //Checks if this is the first track and replies to the original ctx instead of making a new message
+        if (this.manager.dispatcher.firstCtx) {
+            this.message = await this.manager.dispatcher.firstCtx.reply(options).catch(Utils.client.logger.error);
+            delete this.manager.dispatcher.firstCtx;
+        }
+        else this.message = await this.manager.dispatcher.textChannel.send(options).catch(Utils.client.logger.error);
 
         if (!this.message) return;
 

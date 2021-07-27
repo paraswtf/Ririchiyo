@@ -76,7 +76,7 @@ export default class pLAYCommand extends BaseCommand {
                     if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.textChannel.send({ embeds: [queuedEmbed] });
                     break;
             }
-        }
+        } else dispatcher.firstCtx = ctx;
 
         if (!dispatcher.playing && !dispatcher.player.paused) await dispatcher.play();
     }
