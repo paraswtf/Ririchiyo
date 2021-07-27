@@ -24,20 +24,36 @@ export default class PlayerExceptionEvent extends BaseEvent<ExtendedShoukakuPlay
                 embeds: [
                     EmbedUtils.embedifyString(
                         player.dispatcher.guild,
-                        `**[${DCUtil.escapeMarkdown(player.dispatcher.queue.current.displayTitle)}](${player.dispatcher.queue.current.displayURL})**\n\`Added by - \`${player.dispatcher.queue.current.requester}\` \`\nAn error occured while playing track: \`${data?.exception?.message ?? "UNKNOWN_ERROR"}\``
+                        `**[${DCUtil.escapeMarkdown(player.dispatcher.queue.current.displayTitle)}](${player.dispatcher.queue.current.displayURL})**\n\`Added by - \`${player.dispatcher.queue.current.requester}\` \`\nAn error occured while playing track: \`${data?.exception?.message ?? "UNKNOWN_ERROR"}\``,
+                        { isError: true }
                     )
                 ]
             })
         }
 
-        player.dispatcher.queue.next(true);
+        //checkErrorRatelimit
+        if (player.dispatcher.checkErrorRatelimitted(data.exception.severity)) {
+            await player.dispatcher.sendMessage({
+                embeds: [
+                    EmbedUtils.embedifyString(
+                        player.dispatcher.guild,
+                        `Something went wrong, that's all we know...\nThe player was deleted because of too many errors...\nIf this keeps happening, please contact the developers...`,
+                        { isError: true }
+                    )
+                ]
+            })
+            await player.dispatcher.client.dispatchers.destroy(player.dispatcher.guild.id);
+        }
+        //If not ratelimitted
+        else {
+            player.dispatcher.queue.next(true);
 
-
-        if (!player.dispatcher.queue.current) player.dispatcher.sendMessage({
-            embeds: [
-                EmbedUtils.embedifyString(player.dispatcher.guild, "The player queue has ended.")
-            ]
-        })
-        else await player.dispatcher.play();
+            if (!player.dispatcher.queue.current) player.dispatcher.sendMessage({
+                embeds: [
+                    EmbedUtils.embedifyString(player.dispatcher.guild, "The player queue has ended.")
+                ]
+            })
+            else await player.dispatcher.play();
+        }
     }
 }

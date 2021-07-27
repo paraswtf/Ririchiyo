@@ -10,6 +10,7 @@ import Utils, { CustomError, ID, PermissionUtils } from "../Utils";
 import PlayingMessageManager from "../Utils/PlayingMessageManager";
 import Queue, { QueueLoopState } from "./Queue";
 import { ResolvedTrack, RirichiyoTrack } from "./RirichiyoTrack";
+import { PlayerExceptionEvent } from 'shoukaku';
 
 //Max exception ratelimit
 const maxErrorsPer10Seconds = 3;
@@ -52,7 +53,7 @@ export class Dispatcher {
     //The first ctx in case the player joined via the play command and requires a message reply to that message
     firstCtx?: GuildCTX;
     //Handle errors
-    private readonly errors: Collection<string, number> = new Collection();
+    private readonly errors: Collection<PlayerExceptionEvent['exception']['severity'], number> = new Collection();
     //The inactivity checker for the dispatcher
     readonly inactivityChecker: InactivityChecker;
 
@@ -91,13 +92,7 @@ export class Dispatcher {
         return await this.player.voiceConnection.attemptReconnect({ voiceChannelID, forceReconnect });
     }
 
-    async playTrack(track: string | ShoukakuTrack, options?: ShoukakuPlayOptions) {
-        if (!this.player) return new CustomError("The player does not exist for some reason... You sure bruh?");
-        return await this.player.playTrack(track, options);
-    }
-
     async play(options?: ShoukakuPlayOptions) {
-        if (!this.player) return new CustomError("The player does not exist for some reason... You sure bruh?");
         if (!this.queue.current) return;
         const track = this.queue.current.isResolved ? this.queue.current : await this.queue.current.resolve()
         return await this.player.playTrack(track.base64, options);
@@ -149,15 +144,16 @@ export class Dispatcher {
         }
     }
 
-    checkErrorRatelimit(type: string) {
-        if (this.errors.has(type)) {
-            let numberOfErrors = this.errors.get(type) ?? 0;
+    checkErrorRatelimitted(severity: PlayerExceptionEvent['exception']['severity']) {
+        if (this.errors.has(severity)) {
+            let numberOfErrors = this.errors.get(severity) ?? 0;
             if (numberOfErrors + 1 >= maxErrorsPer10Seconds) return true;
-            else this.errors.set(type, ++numberOfErrors);
+            else this.errors.set(severity, ++numberOfErrors);
         } else {
-            this.errors.set(type, 1);
-            setTimeout(() => this.errors.delete("type"), 10000);
+            this.errors.set(severity, 1);
+            setTimeout(() => this.errors.delete(severity), 10000);
         }
+        return false;
     }
 }
 
