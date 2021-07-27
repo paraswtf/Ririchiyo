@@ -4,6 +4,7 @@ import { ShoukakuGroupedFilterOptions, ShoukakuPlayer, ShoukakuPlayOptions, Shou
 import Events from "../Events/Events";
 import RirichiyoClient from "../RirichiyoClient";
 import Utils, { CustomError, ID } from "../Utils";
+import PlayingMessageManager from "../Utils/PlayingMessageManager";
 import Queue, { QueueLoopState } from "./Queue";
 import { ResolvedTrack, RirichiyoTrack } from "./RirichiyoTrack";
 
@@ -35,6 +36,8 @@ export class Dispatcher {
     readonly player!: ShoukakuPlayer;
     //The dispatcher queue
     readonly queue: Queue;
+    //The playing message manager
+    readonly playingMessages = new PlayingMessageManager(null, this);
 
     //If the player is currently streaming audio
     get playing(): boolean {

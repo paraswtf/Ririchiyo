@@ -14,6 +14,7 @@ export default class PlayerEndEvent extends BaseEvent<ExtendedShoukakuPlayer> {
     }
 
     async run(player: ExtendedShoukakuPlayer, data: EventData) {
+        player.dispatcher.playingMessages.deleteMessage(player.dispatcher.queue.current!.id);
         if (data.reason === "FINISHED") {
             player.dispatcher.queue.next();
             await player.dispatcher.play();
