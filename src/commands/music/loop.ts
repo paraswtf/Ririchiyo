@@ -53,6 +53,8 @@ export default class LoopCommand extends BaseCommand {
                 break;
         }
 
+        if (res.dispatcher?.queue.current) await res.dispatcher.playingMessages.get(res.dispatcher.queue.current.id)?.setLoopState(loop);
+
         const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.member} Set the loop to ${loop.toLowerCase()}.`)] };
 
         await ctx.reply(options);
