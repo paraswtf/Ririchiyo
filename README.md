@@ -1,5 +1,5 @@
 # Ririchiyo
-### An open-source Discord Music Bot written in typescript.
+### A really cool discord.js music bot written in TypeScript.
 
 <br>
 
@@ -43,6 +43,76 @@ MONGODB_URI=mongodb://user:pass@mongodb.host.com:27017/myDB
 > #### Example:
 > ```
 > r!info
+> ```
+> ---
+
+> ---
+> ### `summon`
+> Make the bot join your voice channel.
+> #### Aliases: `j, join`
+> #### Example:
+> ```
+> r!summon
+> ```
+> ---
+
+> ---
+> ### `play`
+> Play a song using link or query.
+> #### Aliases: `p`
+> #### Example:
+> ```
+> r!play Tu hi yaar mera
+> ```
+> ---
+
+> ---
+> ### `pause`
+> Pause the player.
+> #### Aliases: `none`
+> #### Example:
+> ```
+> r!pause
+> ```
+> ---
+
+> ---
+> ### `resume`
+> Resume the player.
+> #### Aliases: `none`
+> #### Example:
+> ```
+> r!resume
+> ```
+> ---
+
+> ---
+> ### `shuffle`
+> Shuffle the player queue.
+> #### Aliases: `shuff`
+> #### Example:
+> ```
+> r!shuffle
+> ```
+> ---
+
+> ---
+> ### `loop`
+> Change the player loop state.
+> #### Aliases: `l`
+> #### Example:
+> ```
+> r!loop track
+> ```
+> ---
+
+> ---
+> ### `eval`
+> Evaluate code.
+> #### Aliases: `e, ev`
+> #### Example:
+> ```
+> r!eval ctx.client.user.username;
 > ```
 > ---
 
