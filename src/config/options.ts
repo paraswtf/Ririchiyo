@@ -55,6 +55,7 @@ export const shoukakuNodes: ShoukakuNodeOptions[] = [
 
 export const inviteGenerateOptions: InviteGenerationOptions = { permissions: 2192960584n, scopes: ["bot", "applications.commands"] };
 export const redirect_uri = "";
+export const premium_uri = "";
 
 export const shoukakuOptions: ShoukakuOptions = {};
 
