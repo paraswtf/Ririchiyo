@@ -42,7 +42,7 @@ export class RirichiyoTrack {
             this.isLive = this.data.info.isStream;
             this.ytURL = this.data.info.uri;
             this.identifier = this.data.info.identifier;
-            this.displayTitle = this.title!;
+            this.displayTitle = this.title!.length > 45 ? this.title!.substring(0, 45) + "..." : this.title!;
             this.displayOriginURL = this.ytURL!;
             this.displayURL = this.ytURL!;
             this.displayDuration = this.duration!;
@@ -50,7 +50,7 @@ export class RirichiyoTrack {
         } else {
             this.isResolved = false;
             this.unresolvedTrackData = data as UnresolvedTrackData;
-            this.displayTitle = this.unresolvedTrackData.title;
+            this.displayTitle = this.unresolvedTrackData.title.length > 45 ? this.unresolvedTrackData.title.substring(0, 45) + "..." : this.unresolvedTrackData.title;
             this.displayOriginURL = this.unresolvedTrackData.originURL;
             this.displayURL = this.unresolvedTrackData.originURL;
             this.displayDuration = this.unresolvedTrackData.duration;
@@ -69,7 +69,7 @@ export class RirichiyoTrack {
         this.isLive = data.info.isStream;
         this.ytURL = data.info.uri;
         this.identifier = data.info.identifier;
-        this.displayTitle = this.title!;
+        this.displayTitle = this.title!.length > 45 ? this.title!.substring(0, 45) + "..." : this.title!;
         this.displayURL = this.ytURL!;
         this.displayDuration = this.duration!;
         this.displayArtist = this.channelName!;
@@ -82,7 +82,7 @@ export class RirichiyoTrack {
 
     async resolve(): Promise<ResolvedTrack> {
         if (this.isResolved) return this as ResolvedTrack;
-        const res = await Utils.client.shoukaku.getNode().rest.resolve(this.displayTitle + " - " + this.displayArtist, "youtubemusic");
+        const res = await Utils.client.shoukaku.getNode().rest.resolve((this as UnresolvedTrack).unresolvedTrackData.title + " - " + (this as UnresolvedTrack).unresolvedTrackData.artist, "youtube");
 
         if (!res || res.type !== "SEARCH") throw new CustomError("No tracks found matching the query to resolve the track.");
 
@@ -92,7 +92,7 @@ export class RirichiyoTrack {
             if (track.info.author) {
                 return channelNames.some(name => new RegExp(`^${escapeRegExp(name)}$`, "i").test(track.info.author!));
             } else if (track.info.title) {
-                return new RegExp(`^${escapeRegExp(this.displayTitle)}$`, "i").test(track.info.title);
+                return new RegExp(`^${escapeRegExp((this as UnresolvedTrack).unresolvedTrackData.title)}$`, "i").test(track.info.title);
             } else return false;
         });
 
