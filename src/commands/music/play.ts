@@ -24,7 +24,7 @@ export default class PlayCommand extends BaseCommand {
         //Handle resume and pause with same command as play track
         if (!ctx.args) {
             if (dispatcher?.player.paused) return this.client.commands.get('resume')!.run(ctx);
-            else if (dispatcher?.playing) return this.client.commands.get('pause')!.run(ctx);
+            else if (dispatcher?.queue.current) return this.client.commands.get('pause')!.run(ctx);
             else return await ctx.reply({
                 embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.member} Please provide a song title or link to search for!`, { isError: true })]
             });
@@ -58,6 +58,8 @@ export default class PlayCommand extends BaseCommand {
             return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "Could not find any tracks matching your query!", { isError: true })] });
         }
 
+        const wasPlaying = dispatcher.queue.current;
+
         dispatcher.queue.add(searchRes.tracks);
 
         //If this is not the first song added to the queue then only send the added message else send the playing message in the start event
@@ -78,6 +80,6 @@ export default class PlayCommand extends BaseCommand {
             }
         } else dispatcher.firstCtx = ctx;
 
-        if (!dispatcher.playing && !dispatcher.player.paused) await dispatcher.play();
+        if (!wasPlaying && !dispatcher.player.paused) await dispatcher.play();
     }
 }

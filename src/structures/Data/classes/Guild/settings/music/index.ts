@@ -8,7 +8,8 @@ import { CustomError } from "../../../../../Utils";
 
 export const defaultGuildMusicSettingsData: GuildMusicSettingsData = {
     loopState: "DISABLED",
-    filters: defaultGuildMusicFiltersSettingsData
+    filters: defaultGuildMusicFiltersSettingsData,
+    stayConnected: false
 }
 
 export class GuildMusicSettings extends BaseData {
@@ -38,21 +39,21 @@ export class GuildMusicSettings extends BaseData {
         return this.updateCache("loopState", state);
     }
 
-    get maxVolumeLimit(): number {
-        return this.getCache("maxVolumeLimit", defaultGuildMusicFiltersSettingsData.volume);
+    get stayConnected(): boolean {
+        return this.getCache("stayConnected", defaultGuildMusicSettingsData.stayConnected);
     }
 
-    async setMaxVolumeLimit(value: number) {
-        if (value < 0 || value > 1000) throw new CustomError("VolumeLimit value must be between 0 and 1000");
-        await this.updateDB("maxVolumeLimit", value);
-        this.updateCache("maxVolumeLimit", value);
+    async setStayConnected(value: boolean) {
+        await this.updateDB("stayConnected", value);
+        this.updateCache("stayConnected", value);
         return this;
     }
 }
 
 export interface GuildMusicSettingsData {
     loopState: GuildMusicSettingsLoopState,
-    filters: GuildMusicFiltersSettingsData
+    filters: GuildMusicFiltersSettingsData,
+    stayConnected: boolean
 }
 
 export type GuildMusicSettingsLoopState = "DISABLED" | "QUEUE" | "TRACK";

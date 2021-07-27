@@ -15,8 +15,6 @@ export default class PlayerStartEvent extends BaseEvent<ExtendedShoukakuPlayer> 
     }
 
     async run(player: ExtendedShoukakuPlayer, data: StartEventData) {
-        console.log(this.name);
-        console.log(data);
         await player.dispatcher.playingMessages.createMessage(player.dispatcher.queue.current! as ResolvedTrack).send();
     }
 }
