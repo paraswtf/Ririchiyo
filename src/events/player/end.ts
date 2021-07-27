@@ -18,7 +18,7 @@ export default class PlayerEndEvent extends BaseEvent<ExtendedShoukakuPlayer> {
         player.dispatcher.playingMessages.deleteMessage(player.dispatcher.queue.current!.id);
         if (data.reason === "FINISHED") {
             player.dispatcher.queue.next();
-            if (!player.dispatcher.queue.current) player.dispatcher.textChannel.send({
+            if (!player.dispatcher.queue.current) player.dispatcher.sendMessage({
                 embeds: [
                     EmbedUtils.embedifyString(player.dispatcher.guild, "The player queue has ended.")
                 ]

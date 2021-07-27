@@ -18,7 +18,7 @@ export default class PauseCommand extends BaseCommand {
         })
     }
 
-    async run(ctx: GuildCTX, opts?: Success | Error) {
+    async run(ctx: GuildCTX) {
         const res = MusicUtil.canPerformAction({
             guild: ctx.guild,
             member: ctx.member,
@@ -38,6 +38,6 @@ export default class PauseCommand extends BaseCommand {
         const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.author} Paused the player!`)] };
 
         await ctx.reply(options);
-        if (res.dispatcher.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.textChannel.send(options);
+        if (res.dispatcher.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
     }
 }

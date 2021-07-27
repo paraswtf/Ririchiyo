@@ -20,7 +20,7 @@ export default class PlayerExceptionEvent extends BaseEvent<ExtendedShoukakuPlay
         if (player.dispatcher.queue.current) {
             player.dispatcher.playingMessages.deleteMessage(player.dispatcher.queue.current.id);
 
-            await player.dispatcher.textChannel.send({
+            await player.dispatcher.sendMessage({
                 embeds: [
                     EmbedUtils.embedifyString(
                         player.dispatcher.guild,
@@ -33,7 +33,7 @@ export default class PlayerExceptionEvent extends BaseEvent<ExtendedShoukakuPlay
         player.dispatcher.queue.next(true);
 
 
-        if (!player.dispatcher.queue.current) player.dispatcher.textChannel.send({
+        if (!player.dispatcher.queue.current) player.dispatcher.sendMessage({
             embeds: [
                 EmbedUtils.embedifyString(player.dispatcher.guild, "The player queue has ended.")
             ]

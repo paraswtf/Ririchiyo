@@ -39,19 +39,7 @@ export default class PlayingMessage {
             color: ThemeUtils.getClientColor(this.manager.dispatcher.guild)
         });
 
-        const permissions = await PermissionUtils.handlePermissionsForChannel(this.manager.dispatcher.textChannel, {
-            requiredPermissions: ["USE_EXTERNAL_EMOJIS"],
-            channelToSendMessage: this.manager.dispatcher.textChannel
-        });
-
-        if (!permissions.hasAll) return;
-
-        /**
-        * Send message
-        */
-        if (this.doNotSend) return;
-
-        const options = {
+        this.message = await this.manager.dispatcher.sendMessage({
             embeds: [playingEmbed],
             components: [
                 {
@@ -59,14 +47,7 @@ export default class PlayingMessage {
                     components: this.components
                 }
             ]
-        };
-
-        //Checks if this is the first track and replies to the original ctx instead of making a new message
-        if (this.manager.dispatcher.firstCtx) {
-            this.message = await this.manager.dispatcher.firstCtx.reply(options).catch(Utils.client.logger.error);
-            delete this.manager.dispatcher.firstCtx;
-        }
-        else this.message = await this.manager.dispatcher.textChannel.send(options).catch(Utils.client.logger.error);
+        }).catch(Utils.client.logger.error);
 
         if (!this.message) return;
 

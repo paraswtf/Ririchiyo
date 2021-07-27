@@ -6,7 +6,7 @@ import { Guild as GuildData } from "../Data/classes/Guild";
 import { GuildSettings } from "../Data/classes/Guild/settings";
 import Events from "../Events/Events";
 import RirichiyoClient from "../RirichiyoClient";
-import Utils, { CustomError, ID } from "../Utils";
+import Utils, { CustomError, ID, PermissionUtils } from "../Utils";
 import PlayingMessageManager from "../Utils/PlayingMessageManager";
 import Queue, { QueueLoopState } from "./Queue";
 import { ResolvedTrack, RirichiyoTrack } from "./RirichiyoTrack";
@@ -119,6 +119,33 @@ export class Dispatcher {
 
             default:
                 return Object.assign({}, res, { tracks: res.tracks?.map(t => new RirichiyoTrack(t, member) as ResolvedTrack) ?? [] });
+        }
+    }
+
+    async sendMessage(options: Parameters<this['textChannel']['send']>['0']) {
+        if (this.firstCtx) {
+            const res = await PermissionUtils.handlePermissionsForChannel(this.firstCtx.channel, {
+                userToDM: this.firstCtx.guild.ownerId,
+                channelToSendMessage: this.firstCtx.channel as TextChannel
+            });
+
+            if (!res.hasAll) return;
+
+            const msg = await this.firstCtx.reply(options).catch(this.client.logger.error);
+
+            delete this.firstCtx;
+            return msg;
+
+        }
+        else {
+            const res = await PermissionUtils.handlePermissionsForChannel(this.textChannel, {
+                userToDM: this.guild.ownerId,
+                channelToSendMessage: this.textChannel
+            });
+
+            if (!res.hasAll) return;
+
+            return await this.textChannel.send(options).catch(this.client.logger.error);
         }
     }
 

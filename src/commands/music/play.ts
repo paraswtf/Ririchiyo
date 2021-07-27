@@ -18,7 +18,7 @@ export default class PlayCommand extends BaseCommand {
         })
     }
 
-    async run(ctx: GuildCTX, opts?: Success | Error) {
+    async run(ctx: GuildCTX) {
         let dispatcher = this.client.dispatchers.get(ctx.guild.id);
 
         //Handle resume and pause with same command as play track
@@ -70,12 +70,12 @@ export default class PlayCommand extends BaseCommand {
                 case "PLAYLIST":
                     queuedEmbed.setDescription(`**[${searchRes.playlistName ? DCUtil.escapeMarkdown(searchRes.playlistName) : "Unknown Playlist"}](${/*searchRes.playlist?.uri*/0}) \n(${searchRes.tracks.length} Tracks)**\n\`Added playlist to the queue by - \`${searchRes.tracks[0].requester}\` \``);
                     await ctx.reply({ embeds: [queuedEmbed] });
-                    if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.textChannel.send({ embeds: [queuedEmbed] });
+                    if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.sendMessage({ embeds: [queuedEmbed] });
                     break;
                 default:
                     queuedEmbed.setDescription(`**[${DCUtil.escapeMarkdown(searchRes.tracks[0].displayTitle)}](${searchRes.tracks[0].displayURL})**\n\`Added track to the queue by - \`${searchRes.tracks[0].requester}\` \``);
                     await ctx.reply({ embeds: [queuedEmbed] });
-                    if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.textChannel.send({ embeds: [queuedEmbed] });
+                    if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.sendMessage({ embeds: [queuedEmbed] });
                     break;
             }
         } else dispatcher.firstCtx = ctx;
