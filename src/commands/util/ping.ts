@@ -20,7 +20,7 @@ export default class PingCommand extends BaseCommand {
     async run(ctx: MessageCTX | InteractionCTX) {
         let previousDate = Date.now();
         const pingEmbed = new MessageEmbed({
-            title: `${CustomEmojiUtils.get("ping_pong")} Pinging...`,
+            title: `${CustomEmojiUtils.get("PING_PONG")} Pinging...`,
             color: ThemeUtils.colors.get("loading")!.rgbNumber()
         })
 
@@ -38,7 +38,7 @@ export default class PingCommand extends BaseCommand {
         //The average ping of all WebSocketShards
         const clusterPing = Math.round(this.client.ws.ping);
 
-        pingEmbed.setTitle(`${CustomEmojiUtils.get("ping_pong")} Pong!`)
+        pingEmbed.setTitle(`${CustomEmojiUtils.get("PING_PONG")} Pong!`)
             .setDescription(
                 [
                     `**Rest latency:** \`${restLatency}ms\``,

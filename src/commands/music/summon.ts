@@ -91,15 +91,15 @@ export default class SummonCommand extends BaseCommand {
         const authorVCperms = res.authorVoiceChannel?.permissionsFor(res.authorVoiceChannel.client.user!);
 
         if (!authorVCperms || !authorVCperms.has("VIEW_CHANNEL")) {
-            await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `${CustomEmojiUtils.get("voice_channel_icon_error_locked")} I don't have permissions to view your channel!`, { isError: true })] });
+            await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `${CustomEmojiUtils.get("VOICE_CHANNEL_LOCKED_RED")} I don't have permissions to view your channel!`, { isError: true })] });
             return new Error(FLAG.NO_BOT_PERMS_VIEW_CHANNEL);
         }
         if (!authorVCperms || !authorVCperms.has("CONNECT")) {
-            await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `${CustomEmojiUtils.get("voice_channel_icon_error_locked")} I don't have permissions to join your channel!`, { isError: true })] });
+            await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `${CustomEmojiUtils.get("VOICE_CHANNEL_LOCKED_RED")} I don't have permissions to join your channel!`, { isError: true })] });
             return new Error(FLAG.NO_BOT_PERMS_CONNECT);
         }
         if (!authorVCperms || !authorVCperms.has("SPEAK")) {
-            await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `${CustomEmojiUtils.get("voice_channel_icon_normal_locked")} I don't have permissions to speak in your channel!`, { isError: true })] });
+            await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `${CustomEmojiUtils.get("VOICE_CHANNEL_LOCKED_RED")} I don't have permissions to speak in your channel!`, { isError: true })] });
             return new Error(FLAG.NO_BOT_PERMS_SPEAK);
         }
 

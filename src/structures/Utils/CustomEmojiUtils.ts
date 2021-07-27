@@ -20,7 +20,7 @@ export class CustomEmojiUtils {
      * @param {string} name the name of the emoji
      */
     public static get(name: CustomEmojiName) {
-        return this.customEmojis.get(name) ?? this.customEmojis.get("404")!;
+        return this.customEmojis.get(name) ?? this.customEmojis.get("NOT_FOUND_EMOJI")!;
     }
 }
 
