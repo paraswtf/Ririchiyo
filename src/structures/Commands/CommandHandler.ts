@@ -1,6 +1,6 @@
 import BaseCommand from "./BaseCommand";
 import RirichiyoClient from "../RirichiyoClient";
-import { owners } from "../../config";
+import { message_delete_timeout, owners } from "../../config";
 import { BaseCTX, InteractionCTX, MessageCTX } from './CTX';
 import {
     Collection,
@@ -138,7 +138,7 @@ export class CommandHandler {
             if (permissions.permissions.has('MANAGE_MESSAGES') && msg.deletable) await msg.delete().catch(this.client.logger.error);
             return await ctx.reply({
                 embeds: [EmbedUtils.embedifyString(msg.guild, `Please wait ${(cooldown.timeLeft / 1000).toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`, { isError: true })]
-            }).then(msg => setTimeout(() => msg.delete(), cooldown.timeLeft - recievedAt)).catch(this.client.logger.error);
+            }, { ephemeral: true, deleteTimeout: cooldown.timeLeft - recievedAt }).catch(this.client.logger.error);
         };
 
         //Remove the bot mention in case the bot was mentioned as a prefix
@@ -195,14 +195,14 @@ export class CommandHandler {
         //Handle owner only commands
         if (command.ownerOnly && !owners.find(o => o.id === interaction.user.id)) return await ctx.reply({
             embeds: [EmbedUtils.embedifyString(interaction.guild, "This command can only be used by the bot owners!", { isError: true })]
-        }).catch(this.client.logger.error);
+        }, { ephemeral: true })
 
         //Handle cooldown
         const cooldown = this.checkCooldown(recievedAt, command, interaction.user.id);
         if (cooldown) {
             return await ctx.reply({
                 embeds: [EmbedUtils.embedifyString(interaction.guild, `Please wait ${(cooldown.timeLeft / 1000).toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`, { isError: true })]
-            }).then(msg => setTimeout(() => msg.delete(), cooldown.timeLeft - recievedAt)).catch(this.client.logger.error);
+            }, { ephemeral: true })
         };
 
         await command.run(ctx).catch(async (err) => {

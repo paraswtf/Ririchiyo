@@ -1,7 +1,7 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil, Error, Success, FLAG } from '../../structures/Utils/MusicUtil';
-import { Util as DCUtil, MessageEmbed } from 'discord.js';
+import { Util as DCUtil, MessageEmbed, MessageComponentInteraction } from 'discord.js';
 import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
 
 export default class PauseCommand extends BaseCommand {
@@ -28,8 +28,8 @@ export default class PauseCommand extends BaseCommand {
         });
         if (res.isError) return;
 
-        if (res.dispatcher && res.dispatcher.player.paused) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "The player is already paused!", { isError: true })] });
-        if (!res.dispatcher?.queue.current) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })] });
+        if (res.dispatcher && res.dispatcher.player.paused) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "The player is already paused!", { isError: true })] }, { ephemeral: true });
+        if (!res.dispatcher?.queue.current) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })] }, { ephemeral: true });
 
         res.dispatcher.player.setPaused(true);
 
@@ -37,7 +37,7 @@ export default class PauseCommand extends BaseCommand {
 
         const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.author} Paused the player!`)] };
 
-        await ctx.reply(options);
+        await ctx.reply(options, { ephemeral: true });
         if (res.dispatcher.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
     }
 }

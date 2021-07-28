@@ -11,6 +11,7 @@ import {
     MessagePayload,
     ReplyMessageOptions
 } from "discord.js";
+import { message_delete_timeout } from "../../config";
 import { Guild as GuildData } from "../Data/classes/Guild";
 import { GuildSettings } from "../Data/classes/Guild/settings/GuildSettings";
 import Utils from "../Utils";
@@ -50,8 +51,9 @@ export class InteractionCTX extends BaseCTX {
         this.member = options.message.member as GuildMember | null;
     }
 
-    async reply(options: Parameters<this['message']['reply']>['0']) {
-        return await this.message.reply(options) as unknown as Message;
+    async reply(options: Parameters<this['message']['reply']>['0'], { ephemeral = false, deleteTimeout = message_delete_timeout } = {}) {
+        await this.message.reply(Object.assign(options, { ephemeral }));
+        return null;
     }
 }
 
@@ -71,7 +73,7 @@ export class MessageCTX extends BaseCTX {
         this.isEdit = options.isEdit;
     }
 
-    async reply(options: Parameters<this['message']['reply']>['0'], allowEdit = true) {
+    async reply(options: Parameters<this['message']['reply']>['0'], { allowEdit = true, ephemeral = false, deleteTimeout = message_delete_timeout } = {}) {
         //Handle no read message history permission, append a mention if no read message history permission
         if (!this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) {
             if (typeof options === "string") options += this.message.author.toString() + ", ";
@@ -90,8 +92,14 @@ export class MessageCTX extends BaseCTX {
             return await this.message.previousCommandResponse.responseMessage.edit(options);
 
         //If there was no editable message/allowEdit was disabled, send a message.
-        else if (this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) msg = await this.message.reply(options);
-        else msg = await this.message.channel.send(options);
+        else if (this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) msg = await this.message.reply(options).then(m => {
+            if (ephemeral) setTimeout(async () => m.delete(), deleteTimeout);
+            return m;
+        });
+        else msg = await this.message.channel.send(options).then(m => {
+            if (ephemeral) setTimeout(async () => m.delete(), deleteTimeout);
+            return m;
+        });;
 
         //If allowEdit is enabled, set the previousCommandResponse property to the sent message.
         if (allowEdit) {

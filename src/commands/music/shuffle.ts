@@ -29,13 +29,13 @@ export default class ShuffleCommand extends BaseCommand {
         });
         if (res.isError) return;
 
-        if (!res.dispatcher?.queue.current) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })] });
+        if (!res.dispatcher?.queue.current) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })] }, { ephemeral: true });
 
         res.dispatcher.queue.shuffle();
 
         const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.author} Shuffled the player queue!`)] };
 
-        await ctx.reply(options);
+        await ctx.reply(options, { ephemeral: true });
         if (res.dispatcher.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
     }
 }

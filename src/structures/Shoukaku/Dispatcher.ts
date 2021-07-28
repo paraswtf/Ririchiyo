@@ -99,7 +99,7 @@ export class Dispatcher {
     }
 
     async search(query: string, member: GuildMember, returnSearchList = false): Promise<SearchRes | null> {
-        const res = await this.client.shoukaku.getNode().rest.resolve(query, "youtube").catch(this.client.logger.error);
+        const res = await this.client.shoukaku.getNode().rest.resolve(query).catch(this.client.logger.error);
         if (!res) return null;
 
         switch (res.type) {
@@ -129,7 +129,7 @@ export class Dispatcher {
             const msg = await this.firstCtx.reply(options).catch(this.client.logger.error);
 
             delete this.firstCtx;
-            return msg;
+            return msg || undefined;
 
         }
         else {

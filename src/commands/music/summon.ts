@@ -36,10 +36,21 @@ export default class SummonCommand extends BaseCommand {
                 reconnectingMessage = await ctx.reply({ embeds: [reconnectedEmbed] });
             }
             //Reconnect
-            await dispatcher.attemptReconnect(res.authorVoiceChannel!.id).catch(error => {
-                this.client.logger.error(error);
-                if (reconnectingMessage?.editable) {
-                    reconnectingMessage.edit({
+            await dispatcher.attemptReconnect(res.authorVoiceChannel!.id).then(
+                //If connected
+                () => {
+                    if (reconnectingMessage?.editable) reconnectingMessage.edit({
+                        embeds: [
+                            new MessageEmbed()
+                                .setDescription(`**Reconnected to ${`<#${res.authorVoiceChannel?.id}>` || "your voice channel"}**`)
+                                .setColor(ThemeUtils.getClientColor(ctx.guild))
+                        ]
+                    })
+                },
+                //If could not connect
+                (error) => {
+                    this.client.logger.error(error);
+                    if (reconnectingMessage?.editable) reconnectingMessage.edit({
                         embeds: [
                             new MessageEmbed()
                                 .setDescription(
@@ -49,8 +60,7 @@ export default class SummonCommand extends BaseCommand {
                                 ).setColor(ThemeUtils.colors.get('error')!.rgbNumber())
                         ]
                     })
-                }
-            });
+                });
 
             return new Success(FLAG.RESPAWNED);
         }

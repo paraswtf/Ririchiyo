@@ -4,7 +4,7 @@ import dot from 'dot-prop';
 import { Guild } from "../..";
 import { GuildSettings, GuildSettingsData } from "..";
 import { defaultGuildMusicFiltersSettingsData, GuildMusicFiltersManager, GuildMusicFiltersSettingsData } from "./GuildMusicFiltersManager";
-import { CustomError } from "../../../../../Utils";
+import { CustomError, ID } from "../../../../../Utils";
 
 export const defaultGuildMusicSettingsData: GuildMusicSettingsData = {
     loopState: "DISABLED",
@@ -46,7 +46,7 @@ export class GuildMusicSettings extends BaseData {
         return this;
     }
 
-    get stayConnected(): boolean {
+    get stayConnected() {
         return this.getCache("stayConnected", defaultGuildMusicSettingsData.stayConnected);
     }
 

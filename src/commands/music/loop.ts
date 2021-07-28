@@ -33,7 +33,7 @@ export default class LoopCommand extends BaseCommand {
 
         let loop = res.dispatcher?.queue.loopState || ctx.guildSettings.music.loopState;
 
-        if (res.flag === FLAG.VIEW_ONLY) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `The loop is currently set to ${loop}!`)] });
+        if (res.flag === FLAG.VIEW_ONLY) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `The loop is currently set to ${loop}!`)] }, { ephemeral: true });
 
         switch (ctx.args ? parseOptions(ctx.args[0]) : loop) {
             case "QUEUE":
@@ -57,7 +57,7 @@ export default class LoopCommand extends BaseCommand {
 
         const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.member} Set the loop to ${loop.toLowerCase()}.`)] };
 
-        await ctx.reply(options);
+        await ctx.reply(options, { ephemeral: true });
         if (res.dispatcher?.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
     }
 }
