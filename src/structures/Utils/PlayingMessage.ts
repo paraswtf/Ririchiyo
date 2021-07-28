@@ -1,13 +1,14 @@
-import { Util as DCUtil, Message, MessageEmbed, MessageButton } from 'discord.js';
+import { Util as DCUtil, Message, MessageEmbed, MessageButton, InteractionCollector, MessageComponentInteraction, TextChannel } from 'discord.js';
 import { ExtendedShoukakuPlayer } from '../Shoukaku/Dispatcher';
 import { ResolvedTrack } from '../Shoukaku/RirichiyoTrack';
-import Utils from '../Utils';
+import Utils, { EmbedUtils } from '../Utils';
 import CustomEmojiUtils from './CustomEmojiUtils';
 import ThemeUtils from './ThemeUtils';
 import PermissionUtils from './PermissionUtils';
 import PlayingMessageManager from './PlayingMessageManager';
 import { QueueLoopState } from '../Shoukaku/Queue';
 import { CustomEmojiName } from '../../config';
+import { InteractionCTX } from '../Commands/CTX';
 
 export default class PlayingMessage {
     // Class props //
@@ -16,6 +17,7 @@ export default class PlayingMessage {
     message?: Message;
     doNotSend: boolean = false;
     components: MessageButton[];
+    collector?: InteractionCollector<MessageComponentInteraction>;
     // Class props //
 
     constructor(manager: PlayingMessageManager, track: ResolvedTrack) {
@@ -39,6 +41,9 @@ export default class PlayingMessage {
             image: {
                 url: "https://cdn.discordapp.com/attachments/756541902202863740/780739509704327198/1920x1_TP.png"
             },
+            thumbnail: {
+                url: this.track.displayThumbnail("default")
+            },
             color: ThemeUtils.getClientColor(this.manager.dispatcher.guild)
         });
 
@@ -54,16 +59,29 @@ export default class PlayingMessage {
 
         if (!this.message) return;
 
+        this.collector = this.message.createMessageComponentCollector({ componentType: "BUTTON", interactionType: "MESSAGE_COMPONENT" })
+            .on("collect", async (interaction): Promise<void> => {
+                this.manager.dispatcher.client.commandHandler.handleComponentInteraction(interaction, Date.now());
+                await interaction.update({
+                    components: [
+                        {
+                            type: 1,
+                            components: this.components
+                        }
+                    ]
+                })
+            })
+
         if (this.doNotSend) return this.delete();
     }
 
-    async setPause(value: boolean) {
+    async setPause(value: boolean, editMessage = true) {
         this.components[2] = new MessageButton()
             .setCustomId(value ? "resume" : "pause")
             .setStyle("PRIMARY")
             .setEmoji(CustomEmojiUtils.get(value ? "RESUME_BUTTON" : "PAUSE_BUTTON").identifier);
 
-        await this.message?.edit({
+        if (editMessage) await this.message?.edit({
             components: [
                 {
                     type: 1,
@@ -73,13 +91,13 @@ export default class PlayingMessage {
         });
     }
 
-    async setLoopState(value: QueueLoopState) {
+    async setLoopState(value: QueueLoopState, editMessage = true) {
         this.components[4] = new MessageButton()
             .setCustomId("loop")
             .setStyle("PRIMARY")
             .setEmoji(CustomEmojiUtils.get(getLoopStateButtonName(value)).identifier);
 
-        await this.message?.edit({
+        if (editMessage) await this.message?.edit({
             components: [
                 {
                     type: 1,
@@ -91,6 +109,7 @@ export default class PlayingMessage {
 
     delete() {
         if (!this.message) return this.doNotSend = true;
+        this.collector?.stop();
         if (this.message.deletable && !this.message.deleted) this.message.delete().catch(Utils.client.logger.error);
         delete this.message;
     }

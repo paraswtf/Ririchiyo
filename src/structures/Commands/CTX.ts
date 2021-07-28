@@ -8,8 +8,7 @@ import {
     TextChannel,
     DMChannel,
     GuildMember,
-    MessagePayload,
-    ReplyMessageOptions
+    ReplyMessageOptions,
 } from "discord.js";
 import { message_delete_timeout } from "../../config";
 import { Guild as GuildData } from "../Data/classes/Guild";
@@ -51,7 +50,7 @@ export class InteractionCTX extends BaseCTX {
         this.member = options.message.member as GuildMember | null;
     }
 
-    async reply(options: Parameters<this['message']['reply']>['0'], { ephemeral = false, deleteTimeout = message_delete_timeout } = {}) {
+    async reply(options: Parameters<this['message']['reply']>['0'], { ephemeral = false } = {}) {
         await this.message.reply(Object.assign(options, { ephemeral }));
         return null;
     }

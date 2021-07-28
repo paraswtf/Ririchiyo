@@ -11,6 +11,8 @@ import PlayingMessageManager from "../Utils/PlayingMessageManager";
 import Queue, { QueueLoopState } from "./Queue";
 import { ResolvedTrack, RirichiyoTrack } from "./RirichiyoTrack";
 import { PlayerExceptionEvent } from 'shoukaku';
+import { ResourcePart } from "../YouTube";
+import { encode } from "@lavalink/encoding";
 
 //Max exception ratelimit
 const maxErrorsPer10Seconds = 3;
@@ -98,8 +100,18 @@ export class Dispatcher {
         return await this.player.playTrack(track.base64, options);
     }
 
+    //Use this to get the video url
+    async fetchVideoURL(query: string) {
+        const res = await this.client.ytAPI.searchVideos(query, 1, { part: ResourcePart.video, safeSearch: "strict" }).catch(console.error);
+        if (!res || !res[0]?.id) return null;
+        return "https://www.youtube.com/watch?v=" + res[0].id;
+    }
+
     async search(query: string, member: GuildMember, returnSearchList = false): Promise<SearchRes | null> {
-        const res = await this.client.shoukaku.getNode().rest.resolve(query).catch(this.client.logger.error);
+        const videoURL = await this.fetchVideoURL(query);
+        if (!videoURL) return null;
+
+        const res = await this.client.shoukaku.getNode().rest.resolve(videoURL).catch(this.client.logger.error);
         if (!res) return null;
 
         switch (res.type) {
