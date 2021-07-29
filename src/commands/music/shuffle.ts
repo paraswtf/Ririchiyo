@@ -35,7 +35,7 @@ export default class ShuffleCommand extends BaseCommand {
 
         const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.author} Shuffled the player queue!`)] };
 
-        await ctx.reply(options, { ephemeral: true });
+        await ctx.reply(options);
         if (res.dispatcher.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
     }
 }

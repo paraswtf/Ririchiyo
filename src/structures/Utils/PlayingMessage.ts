@@ -76,9 +76,8 @@ export default class PlayingMessage {
     }
 
     async setPause(value: boolean, editMessage = true) {
-        this.components[2] = new MessageButton()
+        this.components[2]
             .setCustomId(value ? "resume" : "pause")
-            .setStyle("PRIMARY")
             .setEmoji(CustomEmojiUtils.get(value ? "RESUME_BUTTON" : "PAUSE_BUTTON").identifier);
 
         if (editMessage) await this.message?.edit({
@@ -93,8 +92,6 @@ export default class PlayingMessage {
 
     async setLoopState(value: QueueLoopState, editMessage = true) {
         this.components[4] = new MessageButton()
-            .setCustomId("loop")
-            .setStyle("PRIMARY")
             .setEmoji(CustomEmojiUtils.get(getLoopStateButtonName(value)).identifier);
 
         if (editMessage) await this.message?.edit({
