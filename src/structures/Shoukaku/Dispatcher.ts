@@ -52,8 +52,6 @@ export class Dispatcher {
     readonly queue: Queue;
     //The playing message manager
     readonly playingMessages = new PlayingMessageManager(null, this);
-    //The first ctx in case the player joined via the play command and requires a message reply to that message
-    firstCtx?: GuildCTX;
     //Handle errors
     private readonly errors: Collection<PlayerExceptionEvent['exception']['severity'], number> = new Collection();
     //The inactivity checker for the dispatcher
@@ -61,7 +59,6 @@ export class Dispatcher {
 
     constructor(options: DispatcherOptions, firstCtx?: GuildCTX) {
         this.client = Utils.client;
-        this.firstCtx = firstCtx;
         this.guild = options.guild;
         this.guildData = options.guildData;
         this.guildSettings = options.guildSettings;
@@ -130,30 +127,14 @@ export class Dispatcher {
     }
 
     async sendMessage(options: Parameters<this['textChannel']['send']>['0']) {
-        if (this.firstCtx) {
-            const res = await PermissionUtils.handlePermissionsForChannel(this.firstCtx.channel, {
-                userToDM: this.firstCtx.guild.ownerId,
-                channelToSendMessage: this.firstCtx.channel as TextChannel
-            });
+        const res = await PermissionUtils.handlePermissionsForChannel(this.textChannel, {
+            userToDM: this.guild.ownerId,
+            channelToSendMessage: this.textChannel
+        });
 
-            if (!res.hasAll) return;
+        if (!res.hasAll) return;
 
-            const msg = await this.firstCtx.reply(options).catch(this.client.logger.error);
-
-            delete this.firstCtx;
-            return msg || undefined;
-
-        }
-        else {
-            const res = await PermissionUtils.handlePermissionsForChannel(this.textChannel, {
-                userToDM: this.guild.ownerId,
-                channelToSendMessage: this.textChannel
-            });
-
-            if (!res.hasAll) return;
-
-            return await this.textChannel.send(options).catch(this.client.logger.error);
-        }
+        return await this.textChannel.send(options).catch(this.client.logger.error);
     }
 
     checkErrorRatelimitted(severity: PlayerExceptionEvent['exception']['severity']) {

@@ -67,23 +67,20 @@ export default class PlayCommand extends BaseCommand {
 
         dispatcher.queue.add(searchRes.tracks, top ? dispatcher.queue.currentIndex + 1 : undefined);
 
-        //If this is not the first song added to the queue and there was a current song then only send the added message else send the playing message in the start event
-        if (dispatcher.queue.length > 1 && wasPlaying) {
-            const queuedEmbed = new MessageEmbed().setColor(ThemeUtils.getClientColor(ctx.guild));
-
-            switch (searchRes.type) {
-                case "PLAYLIST":
-                    queuedEmbed.setDescription(`**[${searchRes.playlistName ? DCUtil.escapeMarkdown(searchRes.playlistName) : "Unknown Playlist"}](${/*searchRes.playlist?.uri*/0}) \n(${searchRes.tracks.length} Tracks)**\n\`Added playlist to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
-                    await ctx.reply({ embeds: [queuedEmbed] });
-                    if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.sendMessage({ embeds: [queuedEmbed] });
-                    break;
-                default:
-                    queuedEmbed.setDescription(`**[${DCUtil.escapeMarkdown(searchRes.tracks[0].displayTitle)}](${searchRes.tracks[0].displayURL})**\n\`Added track to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
-                    await ctx.reply({ embeds: [queuedEmbed] });
-                    if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.sendMessage({ embeds: [queuedEmbed] });
-                    break;
-            }
-        } else dispatcher.firstCtx = ctx;
+        //Send the queued message
+        const queuedEmbed = new MessageEmbed().setColor(ThemeUtils.getClientColor(ctx.guild));
+        switch (searchRes.type) {
+            case "PLAYLIST":
+                queuedEmbed.setDescription(`**[${searchRes.playlistName ? DCUtil.escapeMarkdown(searchRes.playlistName) : "Unknown Playlist"}](${/*searchRes.playlist?.uri*/0}) \n(${searchRes.tracks.length} Tracks)**\n\`Added playlist to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
+                await ctx.reply({ embeds: [queuedEmbed] });
+                if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.sendMessage({ embeds: [queuedEmbed] });
+                break;
+            default:
+                queuedEmbed.setDescription(`**[${DCUtil.escapeMarkdown(searchRes.tracks[0].displayTitle)}](${searchRes.tracks[0].displayURL})**\n\`Added track to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
+                await ctx.reply({ embeds: [queuedEmbed] });
+                if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.sendMessage({ embeds: [queuedEmbed] });
+                break;
+        }
 
         if (!wasPlaying && !dispatcher.player.paused) await dispatcher.play();
     }

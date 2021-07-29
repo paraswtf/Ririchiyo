@@ -51,7 +51,9 @@ export class InteractionCTX extends BaseCTX {
     }
 
     async reply(options: Parameters<this['message']['reply']>['0'], { ephemeral = false } = {}) {
-        await this.message.reply(Object.assign(options, { ephemeral }));
+        options = Object.assign(options, { ephemeral });
+        if (this.message.replied) await this.message.followUp(options);
+        else await this.message.reply(options);
         return null;
     }
 }
