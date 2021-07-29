@@ -1,4 +1,4 @@
-import { Client as DiscordClient, ClientOptions, ClientUser, Collection, GuildResolvable, ShardClientUtil } from 'discord.js';
+import { Client as DiscordClient, ClientOptions, ClientUser, GuildResolvable, ShardClientUtil } from 'discord.js';
 import { Utils, Logger } from './Utils';
 import Events from './Events/Events';
 import Commands from './Commands/Commands';

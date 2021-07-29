@@ -1,10 +1,7 @@
 import DBUtils, { BaseData } from "../../../../DBUtils";
-import { UpdateQuery } from "mongodb";
-import dot from 'dot-prop';
 import { Guild } from "../..";
-import { GuildSettings, GuildSettingsData } from "..";
+import { GuildSettings } from "..";
 import { defaultGuildMusicFiltersSettingsData, GuildMusicFiltersManager, GuildMusicFiltersSettingsData } from "./GuildMusicFiltersManager";
-import { CustomError, ID } from "../../../../../Utils";
 
 export const defaultGuildMusicSettingsData: GuildMusicSettingsData = {
     loopState: "DISABLED",

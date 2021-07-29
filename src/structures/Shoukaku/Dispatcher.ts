@@ -1,6 +1,6 @@
-import { Collection, Guild, GuildMember, StageChannel, TextChannel, VoiceChannel } from "discord.js";
+import { Collection, Guild, GuildMember, TextChannel } from "discord.js";
 import { join } from "path";
-import { ShoukakuGroupedFilterOptions, ShoukakuPlayer, ShoukakuPlayOptions, ShoukakuTrack, ShoukakuTrackList } from "shoukaku";
+import { ShoukakuGroupedFilterOptions, ShoukakuPlayer, ShoukakuPlayOptions, ShoukakuTrackList } from "shoukaku";
 import { GuildCTX } from "../Commands/CTX";
 import { Guild as GuildData } from "../Data/classes/Guild";
 import { GuildSettings } from "../Data/classes/Guild/settings";

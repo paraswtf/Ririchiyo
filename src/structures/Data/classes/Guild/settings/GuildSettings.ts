@@ -1,10 +1,8 @@
 import { Guild } from "..";
-import { UpdateQuery } from 'mongodb';
 import { AllowedClientID, defaultGuildSettingsData, GuildSettingsManager } from ".";
 import { GuildPermissionsManager, GuildPermissionsData } from "./permissions";
 import DBUtils, { BaseData } from "../../../DBUtils";
 import { GuildMember, Role } from "discord.js";
-import dot from 'dot-prop';
 import { GuildMusicSettings } from "./music";
 
 export class GuildSettings extends BaseData {

@@ -1,5 +1,4 @@
 import DBUtils, { BaseData } from "../../../../DBUtils";
-import { UpdateQuery } from "mongodb";
 import {
     Collection,
     GuildMember,
@@ -11,7 +10,6 @@ import {
     GuildPermission,
     GuildPermissionData,
 } from "./GuildPermission";
-import dot from 'dot-prop';
 
 export const defaultGuildPermissionsData = {
     members: {},

@@ -1,8 +1,7 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
-import { MusicUtil, Error, Success, FLAG } from '../../structures/Utils/MusicUtil';
-import { Util as DCUtil, MessageEmbed, MessageComponentInteraction } from 'discord.js';
-import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
+import { MusicUtil } from '../../structures/Utils/MusicUtil';
+import { EmbedUtils, ThemeUtils } from '../../structures/Utils';
 
 export default class PauseCommand extends BaseCommand {
     constructor() {

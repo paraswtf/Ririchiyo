@@ -1,12 +1,10 @@
-import Guild, { GuildData } from '../..';
+import Guild from '../..';
 import { BitField, GuildMember, Role } from 'discord.js';
 import { InternalPermissions, InternalPermissionResolvable } from '../../../../../Utils/InternalPermissions';
-import { GuildSettings, GuildSettingsData } from '../GuildSettings';
-import { GuildPermissionsManager, GuildPermissionsData } from '.';
+import { GuildSettings } from '../GuildSettings';
+import { GuildPermissionsManager } from '.';
 import { owners } from '../../../../../../config';
-import { UpdateQuery } from 'mongodb';
 import DBUtils, { BaseData } from '../../../../DBUtils';
-import dot from 'dot-prop';
 
 export const defaultGuildPermissionData = {
     allowed: 0,

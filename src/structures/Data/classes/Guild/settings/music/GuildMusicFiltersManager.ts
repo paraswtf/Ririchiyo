@@ -1,5 +1,3 @@
-import { UpdateQuery } from "mongodb";
-import dot from 'dot-prop';
 import { ShoukakuGroupedFilterOptions } from "shoukaku";
 import { GuildMusicSettings } from ".";
 import { GuildSettings } from "..";

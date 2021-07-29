@@ -1,7 +1,7 @@
 import BaseCommand from "./BaseCommand";
 import RirichiyoClient from "../RirichiyoClient";
-import { message_delete_timeout, owners } from "../../config";
-import { BaseCTX, InteractionCTX, MessageCTX } from './CTX';
+import { owners } from "../../config";
+import { InteractionCTX, MessageCTX } from './CTX';
 import {
     Collection,
     TextChannel,

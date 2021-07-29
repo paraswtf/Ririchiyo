@@ -1,14 +1,10 @@
-import { Util as DCUtil, Message, MessageEmbed, MessageButton, InteractionCollector, MessageComponentInteraction, TextChannel } from 'discord.js';
-import { ExtendedShoukakuPlayer } from '../Shoukaku/Dispatcher';
+import { Util as DCUtil, Message, MessageEmbed, MessageButton, InteractionCollector, MessageComponentInteraction } from 'discord.js';
 import { ResolvedTrack } from '../Shoukaku/RirichiyoTrack';
-import Utils, { EmbedUtils } from '../Utils';
+import Utils from '../Utils';
 import CustomEmojiUtils from './CustomEmojiUtils';
 import ThemeUtils from './ThemeUtils';
-import PermissionUtils from './PermissionUtils';
 import PlayingMessageManager from './PlayingMessageManager';
 import { QueueLoopState } from '../Shoukaku/Queue';
-import { CustomEmojiName } from '../../config';
-import { InteractionCTX } from '../Commands/CTX';
 
 export default class PlayingMessage {
     // Class props //

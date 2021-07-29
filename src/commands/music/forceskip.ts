@@ -1,13 +1,13 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
-import { MusicUtil, Error, Success, FLAG } from '../../structures/Utils/MusicUtil';
-import { Util as DCUtil, MessageEmbed, MessageComponentInteraction } from 'discord.js';
-import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
+import { MusicUtil } from '../../structures/Utils/MusicUtil';
+import { EmbedUtils } from '../../structures/Utils';
 
 export default class ForceSkipCommand extends BaseCommand {
     constructor() {
         super({
             name: "forceskip",
+            aliases: ['fs'],
             category: "music",
             description: "Force Skip the current track",
             allowSlashCommand: true,

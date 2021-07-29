@@ -1,7 +1,7 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil, Error, Success, FLAG } from '../../structures/Utils/MusicUtil';
-import { Message, MessageEmbed, TextChannel } from 'discord.js';
+import { MessageEmbed, TextChannel } from 'discord.js';
 import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
 
 export default class SummonCommand extends BaseCommand {
