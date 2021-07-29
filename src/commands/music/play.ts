@@ -67,8 +67,8 @@ export default class PlayCommand extends BaseCommand {
 
         dispatcher.queue.add(searchRes.tracks, top ? dispatcher.queue.currentIndex + 1 : undefined);
 
-        //If this is not the first song added to the queue then only send the added message else send the playing message in the start event
-        if (dispatcher.queue.length > 1) {
+        //If this is not the first song added to the queue and there was a current song then only send the added message else send the playing message in the start event
+        if (dispatcher.queue.length > 1 && dispatcher.queue.current) {
             const queuedEmbed = new MessageEmbed().setColor(ThemeUtils.getClientColor(ctx.guild));
 
             switch (searchRes.type) {
