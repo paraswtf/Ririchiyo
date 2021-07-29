@@ -83,7 +83,7 @@ export default class PlayingMessage {
     }
 
     async setLoopState(value: QueueLoopState, editMessage = true) {
-        this.components[4] = new MessageButton()
+        this.components[4]
             .setEmoji(CustomEmojiUtils.get(getLoopStateButtonName(value)).identifier);
 
         if (editMessage) await this.message?.edit({

@@ -27,19 +27,18 @@ export default class SummonCommand extends BaseCommand {
         let dispatcher = this.client.dispatchers.get(ctx.guild.id);
 
         if (dispatcher && !meVoiceChannel) {
-            let reconnectingMessage: Message | null = null;
             //If this wasn't an internal call, send message
             if (!opts) {
                 const reconnectedEmbed = new MessageEmbed()
                     .setDescription(`**Reconnecting to ${`<#${res.authorVoiceChannel?.id}>` || "your voice channel"}**`)
                     .setColor(ThemeUtils.colors.get("loading")!.rgbNumber())
-                reconnectingMessage = await ctx.reply({ embeds: [reconnectedEmbed] });
+                await ctx.reply({ embeds: [reconnectedEmbed] });
             }
             //Reconnect
             await dispatcher.attemptReconnect(res.authorVoiceChannel!.id).then(
                 //If connected
                 () => {
-                    if (reconnectingMessage?.editable) reconnectingMessage.edit({
+                    ctx.editResponse({
                         embeds: [
                             new MessageEmbed()
                                 .setDescription(`**Reconnected to ${`<#${res.authorVoiceChannel?.id}>` || "your voice channel"}**`)
@@ -50,7 +49,7 @@ export default class SummonCommand extends BaseCommand {
                 //If could not connect
                 (error) => {
                     this.client.logger.error(error);
-                    if (reconnectingMessage?.editable) reconnectingMessage.edit({
+                    ctx.editResponse({
                         embeds: [
                             new MessageEmbed()
                                 .setDescription(

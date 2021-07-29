@@ -36,25 +36,34 @@ export class BaseCTX {
     }
 }
 
-export class InteractionCTX extends BaseCTX {
+export class InteractionCTX<ITYPE extends (CommandInteraction | MessageComponentInteraction) = (CommandInteraction | MessageComponentInteraction)> extends BaseCTX {
     readonly isInteraction = true;
     readonly isMessage = false;
-    message: CommandInteraction | MessageComponentInteraction
+    message: ITYPE
     author: User;
     member: GuildMember | null;
 
     constructor(options: InteractionCTXOptions) {
         super(options);
-        this.message = options.message;
+        this.message = options.message as ITYPE;
         this.author = options.message.user;
         this.member = options.message.member as GuildMember | null;
     }
 
-    async reply(options: Parameters<this['message']['reply']>['0'], { ephemeral = false } = {}) {
+    async defer(options?: Parameters<this['message']['defer']>[0]) {
+        return await this.message.defer(options);
+    }
+
+    async reply(options: Parameters<this['message']['reply']>['0'], { ephemeral = false, deleteTimeout = message_delete_timeout, deleteLater = false } = {}) {
         options = Object.assign(options, { ephemeral });
-        if (this.message.replied) await this.message.followUp(options);
+        if (this.message.replied || this.message.deferred) await this.message.followUp(options);
         else await this.message.reply(options);
+        if (deleteLater) setTimeout(() => this.message.deleteReply(), deleteTimeout);
         return null;
+    }
+
+    async editResponse(options: Parameters<this['message']['editReply']>[0]) {
+        return await this.message.editReply(options);
     }
 }
 
@@ -65,6 +74,7 @@ export class MessageCTX extends BaseCTX {
     author: User;
     member: GuildMember | null;
     isEdit: boolean;
+    response: Message | null = null;
 
     constructor(options: MessageCTXOptions) {
         super(options);
@@ -74,15 +84,17 @@ export class MessageCTX extends BaseCTX {
         this.isEdit = options.isEdit;
     }
 
-    async reply(options: Parameters<this['message']['reply']>['0'], { allowEdit = true, ephemeral = false, deleteTimeout = message_delete_timeout } = {}) {
+    async defer() {
+        return;
+    }
+
+    async reply(options: Parameters<this['message']['reply']>['0'], { allowEdit = true, ephemeral = false, deleteTimeout = message_delete_timeout, deleteLater = false } = {}) {
         //Handle no read message history permission, append a mention if no read message history permission
         if (!this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) {
             if (typeof options === "string") options += this.message.author.toString() + ", ";
             else if ((options as ReplyMessageOptions).content) (options as ReplyMessageOptions).content += this.message.author.toString();
             else Object.assign(options, { content: this.message.author.toString() });
         } else Object.assign(options, { allowedMentions: { repliedUser: false } });
-
-        let msg: Message;
 
         //If this is an edit then just edit and return
         if (allowEdit &&
@@ -93,24 +105,28 @@ export class MessageCTX extends BaseCTX {
             return await this.message.previousCommandResponse.responseMessage.edit(options);
 
         //If there was no editable message/allowEdit was disabled, send a message.
-        else if (this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) msg = await this.message.reply(options).then(m => {
-            if (ephemeral) setTimeout(async () => m.delete(), deleteTimeout);
+        else if (this.botPermissionsForChannel.has("READ_MESSAGE_HISTORY")) this.response = await this.message.reply(options).then(m => {
+            if (ephemeral || deleteLater) setTimeout(async () => m.delete(), deleteTimeout);
             return m;
         });
-        else msg = await this.message.channel.send(options).then(m => {
-            if (ephemeral) setTimeout(async () => m.delete(), deleteTimeout);
+        else this.response = await this.message.channel.send(options).then(m => {
+            if (ephemeral || deleteLater) setTimeout(async () => m.delete(), deleteTimeout);
             return m;
         });;
 
         //If allowEdit is enabled, set the previousCommandResponse property to the sent message.
         if (allowEdit) {
             if (this.message.previousCommandResponse) {
-                Object.assign(this.message.previousCommandResponse, { responseMessage: msg })
-            } else this.message.previousCommandResponse = { responseMessage: msg };
+                Object.assign(this.message.previousCommandResponse, { responseMessage: this.response })
+            } else this.message.previousCommandResponse = { responseMessage: this.response! };
         }
 
         //Finally return the message
-        return msg;
+        return this.response;
+    }
+
+    async editResponse(options: Parameters<Message['edit']>[0]) {
+        return await this.response?.edit(options);
     }
 }
 
@@ -139,9 +155,9 @@ export interface MessageCTXOptions extends BaseCTXOptions {
 }
 
 export type DMMessageCTX = MessageCTX & { guild: null, member: null };
-export type DMInteractionCTX = InteractionCTX & { guild: null, member: null };
-export type DMCTX = DMMessageCTX | DMInteractionCTX;
+export type DMInteractionCTX<ITYPE extends (CommandInteraction | MessageComponentInteraction) = (CommandInteraction | MessageComponentInteraction)> = InteractionCTX<ITYPE> & { guild: null, member: null };
+export type DMCTX<ITYPE extends (CommandInteraction | MessageComponentInteraction) = (CommandInteraction | MessageComponentInteraction)> = DMMessageCTX | DMInteractionCTX<ITYPE>;
 
 export type GuildMessageCTX = MessageCTX & { guild: Guild, member: GuildMember };
-export type GuildInteractionCTX = InteractionCTX & { guild: Guild, member: GuildMember };
-export type GuildCTX = GuildMessageCTX | GuildInteractionCTX;
+export type GuildInteractionCTX<ITYPE extends (CommandInteraction | MessageComponentInteraction) = (CommandInteraction | MessageComponentInteraction)> = InteractionCTX<ITYPE> & { guild: Guild, member: GuildMember };
+export type GuildCTX<ITYPE extends (CommandInteraction | MessageComponentInteraction) = (CommandInteraction | MessageComponentInteraction)> = GuildMessageCTX | GuildInteractionCTX<ITYPE>;

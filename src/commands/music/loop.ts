@@ -57,7 +57,7 @@ export default class LoopCommand extends BaseCommand {
 
         const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.member} Set the loop to ${loop.toLowerCase()}.`)] };
 
-        await ctx.reply(options);
+        await ctx.reply(options, { deleteLater: true });
         if (res.dispatcher?.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
     }
 }

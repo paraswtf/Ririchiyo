@@ -11,7 +11,7 @@ export const defaultGuildMusicFiltersSettingsData: GuildMusicFiltersSettingsData
     & {
         volume: number
     } = {
-    volume: 0.7,
+    volume: 0.5,
 }
 
 export class GuildMusicFiltersManager extends BaseData {

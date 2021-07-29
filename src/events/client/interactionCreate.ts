@@ -1,6 +1,6 @@
 import BaseEvent from '../../structures/Events/BaseEvent';
 import RirichiyoClient from '../../structures/RirichiyoClient';
-import { Interaction, MessageComponentInteraction } from 'discord.js';
+import { CommandInteraction, Interaction, MessageComponentInteraction } from 'discord.js';
 
 export default class ClientInteractionCreateEvent extends BaseEvent<RirichiyoClient> {
     constructor() {
@@ -12,13 +12,9 @@ export default class ClientInteractionCreateEvent extends BaseEvent<RirichiyoCli
 
     async run(emitter: RirichiyoClient, interaction: Interaction) {
         switch (interaction.type) {
-            case "MESSAGE_COMPONENT":
-                break;
             case "APPLICATION_COMMAND":
-                //this.emitter.commandHandler.handleInteraction(interaction, Date.now());
+                this.emitter.commandHandler.handleCommandInteraction(interaction as CommandInteraction, Date.now());
                 break;
-            default:
-                return;
         }
     }
 }

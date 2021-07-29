@@ -1,4 +1,4 @@
-import { MessageEmbed, Permissions } from 'discord.js';
+import { ApplicationCommandData, MessageEmbed, Permissions } from 'discord.js';
 import BaseCommand from '../../structures/Commands/BaseCommand';
 import { MessageCTX, InteractionCTX } from '../../structures/Commands/CTX'
 import { CustomEmojiUtils, ThemeUtils } from '../../structures/Utils';
@@ -24,8 +24,7 @@ export default class PingCommand extends BaseCommand {
             color: ThemeUtils.colors.get("loading")!.rgbNumber()
         })
 
-        const pingMessage = await ctx.reply({ embeds: [pingEmbed] }).catch(this.client.logger.error);
-        if (!pingMessage) return;
+        await ctx.reply({ embeds: [pingEmbed] });
 
         //The delay between the message being recieved and the command execution
         const internalDelay = Math.round(previousDate - ctx.recievedAt);
@@ -49,10 +48,18 @@ export default class PingCommand extends BaseCommand {
                 ].join("\n")
             )
             .setColor(ThemeUtils.colors.get("success")!.rgbNumber());
-        await pingMessage.edit({ embeds: [pingEmbed] }).catch(this.client.logger.error);
+
+        await ctx.editResponse({ embeds: [pingEmbed] });
     }
 
     getUsage(p: string) {
         return `${p}ping`
+    }
+
+    get slashCommandData(): ApplicationCommandData {
+        return {
+            name: this.name,
+            description: this.description
+        }
     }
 }

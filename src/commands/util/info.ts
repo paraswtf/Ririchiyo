@@ -1,4 +1,4 @@
-import { MessageEmbed, Permissions } from 'discord.js';
+import { ApplicationCommandData, MessageEmbed, Permissions } from 'discord.js';
 import { inviteGenerateOptions, OwnerObject, owners } from '../../config';
 import BaseCommand from '../../structures/Commands/BaseCommand';
 import { MessageCTX, InteractionCTX } from '../../structures/Commands/CTX'
@@ -59,6 +59,13 @@ export default class InfoCommand extends BaseCommand {
 
     getUsage(p: string) {
         return `${p}info`
+    }
+
+    get slashCommandData(): ApplicationCommandData {
+        return {
+            name: this.name,
+            description: this.description
+        }
     }
 }
 

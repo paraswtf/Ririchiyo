@@ -1,6 +1,5 @@
 import RirichiyoClient from '../RirichiyoClient';
-import { Permissions } from 'discord.js';
-import { ApplicationCommandOption } from 'discord.js';
+import { ApplicationCommandData, Permissions } from 'discord.js';
 import {
     InteractionCTX,
     MessageCTX
@@ -91,7 +90,7 @@ export class BaseCommand {
         this.allowMessageCommponentInteraction = allowMessageCommponentInteraction ?? false;
     }
 
-    get slashCommandData(): ApplicationCommandOption | undefined { return undefined }
+    get slashCommandData(): ApplicationCommandData | undefined { return undefined }
     init(client: RirichiyoClient, filePath: string): any { Object.assign(this, { client, filePath }) };
     async run(ctx: InteractionCTX | MessageCTX, opts?: any): Promise<any> { };
     getUsage(guildPrefix: string): string | void { };

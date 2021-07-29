@@ -1,7 +1,7 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil, Error, Success, FLAG } from '../../structures/Utils/MusicUtil';
-import { Util as DCUtil, MessageEmbed } from 'discord.js';
+import { Util as DCUtil, MessageEmbed, CommandInteraction, Message, ApplicationCommandData } from 'discord.js';
 import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
 import { InternalPermissionResolvable } from '../../structures/Utils/InternalPermissions';
 
@@ -15,17 +15,24 @@ export default class PlayCommand extends BaseCommand {
             allowSlashCommand: true,
             allowMessageCommand: true,
             allowGuildCommand: true,
-            allowDMCommand: false,
+            allowDMCommand: false
         })
     }
 
-    async run(ctx: GuildCTX, top = false) {
+    async run(ctx: GuildCTX<CommandInteraction>, top = false) {
+        //Defer in case of interaction
+        await ctx.defer();
+        //Parse the query if any
+        let query: string | undefined;
+        if (ctx.isInteraction) query = ctx.message.options.get("query")?.value as string;
+        else query = ctx.args?.join(" ");
+
         let dispatcher = this.client.dispatchers.get(ctx.guild.id);
 
         //Handle resume and pause with same command as play track
-        if (!ctx.args) {
-            if (dispatcher?.player.paused) return this.client.commands.get('resume')!.run(ctx);
-            else if (dispatcher?.queue.current) return this.client.commands.get('pause')!.run(ctx);
+        if (!query) {
+            if (!ctx.isInteraction && dispatcher?.player.paused) return this.client.commands.get('resume')!.run(ctx);
+            else if (!ctx.isInteraction && dispatcher?.queue.current) return this.client.commands.get('pause')!.run(ctx);
             else return await ctx.reply({
                 embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.member} Please provide a song title or link to search for!`, { isError: true })]
             });
@@ -57,7 +64,7 @@ export default class PlayCommand extends BaseCommand {
         dispatcher = res.dispatcher || this.client.dispatchers.get(ctx.guild.id);
         if (!dispatcher) return res;
 
-        const searchRes = await dispatcher.search(ctx.args.join(" "), ctx.member);
+        const searchRes = await dispatcher.search(ctx.args?.join(" ") || (ctx.message as CommandInteraction).options.get("query")?.value as string, ctx.member);
 
         if (!searchRes) {
             return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "Could not find any tracks matching your query!", { isError: true })] });
@@ -83,5 +90,20 @@ export default class PlayCommand extends BaseCommand {
         }
 
         if (!wasPlaying && !dispatcher.player.paused) await dispatcher.play();
+    }
+
+    get slashCommandData(): ApplicationCommandData {
+        return {
+            name: this.name,
+            description: this.description,
+            options: [
+                {
+                    name: "query",
+                    description: "The song link or name to search for",
+                    type: "STRING",
+                    required: true
+                }
+            ]
+        }
     }
 }

@@ -157,6 +157,65 @@ export class CommandHandler {
         }).catch(this.client.logger.error);
     }
 
+    async handleCommandInteraction(interaction: CommandInteraction, recievedAt: number) {
+        //Find the requested command
+        const command = this.client.commands.get(interaction.commandName);
+
+        //Check if command exists and meets the requirements to run
+        if (
+            !command
+            || !command.allowMessageCommand
+            || (interaction.guild && !command.allowGuildCommand)
+            || (!interaction.guild && !command.allowDMCommand)
+        ) return;
+
+        const guildData = await this.client.db.getGuild(interaction.guild);
+        const guildSettings = guildData.settings.getSettings();
+
+        //Create the ctx
+        const ctx = new InteractionCTX({
+            recievedAt,
+            args: null,
+            message: interaction,
+            botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel),
+            isInteraction: true,
+            isMessage: false,
+            guildData,
+            guildSettings
+        });
+
+        //Check if bot has required permissions to run the command
+        const permissions = await PermissionUtils.handlePermissionsForChannel(ctx.channel, {
+            userToDM: interaction.user,
+            ctx,
+            requiredPermissions: command.botPermsRequired
+        });
+        if (!permissions.hasAll) return;
+
+
+        //Handle owner only commands
+        if (command.ownerOnly && !owners.find(o => o.id === interaction.user.id)) return await ctx.reply({
+            embeds: [EmbedUtils.embedifyString(interaction.guild, "This command can only be used by the bot owners!", { isError: true })]
+        }).catch(this.client.logger.error);
+
+        //Handle cooldown
+        const cooldown = this.checkCooldown(recievedAt, command, interaction.user.id);
+        if (cooldown) {
+            return await ctx.reply({
+                embeds: [EmbedUtils.embedifyString(interaction.guild, `Please wait ${(cooldown.timeLeft / 1000).toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`, { isError: true })]
+            }, { ephemeral: true, deleteTimeout: cooldown.timeLeft - recievedAt }).catch(this.client.logger.error);
+        };
+
+        await command.run(ctx).catch(async (err) => {
+            this.client.logger.error(err);
+            await ctx.reply(
+                permissions.permissions.has('EMBED_LINKS')
+                    ? { embeds: [EmbedUtils.embedifyString(interaction.guild, this.errorMessage, { isError: true })] }
+                    : this.errorMessage
+            ).catch(this.client.logger.error);
+        }).catch(this.client.logger.error);
+    }
+
     async handleComponentInteraction(interaction: MessageComponentInteraction, recievedAt: number) {
         //Find the requested command
         const command = this.client.commands.get(interaction.customId);
