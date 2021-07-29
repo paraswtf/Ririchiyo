@@ -53,8 +53,8 @@ export class GuildPermission<ENTITY extends (GuildMember | Role)> extends BaseDa
 
         //Give all perms to the owner
         if (owners.find(o => o.id === this.entity.id)) return new InternalPermissions(InternalPermissions.ALL);
-        //Give all perms to admins
-        if (this.entity.permissions.has("ADMINISTRATOR")) return new InternalPermissions(InternalPermissions.ALL);
+        //Give all perms to admins/mods
+        if (this.entity.permissions.any(['ADMINISTRATOR', 'MANAGE_GUILD'])) return new InternalPermissions(InternalPermissions.ALL);
         else {
             const finalPermissions = new InternalPermissions(InternalPermissions.DEFAULT);
             //Sort roles from lowest to highest and map to array
