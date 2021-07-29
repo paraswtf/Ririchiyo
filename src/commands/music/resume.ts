@@ -28,8 +28,8 @@ export default class ResumeCommand extends BaseCommand {
         });
         if (res.isError) return;
 
-        if (res.dispatcher && res.dispatcher.queue.current && !res.dispatcher.player.paused) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "The player is already playing!", { isError: true })] }, { ephemeral: true });
-        if (!res.dispatcher?.queue.current) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })] }, { ephemeral: true });
+        if (res.dispatcher && res.dispatcher.queue.current && !res.dispatcher.player.paused) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "The player is already playing!", { isError: true })] });
+        if (!res.dispatcher?.queue.current) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })] });
 
         res.dispatcher.player.setPaused(false);
 

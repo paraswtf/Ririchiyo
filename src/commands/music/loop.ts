@@ -33,7 +33,7 @@ export default class LoopCommand extends BaseCommand {
 
         let loop = res.dispatcher?.queue.loopState || ctx.guildSettings.music.loopState;
 
-        if (res.flag === FLAG.VIEW_ONLY) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `The loop is currently set to ${loop}!`)] }, { ephemeral: true });
+        if (res.flag === FLAG.VIEW_ONLY) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `The loop is currently set to ${loop}!`)] });
 
         switch (ctx.args ? parseOptions(ctx.args[0]) : loop) {
             case "QUEUE":
