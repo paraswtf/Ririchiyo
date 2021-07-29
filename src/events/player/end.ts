@@ -15,15 +15,19 @@ export default class PlayerEndEvent extends BaseEvent<ExtendedShoukakuPlayer> {
     }
 
     async run(player: ExtendedShoukakuPlayer, data: EventData) {
-        player.dispatcher.playingMessages.deleteMessage(player.dispatcher.queue.current!.id);
-        if (data.reason === "FINISHED") {
-            player.dispatcher.queue.next();
-            if (!player.dispatcher.queue.current) player.dispatcher.sendMessage({
-                embeds: [
-                    EmbedUtils.embedifyString(player.dispatcher.guild, "The player queue has ended.")
-                ]
-            })
-            else await player.dispatcher.play();
+        if (player.dispatcher.queue.current) player.dispatcher.playingMessages.deleteMessage(player.dispatcher.queue.current.id);
+
+        switch (data.reason) {
+            case "FINISHED": {
+                player.dispatcher.queue.next();
+                await player.dispatcher.play();
+                if (!player.dispatcher.queue.current) player.dispatcher.sendMessage({
+                    embeds: [
+                        EmbedUtils.embedifyString(player.dispatcher.guild, "The player queue has ended.")
+                    ]
+                })
+                break;
+            }
         }
     }
 }
