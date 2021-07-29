@@ -62,14 +62,6 @@ export default class PlayingMessage {
         this.collector = this.message.createMessageComponentCollector({ componentType: "BUTTON", interactionType: "MESSAGE_COMPONENT" })
             .on("collect", async (interaction): Promise<void> => {
                 this.manager.dispatcher.client.commandHandler.handleComponentInteraction(interaction, Date.now());
-                await interaction.update({
-                    components: [
-                        {
-                            type: 1,
-                            components: this.components
-                        }
-                    ]
-                })
             })
 
         if (this.doNotSend) return this.delete();
