@@ -1,8 +1,16 @@
-import { Guild, GuildMember, StageChannel, VoiceChannel } from "discord.js";
 import Utils from "./";
+import {
+    Guild,
+    GuildMember,
+    StageChannel,
+    VoiceChannel
+} from "discord.js";
 import CTX from "../Commands/CTX";
 import EmbedUtils from "./EmbedUtils";
-import { InternalPermissionResolvable, InternalPermissions } from "./InternalPermissions";
+import {
+    InternalPermissionResolvable,
+    InternalPermissions
+} from "./InternalPermissions";
 import Dispatcher from "../Shoukaku/Dispatcher";
 
 

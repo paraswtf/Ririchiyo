@@ -11,7 +11,7 @@ export default class PingCommand extends BaseCommand<boolean, false> {
             description: "Displays bot connection stats",
             allowGuildCommand: true,
             allowDMCommand: true,
-            botPermsRequired: new Permissions(["USE_EXTERNAL_EMOJIS"])
+            webhookPermsRequired: new Permissions(["USE_EXTERNAL_EMOJIS"])
         });
     }
 

@@ -17,8 +17,12 @@ export interface CommandProps {
     allowGuildCommand?: boolean;
     /** If the command can be called in DMs */
     allowDMCommand?: boolean;
+    /** Permissions that the bot needs on the server in order to run this command */
+    serverPermsRequired?: Permissions;
+    /** Permissions that the bot needs in the channel in order to run this command */
+    channelPermsRequired?: Permissions;
     /** Permissions that the bot needs to have in order to run this command */
-    botPermsRequired?: Permissions;
+    webhookPermsRequired?: Permissions;
     /** If the command is owner only */
     ownerOnly?: boolean;
     /** If the command can be used with a message component interaction */
@@ -33,7 +37,9 @@ export class BaseCommand<isGuild extends boolean = boolean, allowComponent exten
     hidden: boolean;
     allowGuildCommand: boolean;
     allowDMCommand: boolean;
-    botPermsRequired: CommandProps['botPermsRequired'];
+    serverPermsRequired: CommandProps['serverPermsRequired'];
+    channelPermsRequired: CommandProps['channelPermsRequired'];
+    webhookPermsRequired: CommandProps['webhookPermsRequired'];
     ownerOnly: boolean;
     allowMessageCommponentInteraction: boolean;
     /** The bot client */
@@ -51,7 +57,9 @@ export class BaseCommand<isGuild extends boolean = boolean, allowComponent exten
             hidden,
             allowGuildCommand,
             allowDMCommand,
-            botPermsRequired,
+            serverPermsRequired,
+            channelPermsRequired,
+            webhookPermsRequired,
             ownerOnly,
             allowMessageCommponentInteraction
         } = check(options);
@@ -62,7 +70,9 @@ export class BaseCommand<isGuild extends boolean = boolean, allowComponent exten
         this.hidden = hidden || false;
         this.allowGuildCommand = allowGuildCommand ?? true;
         this.allowDMCommand = allowDMCommand ?? true;
-        this.botPermsRequired = botPermsRequired;
+        this.serverPermsRequired = serverPermsRequired;
+        this.channelPermsRequired = channelPermsRequired;
+        this.webhookPermsRequired = webhookPermsRequired;
         this.ownerOnly = ownerOnly ?? false;
         this.allowMessageCommponentInteraction = allowMessageCommponentInteraction ?? false;
     }
@@ -94,7 +104,11 @@ function check(options?: CommandProps): CommandProps {
 
     if (typeof options.allowDMCommand !== 'undefined' && typeof options.allowDMCommand !== 'boolean') throw new TypeError("Command option 'allowDMCommand' must be of type 'boolean'.");
 
-    if (typeof options.botPermsRequired !== 'undefined' && !(options.botPermsRequired instanceof Permissions)) throw new TypeError("Command option 'botPermsRequired' must be of type 'Discord.Permission'.");
+    if (typeof options.serverPermsRequired !== 'undefined' && !(options.serverPermsRequired instanceof Permissions)) throw new TypeError("Command option 'botPermsRequired' must be of type 'Discord.Permission'.");
+
+    if (typeof options.channelPermsRequired !== 'undefined' && !(options.channelPermsRequired instanceof Permissions)) throw new TypeError("Command option 'botPermsRequired' must be of type 'Discord.Permission'.");
+
+    if (typeof options.webhookPermsRequired !== 'undefined' && !(options.webhookPermsRequired instanceof Permissions)) throw new TypeError("Command option 'botPermsRequired' must be of type 'Discord.Permission'.");
 
     if (typeof options.ownerOnly !== 'undefined' && typeof options.ownerOnly !== 'boolean') throw new TypeError("Command option 'ownerOnly' must be of type 'boolean'.");
 

@@ -14,7 +14,7 @@ export default class InfoCommand extends BaseCommand<boolean, false>{
             description: "Displays information about the bot",
             allowGuildCommand: true,
             allowDMCommand: true,
-            botPermsRequired: new Permissions(["USE_EXTERNAL_EMOJIS"])
+            webhookPermsRequired: new Permissions(["USE_EXTERNAL_EMOJIS"])
         });
     }
 

@@ -1,6 +1,18 @@
-import { Util as DCUtil, Message, MessageEmbed, MessageButton, InteractionCollector, MessageComponentInteraction, Collection, GuildMember } from 'discord.js';
+import {
+    Util as DCUtil,
+    Message,
+    MessageEmbed,
+    MessageButton,
+    InteractionCollector,
+    MessageComponentInteraction,
+    Collection,
+    GuildMember
+} from 'discord.js';
 import { ResolvedTrack } from '../Shoukaku/RirichiyoTrack';
-import Utils, { ID } from '../Utils';
+import {
+    Utils,
+    ID
+} from '../Utils';
 import CustomEmojiUtils from './CustomEmojiUtils';
 import ThemeUtils from './ThemeUtils';
 import PlayingMessageManager from './PlayingMessageManager';

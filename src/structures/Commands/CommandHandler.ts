@@ -55,15 +55,17 @@ export class CommandHandler {
             command,
             guildData,
             guildSettings,
-            botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel, true)
+            botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel)
         });
 
         //Check if bot has required permissions to run the command
         const permissions = await PermissionUtils.handlePermissionsForChannel(ctx.channel as TextChannel, {
             userToDM: interaction.user,
             ctx,
-            permissions: ctx.botPermissionsForChannel,
-            requiredPermissions: command.botPermsRequired
+            channelPermissions: ctx.botPermissionsForChannel,
+            guildPermsRequired: command.serverPermsRequired,
+            channelPermsRequired: command.channelPermsRequired,
+            webhookPermsRequired: command.webhookPermsRequired
         });
         if (!permissions.hasAll) return;
 
@@ -83,12 +85,8 @@ export class CommandHandler {
 
         await command.run(ctx).catch(async (err) => {
             this.client.logger.error(err);
-            await ctx.reply(
-                permissions.permissions.has('EMBED_LINKS')
-                    ? { embeds: [EmbedUtils.embedifyString(interaction.guild, this.errorMessage, { isError: true })] }
-                    : this.errorMessage
-            ).catch(this.client.logger.error);
-        }).catch(this.client.logger.error);
+            await ctx.reply({ embeds: [EmbedUtils.embedifyString(interaction.guild, this.errorMessage, { isError: true })] }).catch(this.client.logger.error);
+        })
     }
 
     async handleComponentInteraction(interaction: MessageComponentInteraction, recievedAt: number) {
@@ -113,15 +111,17 @@ export class CommandHandler {
             command,
             guildData,
             guildSettings,
-            botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel, true)
+            botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel)
         });
 
         //Check if bot has required permissions to run the command
         const permissions = await PermissionUtils.handlePermissionsForChannel(ctx.channel as TextChannel, {
             userToDM: interaction.user,
             ctx,
-            permissions: ctx.botPermissionsForChannel,
-            requiredPermissions: command.botPermsRequired
+            channelPermissions: ctx.botPermissionsForChannel,
+            guildPermsRequired: command.serverPermsRequired,
+            channelPermsRequired: command.channelPermsRequired,
+            webhookPermsRequired: command.webhookPermsRequired
         });
         if (!permissions.hasAll) return;
 
@@ -140,12 +140,8 @@ export class CommandHandler {
 
         await command.run(ctx).catch(async (err) => {
             this.client.logger.error(err);
-            await ctx.reply(
-                permissions.permissions.has('EMBED_LINKS')
-                    ? { embeds: [EmbedUtils.embedifyString(interaction.guild, this.errorMessage, { isError: true })] }
-                    : this.errorMessage
-            ).catch(this.client.logger.error);
-        }).catch(this.client.logger.error);
+            await ctx.reply({ embeds: [EmbedUtils.embedifyString(interaction.guild, this.errorMessage, { isError: true })] }).catch(this.client.logger.error);
+        })
     }
 }
 

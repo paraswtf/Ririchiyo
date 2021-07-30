@@ -1,5 +1,5 @@
 import { Collection } from 'discord.js';
-import { Dispatcher } from '../Shoukaku/Dispatcher';
+import Dispatcher from '../Shoukaku/Dispatcher';
 import { ResolvedTrack } from '../Shoukaku/RirichiyoTrack';
 import PlayingMessage from './PlayingMessage';
 

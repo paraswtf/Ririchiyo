@@ -1,10 +1,10 @@
 import Color from "color";
+import ThemeUtils from "./ThemeUtils";
 import {
     ColorResolvable,
     Guild,
     MessageEmbed
 } from "discord.js";
-import ThemeUtils from "./ThemeUtils";
 
 
 export class EmbedUtils {
