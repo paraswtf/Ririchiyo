@@ -9,10 +9,11 @@ import {
     PermissionString,
     MessageEmbed,
     Message,
-    CommandInteraction
+    CommandInteraction,
+    Interaction
 } from 'discord.js';
 import { DirectMessageUtils, EmbedUtils } from '.';
-import { InteractionCTX, MessageCTX } from '../Commands/CTX';
+import CTX from '../Commands/CTX';
 const dmPerms = new Permissions([
     'ADD_REACTIONS',
     'ATTACH_FILES',
@@ -27,18 +28,22 @@ const dmPerms = new Permissions([
 
 
 export class PermissionUtils {
-    public static getPermissionsForChannel(channel: GuildChannel | Channel & { guild: undefined }) {
-        if (!channel.guild) return new Permissions(dmPerms);
-        else return channel.permissionsFor(Utils.client.user!) ?? new Permissions();
+    public static getPermissionsForChannel(channel: GuildChannel | Channel & { guild: undefined }, isWebhook = false) {
+        if (channel?.type && ['DM', 'GROUP_DM', 'UNKNOWN'].includes(channel.type)) return new Permissions(dmPerms);
+        else if (isWebhook) return (channel as GuildChannel).guild.roles.everyone.permissions
+        else return (channel as GuildChannel).permissionsFor(Utils.client.user) ?? new Permissions();
     }
 
     public static async handlePermissionsForChannel(channel: GuildChannel | Channel & { guild: undefined }, options: GetPermissionsOptions = {}) {
         options = Object.assign({ dmGuildOwnerAsAlt: true }, options);
 
-        if (!options.permissions) options.permissions = this.getPermissionsForChannel(channel);
+        //Can provide previously fetched permissions for channel to save resources
+        if (!options.permissions) options.permissions = this.getPermissionsForChannel(channel, options.isWebhook);
 
+        //If channel is text channel, add default required permission
         if (channel.isText() && channel.guild) options.requiredPermissions = new Permissions(options.requiredPermissions).add(['SEND_MESSAGES', 'EMBED_LINKS']);
 
+        //Check if has all permissions
         let returnValue: GetPermissionsResult = {
             hasAll: options.requiredPermissions ? options.permissions.has(options.requiredPermissions, options.checkAdmin) : true,
             missing: options.requiredPermissions ? options.permissions.missing(options.requiredPermissions, options.checkAdmin) : null,
@@ -50,60 +55,35 @@ export class PermissionUtils {
             //And if there is somewhere to send a error message
             (options.ctx || options.channelToSendMessage || options.userToDM)
         ) {
-            if (options.ctx
-                && (options.ctx.channel.guild
-                    ? options.ctx.channel.permissionsFor(Utils.client.user!)?.has('SEND_MESSAGES')
-                    : true
-                )
-            ) {
-                const permissions = this.getPermissionsForChannel(options.ctx.channel);
-
-                let noPermsMessage: NoPermsMessage = {
-                    content: this.generateNoPermsMessage(returnValue.missing, options.ctx.channel.id === channel.id ? undefined : channel.id)
-                };
-
-                if (permissions?.has('EMBED_LINKS')) noPermsMessage = {
-                    embeds: [EmbedUtils.embedifyString(options.ctx.guild, noPermsMessage.content!, { isError: true })]
-                };
-
-                options.ctx.reply(noPermsMessage);
+            //In case of interaction ctx
+            if (options.ctx) {
+                await options.ctx.reply({
+                    embeds: [
+                        EmbedUtils.embedifyString(
+                            options.ctx.guild,
+                            this.generateNoPermsMessage(returnValue.missing, options.ctx.channel.id === channel.id ? undefined : channel.id),
+                            { isError: true }
+                        )
+                    ]
+                });
             }
-            else if (
-                options.channelToSendMessage
-                && options.channelToSendMessage.permissionsFor(Utils.client.user!)?.has('SEND_MESSAGES')
-            ) {
+            //In case of given channel
+            else if (options.channelToSendMessage && options.channelToSendMessage.permissionsFor(Utils.client.user!)?.has('SEND_MESSAGES')) {
                 const permissions = this.getPermissionsForChannel(options.channelToSendMessage);
-                let noPermsMessage: NoPermsMessage = {
+                let noPermsMessage: { content: string } | { embeds: MessageEmbed[] } = {
                     content: this.generateNoPermsMessage(returnValue.missing, options.channelToSendMessage.id === channel.id ? undefined : channel.id)
                 };
                 if (permissions?.has('EMBED_LINKS')) noPermsMessage = {
                     embeds: [EmbedUtils.embedifyString(options.channelToSendMessage.guild, noPermsMessage.content!, { isError: true })]
                 };
 
-                options.channelToSendMessage.send(noPermsMessage);
+                await options.channelToSendMessage.send(noPermsMessage);
             }
-            else if (
-                options.message?.channel
-                && this.getPermissionsForChannel(options.message.channel as TextChannel).has('SEND_MESSAGES')
-            ) {
-                const permissions = this.getPermissionsForChannel(options.message.channel as TextChannel);
-
-                let noPermsMessage: NoPermsMessage = {
-                    content: this.generateNoPermsMessage(returnValue.missing, options.message.channel.id === channel.id ? undefined : channel.id)
-                };
-
-                if (permissions?.has('EMBED_LINKS')) noPermsMessage = {
-                    embeds: [EmbedUtils.embedifyString(options.message.guild, noPermsMessage.content!, { isError: true })]
-                };
-
-                options.message.reply(noPermsMessage);
-            }
+            //In case of no given channel perms or no given channel
             else if (options.userToDM) {
-                await DirectMessageUtils.send(
-                    {
-                        embeds: [EmbedUtils.embedifyString(null, this.generateNoPermsMessage(returnValue.missing, channel.id))]
-                    }, options.userToDM, options.dmGuildOwnerAsAlt ? channel.guild?.ownerId : undefined
-                );
+                await DirectMessageUtils.send({
+                    embeds: [EmbedUtils.embedifyString(null, this.generateNoPermsMessage(returnValue.missing, channel.id))]
+                }, options.userToDM, options.dmGuildOwnerAsAlt ? channel.guild?.ownerId : undefined);
             }
         }
 
@@ -125,10 +105,10 @@ export interface GetPermissionsOptions {
     checkAdmin?: boolean,
     userToDM?: UserResolvable,
     channelToSendMessage?: TextChannel & GuildChannel,
-    ctx?: MessageCTX | InteractionCTX,
-    message?: Message | CommandInteraction,
+    ctx?: CTX<boolean, boolean>,
     permissions?: Permissions,
     dmGuildOwnerAsAlt?: boolean
+    isWebhook?: boolean
 }
 
 export interface GetPermissionsResult {
@@ -136,7 +116,5 @@ export interface GetPermissionsResult {
     missing: PermissionString[] | null,
     permissions: Permissions
 }
-
-export type NoPermsMessage = { content: string } | { embeds: MessageEmbed[] };
 
 export default PermissionUtils;

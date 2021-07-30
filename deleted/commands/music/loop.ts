@@ -2,6 +2,7 @@ import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil, FLAG } from '../../structures/Utils/MusicUtil';
 import { EmbedUtils } from '../../structures/Utils';
+import { ApplicationCommandData, CommandInteraction } from 'discord.js';
 
 export default class LoopCommand extends BaseCommand {
     constructor() {
@@ -34,7 +35,11 @@ export default class LoopCommand extends BaseCommand {
 
         if (res.flag === FLAG.VIEW_ONLY) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `The loop is currently set to ${loop}!`)] });
 
-        switch (ctx.args ? parseOptions(ctx.args[0]) : loop) {
+        let option;
+        if (ctx.isInteraction && ctx.message.isCommand()) option = ctx.message.options.get("value")?.value || loop;
+        else option = ctx.args ? parseOptions(ctx.args[0]) : loop;
+
+        switch (option) {
             case "QUEUE":
                 loop = "TRACK";
                 res.dispatcher?.queue.setLoopState(loop);
@@ -58,6 +63,35 @@ export default class LoopCommand extends BaseCommand {
 
         await ctx.reply(options, { deleteLater: true });
         if (res.dispatcher?.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
+    }
+
+    get slashCommandData(): ApplicationCommandData {
+        return {
+            name: this.name,
+            description: this.description,
+            options: [
+                {
+                    name: "value",
+                    description: "The song link or name to search for",
+                    type: "STRING",
+                    required: false,
+                    choices: [
+                        {
+                            name: "QUEUE",
+                            value: "q"
+                        },
+                        {
+                            name: "TRACK",
+                            value: "t"
+                        },
+                        {
+                            name: "DISABLE",
+                            value: "d"
+                        }
+                    ]
+                }
+            ]
+        }
     }
 }
 

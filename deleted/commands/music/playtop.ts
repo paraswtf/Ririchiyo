@@ -1,3 +1,4 @@
+import { ApplicationCommandData } from 'discord.js';
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 
@@ -17,5 +18,20 @@ export default class PlayCommand extends BaseCommand {
 
     async run(ctx: GuildCTX) {
         return this.client.commands.get("play")!.run(ctx, true);
+    }
+
+    get slashCommandData(): ApplicationCommandData {
+        return {
+            name: this.name,
+            description: this.description,
+            options: [
+                {
+                    name: "query",
+                    description: "The song link or name to search for",
+                    type: "STRING",
+                    required: true
+                }
+            ]
+        }
     }
 }

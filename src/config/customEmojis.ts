@@ -18,6 +18,11 @@ export const customEmojis = [
         "animated": true
     },
     {
+        "name": "PANDA_CODING_ANIMATED",
+        "id": "870337400184926218",
+        "animated": true
+    },
+    {
         "name": "ANIMATED_PLAYING",
         "id": "869684437049278525",
         "animated": true

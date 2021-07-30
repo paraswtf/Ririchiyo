@@ -1,7 +1,7 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil, Error, Success, FLAG } from '../../structures/Utils/MusicUtil';
-import { MessageEmbed, TextChannel } from 'discord.js';
+import { ApplicationCommandData, MessageEmbed, TextChannel } from 'discord.js';
 import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
 
 export default class SummonCommand extends BaseCommand {
@@ -113,5 +113,12 @@ export default class SummonCommand extends BaseCommand {
         }
 
         return new Success(FLAG.NULL, undefined, res.authorVoiceChannel);
+    }
+
+    get slashCommandData(): ApplicationCommandData {
+        return {
+            name: this.name,
+            description: this.description
+        }
     }
 }

@@ -99,7 +99,7 @@ export class Dispatcher {
 
     //Use this to get the video url
     async fetchVideoURL(query: string) {
-        const res = await this.client.ytAPI.searchVideos(query, 1, { part: ResourcePart.video, safeSearch: "strict" }).catch(console.error);
+        const res = await this.client.ytAPI.searchVideos(query, 1, { part: ResourcePart.video, safeSearch: "moderate" }).catch(console.error);
         if (!res || !res[0]?.id) return null;
         return "https://www.youtube.com/watch?v=" + res[0].id;
     }

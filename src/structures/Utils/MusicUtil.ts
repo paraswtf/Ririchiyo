@@ -1,13 +1,13 @@
 import { Guild, GuildMember, StageChannel, VoiceChannel } from "discord.js";
 import Utils from "./";
-import { InteractionCTX, MessageCTX } from "../Commands/CTX";
+import CTX from "../Commands/CTX";
 import EmbedUtils from "./EmbedUtils";
 import { InternalPermissionResolvable, InternalPermissions } from "./InternalPermissions";
 import Dispatcher from "../Shoukaku/Dispatcher";
 
 
 export class MusicUtil {
-    private static async sendError(error: string, ctx: MessageCTX | InteractionCTX, ephemeral: boolean) {
+    private static async sendError(error: string, ctx: CTX<true, boolean>, ephemeral: boolean) {
         return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, error, { isError: true })] }, { ephemeral });
     }
 
@@ -23,7 +23,7 @@ export class MusicUtil {
             isSpawnAttempt,
             allowViewOnly
         } = Object.assign({
-            vcMemberAmtForAllPerms: 2,
+            vcMemberAmtForAllPerms: 3,
             noDispatcherRequired: false,
             isSpawnAttempt: false,
             sendError: true,
@@ -117,7 +117,7 @@ export class MusicUtil {
 export interface CanPerformActionrOptions {
     guild: Guild,
     member: GuildMember,
-    ctx?: MessageCTX | InteractionCTX,
+    ctx?: CTX<true, boolean>,
     memberPermissions: InternalPermissions,
     requiredPermissions: InternalPermissionResolvable,
     vcMemberAmtForAllPerms?: number,

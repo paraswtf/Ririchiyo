@@ -14,7 +14,8 @@ export default class InfoCommand extends BaseCommand<boolean, false>{
             description: "Displays information about the bot",
             allowGuildCommand: true,
             allowDMCommand: true,
-            botPermsRequired: new Permissions(["USE_EXTERNAL_EMOJIS"])
+            botPermsRequired: new Permissions(["USE_EXTERNAL_EMOJIS"]),
+            allowMessageCommponentInteraction: false
         });
     }
 
@@ -57,6 +58,8 @@ export default class InfoCommand extends BaseCommand<boolean, false>{
         const user = fetchedData ? new User(this.client, fetchedData) : null;
         return `**[${user?.username ?? owner.displayName}](${owner.clickableLink})** ${owner.emoji && hasPermission ? ` ${CustomEmojiUtils.get(owner.emoji)}` : ""}`;
     }
+
+    usage = `/info`;
 
     slashCommandData = {
         name: this.name,

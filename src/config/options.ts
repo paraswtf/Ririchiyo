@@ -13,7 +13,8 @@ export const owners: OwnerObject[] = [
         github: "https://github.com/Styxo",
         contact: "parasbpndeshpande@gmail.com",
         profileURL: "https://dsc.bio/styxo",
-        clickableLink: "https://dsc.bio/styxo"
+        clickableLink: "https://dsc.bio/styxo",
+        emoji: "PANDA_CODING_ANIMATED"
     }
 ];
 

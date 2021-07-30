@@ -2,6 +2,7 @@ import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil } from '../../structures/Utils/MusicUtil';
 import { EmbedUtils } from '../../structures/Utils';
+import { ApplicationCommandData } from 'discord.js';
 
 export default class ForceSkipCommand extends BaseCommand {
     constructor() {
@@ -31,7 +32,7 @@ export default class ForceSkipCommand extends BaseCommand {
         if (!res.dispatcher?.queue.current) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })] });
 
         res.dispatcher.playingMessages.deleteMessage(res.dispatcher.queue.current.id);
-        res.dispatcher.queue.next();
+        res.dispatcher.queue.next(true);
         let endedMessageOptions = null;
         if (res.dispatcher.queue.current) await res.dispatcher.play();
         else {
@@ -48,5 +49,12 @@ export default class ForceSkipCommand extends BaseCommand {
         await ctx.reply(options, { deleteLater: true });
         if (res.dispatcher.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
         if (endedMessageOptions) await res.dispatcher.sendMessage(endedMessageOptions);
+    }
+
+    get slashCommandData(): ApplicationCommandData {
+        return {
+            name: this.name,
+            description: this.description
+        }
     }
 }

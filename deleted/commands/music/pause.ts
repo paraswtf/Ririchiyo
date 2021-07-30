@@ -1,14 +1,15 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil } from '../../structures/Utils/MusicUtil';
-import { EmbedUtils } from '../../structures/Utils';
+import { EmbedUtils, ThemeUtils } from '../../structures/Utils';
+import { ApplicationCommandData } from 'discord.js';
 
-export default class ResumeCommand extends BaseCommand {
+export default class PauseCommand extends BaseCommand {
     constructor() {
         super({
-            name: "resume",
+            name: "pause",
             category: "music",
-            description: "Resume the player",
+            description: "Pause the player",
             allowSlashCommand: true,
             allowMessageCommand: true,
             allowGuildCommand: true,
@@ -27,16 +28,23 @@ export default class ResumeCommand extends BaseCommand {
         });
         if (res.isError) return;
 
-        if (res.dispatcher && res.dispatcher.queue.current && !res.dispatcher.player.paused) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "The player is already playing!", { isError: true })] });
+        if (res.dispatcher && res.dispatcher.player.paused) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "The player is already paused!", { isError: true })] });
         if (!res.dispatcher?.queue.current) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })] });
 
-        res.dispatcher.player.setPaused(false);
+        res.dispatcher.player.setPaused(true);
 
-        await res.dispatcher.playingMessages.get(res.dispatcher.queue.current.id)?.setPause(false);
+        await res.dispatcher.playingMessages.get(res.dispatcher.queue.current.id)?.setPause(true);
 
-        const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.author} Resumed the player!`)] };
+        const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.author} Paused the player!`)] };
 
         await ctx.reply(options, { deleteLater: true });
-        if (res.dispatcher?.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
+        if (res.dispatcher.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
+    }
+
+    get slashCommandData(): ApplicationCommandData {
+        return {
+            name: this.name,
+            description: this.description
+        }
     }
 }

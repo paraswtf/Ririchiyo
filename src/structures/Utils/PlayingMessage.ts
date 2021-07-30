@@ -1,6 +1,6 @@
-import { Util as DCUtil, Message, MessageEmbed, MessageButton, InteractionCollector, MessageComponentInteraction } from 'discord.js';
+import { Util as DCUtil, Message, MessageEmbed, MessageButton, InteractionCollector, MessageComponentInteraction, Collection, GuildMember } from 'discord.js';
 import { ResolvedTrack } from '../Shoukaku/RirichiyoTrack';
-import Utils from '../Utils';
+import Utils, { ID } from '../Utils';
 import CustomEmojiUtils from './CustomEmojiUtils';
 import ThemeUtils from './ThemeUtils';
 import PlayingMessageManager from './PlayingMessageManager';
@@ -14,6 +14,7 @@ export default class PlayingMessage {
     doNotSend: boolean = false;
     components: MessageButton[];
     collector?: InteractionCollector<MessageComponentInteraction>;
+    skipVotes: Collection<ID, GuildMember> = new Collection();
     // Class props //
 
     constructor(manager: PlayingMessageManager, track: ResolvedTrack) {
@@ -23,7 +24,7 @@ export default class PlayingMessage {
             new MessageButton().setCustomId("shuffle").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("SHUFFLE_BUTTON").identifier),
             new MessageButton().setCustomId("back").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("PREVIOUS_BUTTON").identifier),
             new MessageButton().setCustomId("pause").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("PAUSE_BUTTON").identifier),
-            new MessageButton().setCustomId("next").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("NEXT_BUTTON").identifier),
+            new MessageButton().setCustomId("skip").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("NEXT_BUTTON").identifier),
             new MessageButton().setCustomId("loop").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get(getLoopStateButtonName(this.manager.dispatcher.queue.loopState)).identifier)
         ];
     }
@@ -38,7 +39,7 @@ export default class PlayingMessage {
                 url: "https://cdn.discordapp.com/attachments/756541902202863740/780739509704327198/1920x1_TP.png"
             },
             thumbnail: {
-                url: this.track.displayThumbnail("default")
+                url: this.track.displayThumbnail("mqdefault")
             },
             color: ThemeUtils.getClientColor(this.manager.dispatcher.guild)
         });
