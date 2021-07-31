@@ -44,7 +44,7 @@ export class RirichiyoTrack {
             this.isLive = this.data.info.isStream;
             this.ytURL = this.data.info.uri;
             this.identifier = this.data.info.identifier;
-            this.displayTitle = this.title!.length > maxTrackTitleDisplayLength ? this.title!.substring(0, maxTrackTitleDisplayLength) + "..." : this.title!;
+            this.displayTitle = Utils.escapeMarkdown(this.title!.length > maxTrackTitleDisplayLength ? this.title!.substring(0, maxTrackTitleDisplayLength) + "..." : this.title!);
             this.displayOriginURL = this.ytURL!;
             this.displayURL = this.ytURL!;
             this.displayDuration = this.duration!;
@@ -52,7 +52,7 @@ export class RirichiyoTrack {
         } else {
             this.isResolved = false;
             this.unresolvedTrackData = data as UnresolvedTrackData;
-            this.displayTitle = this.unresolvedTrackData.title.length > maxTrackTitleDisplayLength ? this.unresolvedTrackData.title.substring(0, maxTrackTitleDisplayLength) + "..." : this.unresolvedTrackData.title;
+            this.displayTitle = Utils.escapeMarkdown(this.unresolvedTrackData.title.length > maxTrackTitleDisplayLength ? this.unresolvedTrackData.title.substring(0, maxTrackTitleDisplayLength) + "..." : this.unresolvedTrackData.title);
             this.displayOriginURL = this.unresolvedTrackData.originURL;
             this.displayURL = this.unresolvedTrackData.originURL;
             this.displayDuration = this.unresolvedTrackData.duration;
@@ -71,7 +71,7 @@ export class RirichiyoTrack {
         this.isLive = data.info.isStream;
         this.ytURL = data.info.uri;
         this.identifier = data.info.identifier;
-        this.displayTitle = this.title!.length > maxTrackTitleDisplayLength ? this.title!.substring(0, maxTrackTitleDisplayLength) + "..." : this.title!;
+        this.displayTitle = Utils.escapeMarkdown(this.title!.length > maxTrackTitleDisplayLength ? this.title!.substring(0, maxTrackTitleDisplayLength) + "..." : this.title!);
         this.displayURL = this.ytURL!;
         this.displayDuration = this.duration!;
         this.displayArtist = this.channelName!;

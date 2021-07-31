@@ -28,6 +28,14 @@ export default class PlayerEndEvent extends BaseEvent<ExtendedShoukakuPlayer> {
                 })
                 break;
             }
+            case "STOPPED": {
+                if (!player.dispatcher.queue.current) player.dispatcher.sendMessage({
+                    embeds: [
+                        EmbedUtils.embedifyString(player.dispatcher.guild, "The player queue has ended.")
+                    ]
+                })
+                break;
+            }
         }
     }
 }

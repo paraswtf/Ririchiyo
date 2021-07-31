@@ -20,7 +20,7 @@ export default class PlayerInactivityEvent extends BaseEvent<ExtendedShoukakuPla
             embeds: [
                 EmbedUtils.embedifyString(
                     player.dispatcher.guild,
-                    `I left the voice channel due to inactivity!\nIf you have **[premium](${premium_uri})**, you can disable this by using \`${player.dispatcher.guildSettings.prefix}24/7\``,
+                    `I left the voice channel due to inactivity!\nIf you have **[premium](${premium_uri})**, you can disable this by using \`/24x7\``,
                     { embedColour: ThemeUtils.colors.get("warn")!.rgbNumber() }
                 )
             ]

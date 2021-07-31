@@ -1,9 +1,21 @@
-import { ApplicationCommandData, MessageEmbed, Permissions, User } from 'discord.js';
-import { inviteGenerateOptions, OwnerObject, owners } from '../../config';
+import {
+    inviteGenerateOptions,
+    OwnerObject,
+    owners
+} from '../../config';
+import {
+    CustomEmojiUtils,
+    ThemeUtils
+} from '../../structures/Utils';
+import {
+    ApplicationCommandData,
+    MessageEmbed,
+    Permissions,
+    User
+} from 'discord.js';
 import BaseCommand from '../../structures/Commands/BaseCommand';
 import CTX from '../../structures/Commands/CTX'
 import { version } from '../../../package.json';
-import { CustomEmojiUtils, ThemeUtils } from '../../structures/Utils';
 import time from 'ms';
 
 export default class InfoCommand extends BaseCommand<boolean, false>{
@@ -27,8 +39,6 @@ export default class InfoCommand extends BaseCommand<boolean, false>{
             arr.reduce((prev, cur) =>
                 (prev as number) + (cur as number), 0)
         ).catch(this.client.logger.error) as number ?? 0;
-
-        console.log(ownerUserStrings.join(", "));
 
         const infoEmbed = new MessageEmbed({
             author: {
@@ -58,7 +68,7 @@ export default class InfoCommand extends BaseCommand<boolean, false>{
         return `**[${user?.username ?? owner.displayName}](${owner.clickableLink})** ${owner.emoji && hasPermission ? ` ${CustomEmojiUtils.get(owner.emoji)}` : ""}`;
     }
 
-    slashCommandData = {
+    slashCommandData: ApplicationCommandData = {
         name: this.name,
         description: this.description
     }

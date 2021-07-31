@@ -2,6 +2,17 @@ import {
     AnyTrack,
     validateTrackOrTrackArray
 } from "./RirichiyoTrack";
+import Search from 'fuse.js';
+
+const searchOptions: Search.IFuseOptions<AnyTrack> = {
+    isCaseSensitive: false,
+    keys: [
+        { name: 'displayTitle', weight: 3 },
+        { name: "displayURL", weight: 2 },
+        { name: "displayArtist", weight: 2 }
+    ],
+    threshold: 0.4
+}
 
 export class Queue extends Array<AnyTrack> {
     /** The approximate duration of the queue. */
@@ -26,6 +37,12 @@ export class Queue extends Array<AnyTrack> {
 
     /** The index of the current track */
     public readonly currentIndex: number = 0;
+
+    setCurrentIndex(index: number) {
+        if (!this.length) return;
+        //@ts-ignore
+        this.currentIndex = Math.min(this.length - 1, Math.max(0, Number.parseInt(index.toString())));
+    }
 
     /** The loop state of the queue */
     public readonly loopState: QueueLoopState = "DISABLED";
@@ -123,6 +140,14 @@ export class Queue extends Array<AnyTrack> {
             this.length - (this.currentIndex + 1),
             ...randomizeArray(this.upcomingTracks)
         );
+    }
+
+    /** Fuzzy search queue tracks */
+    public findByQuery(query: string): number {
+        if (!this.length) return -1;
+        const searchResult = new Search(this, searchOptions).search(query);
+        if (!searchResult[0]) return -1;
+        return searchResult[0].refIndex;
     }
 }
 

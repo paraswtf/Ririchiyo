@@ -3,17 +3,16 @@ import RirichiyoClient from "../RirichiyoClient";
 import { owners } from "../../config";
 import CTX from './CTX';
 import { Collection, TextChannel, CommandInteraction, MessageComponentInteraction } from "discord.js";
-import { EmbedUtils, PermissionUtils } from "../Utils";
+import Utils, { EmbedUtils, PermissionUtils } from "../Utils";
+import translations from "../../config/translations";
 
 export class CommandHandler {
     client: RirichiyoClient;
     cooldowns: Collection<string, Collection<string, number>>;
-    errorMessage: string;
 
     constructor(client: RirichiyoClient) {
         this.client = client;
         this.cooldowns = new Collection();
-        this.errorMessage = `There was an error executing that command, please try again.\nIf this error persists, please report this issue on our support server- [ririchiyo.xyz/support](https://youtu.be/dQw4w9WgXcQ)`;//${Utils.config.settings.info.supportServerURL}
     }
 
     checkCooldown(recievedAt: number, command: BaseCommand<boolean>, userID: string, add = true): CooldownCheckResponse | null {
@@ -47,6 +46,7 @@ export class CommandHandler {
 
         const guildData = await this.client.db.getGuild(interaction.guild);
         const guildSettings = guildData.settings.getSettings();
+        const lang = guildSettings.languagePreference;
 
         //Create the ctx
         const ctx = new CTX({
@@ -55,7 +55,8 @@ export class CommandHandler {
             command,
             guildData,
             guildSettings,
-            botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel)
+            botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel),
+            language: lang
         });
 
         //Check if bot has required permissions to run the command
@@ -72,20 +73,31 @@ export class CommandHandler {
 
         //Handle owner only commands
         if (command.ownerOnly && !owners.find(o => o.id === interaction.user.id)) return await ctx.reply({
-            embeds: [EmbedUtils.embedifyString(interaction.guild, "This command can only be used by the bot owners!", { isError: true })]
+            embeds: [
+                EmbedUtils.embedifyString(interaction.guild, ctx.language.COMMAND_OWNER_ONLY, { isError: true })
+            ]
         }).catch(this.client.logger.error);
 
         //Handle cooldown
         const cooldown = this.checkCooldown(recievedAt, command, interaction.user.id);
         if (cooldown) {
             return await ctx.reply({
-                embeds: [EmbedUtils.embedifyString(interaction.guild, `Please wait ${(cooldown.timeLeft / 1000).toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`, { isError: true })]
-            }, { ephemeral: true, deleteTimeout: cooldown.timeLeft - recievedAt }).catch(this.client.logger.error);
+                embeds: [
+                    EmbedUtils.embedifyString(interaction.guild, Utils.formatString(
+                        ctx.language.COMMAND_RATELIMITED,
+                        (cooldown.timeLeft / 1000).toFixed(1),
+                        command.name), { isError: true })
+                ]
+            }, { ephemeral: true }).catch(this.client.logger.error);
         };
 
         await command.run(ctx).catch(async (err) => {
             this.client.logger.error(err);
-            await ctx.reply({ embeds: [EmbedUtils.embedifyString(interaction.guild, this.errorMessage, { isError: true })] }).catch(this.client.logger.error);
+            await ctx.reply({
+                embeds: [
+                    EmbedUtils.embedifyString(interaction.guild, ctx.language.COMMAND_ERROR, { isError: true })
+                ]
+            }).catch(this.client.logger.error);
         })
     }
 
@@ -103,6 +115,7 @@ export class CommandHandler {
 
         const guildData = await this.client.db.getGuild(interaction.guild);
         const guildSettings = guildData.settings.getSettings();
+        const lang = guildSettings.languagePreference;
 
         //Create the ctx
         const ctx = new CTX<boolean, true>({
@@ -111,7 +124,8 @@ export class CommandHandler {
             command,
             guildData,
             guildSettings,
-            botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel)
+            botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel),
+            language: lang
         });
 
         //Check if bot has required permissions to run the command
@@ -127,20 +141,31 @@ export class CommandHandler {
 
         //Handle owner only commands
         if (command.ownerOnly && !owners.find(o => o.id === interaction.user.id)) return await ctx.reply({
-            embeds: [EmbedUtils.embedifyString(interaction.guild, "This command can only be used by the bot owners!", { isError: true })]
+            embeds: [
+                EmbedUtils.embedifyString(interaction.guild, ctx.language.COMMAND_OWNER_ONLY, { isError: true })
+            ]
         }, { ephemeral: true })
 
         //Handle cooldown
         const cooldown = this.checkCooldown(recievedAt, command, interaction.user.id);
         if (cooldown) {
             return await ctx.reply({
-                embeds: [EmbedUtils.embedifyString(interaction.guild, `Please wait ${(cooldown.timeLeft / 1000).toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`, { isError: true })]
-            }, { ephemeral: true })
+                embeds: [
+                    EmbedUtils.embedifyString(interaction.guild, Utils.formatString(
+                        ctx.language.COMMAND_RATELIMITED,
+                        (cooldown.timeLeft / 1000).toFixed(1),
+                        command.name), { isError: true })
+                ]
+            }, { ephemeral: true }).catch(this.client.logger.error)
         };
 
         await command.run(ctx).catch(async (err) => {
             this.client.logger.error(err);
-            await ctx.reply({ embeds: [EmbedUtils.embedifyString(interaction.guild, this.errorMessage, { isError: true })] }).catch(this.client.logger.error);
+            await ctx.reply({
+                embeds: [
+                    EmbedUtils.embedifyString(interaction.guild, ctx.language.COMMAND_ERROR, { isError: true })
+                ]
+            }).catch(this.client.logger.error);
         })
     }
 }

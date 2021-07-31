@@ -35,10 +35,6 @@ export class PresenceUpdater {
         this.client = client;
         this.timeoutSeconds = timeoutSeconds;
         this.activityGenerators = [
-            () => {
-                const guildData = this.client.db.getDefaultGuild();
-                return { type: 2, name: `${guildData.settings.getSettings().prefix}help` };
-            },
             () => ({ type: 2, name: "/help" })
         ]
     }

@@ -4,6 +4,7 @@ import { GuildPermissionsManager, GuildPermissionsData } from "./permissions";
 import DBUtils, { BaseData } from "../../../DBUtils";
 import { GuildMember, Role } from "discord.js";
 import { GuildMusicSettings } from "./music";
+import { LanguageName } from "../../../../../config/translations";
 
 export class GuildSettings extends BaseData {
     // Class props //
@@ -33,22 +34,22 @@ export class GuildSettings extends BaseData {
         this.music = new GuildMusicSettings(this);
     }
 
-    get prefix() {
-        return this.getCache("prefix", defaultGuildSettingsData[this.clientId].prefix);
+    get languagePreference() {
+        return this.getCache("languagePreference", defaultGuildSettingsData[this.clientId].languagePreference);
     }
 
-    async setPrefix(newPrefix?: string) {
-        if (this.prefix === newPrefix) return this.prefix;
-        if (!newPrefix) newPrefix = defaultGuildSettingsData[this.clientId].prefix;
+    async setLanguagePreference(newLanguagePreference?: LanguageName) {
+        if (this.languagePreference === newLanguagePreference) return this.languagePreference;
+        if (!newLanguagePreference) newLanguagePreference = defaultGuildSettingsData[this.clientId].languagePreference;
 
-        await this.updateDB("prefix", null, '$unset');
-        this.updateCache("prefix", newPrefix);
+        await this.updateDB("languagePreference", newLanguagePreference, newLanguagePreference === defaultGuildSettingsData[this.clientId].languagePreference ? "$unset" : "$set");
+        this.updateCache("languagePreference", newLanguagePreference);
         return this;
     }
 }
 
 export interface GuildSettingsData {
-    prefix: string,
+    languagePreference: LanguageName,
     permissions: {
         members: GuildPermissionsData,
         roles: GuildPermissionsData

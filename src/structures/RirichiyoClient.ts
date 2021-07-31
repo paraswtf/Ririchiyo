@@ -7,9 +7,10 @@ import DB from './Data/Database';
 import path from 'path';
 import Shoukaku from './Shoukaku';
 
-import { mongodb, shoukakuNodes, shoukakuOptions, youtube } from '../config';
+import { mongodb, shoukakuNodes, shoukakuOptions, spotify, youtube } from '../config';
 import { DispatcherManager } from './Shoukaku/Dispatcher';
 import { YouTube } from './YouTube';
+import { Spotify } from './Spotify';
 
 export class RirichiyoClient extends DiscordClient {
     logger: Logger;
@@ -19,6 +20,7 @@ export class RirichiyoClient extends DiscordClient {
     commandHandler: CommandHandler;
     shoukaku: Shoukaku;
     ytAPI: YouTube;
+    spotifyApi: Spotify;
     dispatchers: DispatcherManager;
     user!: ClientUser;
     shard!: ShardClientUtil;
@@ -30,6 +32,7 @@ export class RirichiyoClient extends DiscordClient {
         this.db = new DB({ mongoDBURI: mongodb.uri }, this);
         this.shoukaku = new Shoukaku(this, shoukakuNodes, shoukakuOptions);
         this.ytAPI = new YouTube(youtube.APIKey, { cache: true, fetchAll: false });
+        this.spotifyApi = new Spotify({ clientID: spotify.clientID, clientSecret: spotify.secret });
         this.dispatchers = new DispatcherManager();
         this.events = new Events(null, this).load(path.join(__dirname, "../events/client"));
         this.commands = new Commands(null, this);
@@ -45,6 +48,7 @@ export class RirichiyoClient extends DiscordClient {
     }
 
     async preLogin() {
+        await this.spotifyApi.login();
     }
 
     async postLogin() {

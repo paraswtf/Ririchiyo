@@ -1,7 +1,14 @@
-import { ApplicationCommandData, MessageEmbed, Permissions } from 'discord.js';
+import {
+    CustomEmojiUtils,
+    ThemeUtils
+} from '../../structures/Utils';
+import {
+    ApplicationCommandData,
+    MessageEmbed,
+    Permissions
+} from 'discord.js';
 import BaseCommand from '../../structures/Commands/BaseCommand';
-import { CTX } from '../../structures/Commands/CTX'
-import { CustomEmojiUtils, ThemeUtils } from '../../structures/Utils';
+import CTX from '../../structures/Commands/CTX'
 
 export default class PingCommand extends BaseCommand<boolean, false> {
     constructor() {
@@ -52,7 +59,7 @@ export default class PingCommand extends BaseCommand<boolean, false> {
         await ctx.interaction.editReply({ embeds: [pingEmbed] });
     }
 
-    slashCommandData = {
+    slashCommandData: ApplicationCommandData = {
         name: this.name,
         description: this.description
     }

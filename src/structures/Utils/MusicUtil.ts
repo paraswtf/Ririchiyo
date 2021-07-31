@@ -43,31 +43,31 @@ export class MusicUtil {
         const { channel: memberVc } = member.voice;
 
         if (!noDispatcherRequired && !dispatcher) {
-            if (ctx) this.sendError("There is nothing playing right now!", ctx, true);
+            if (ctx) this.sendError(ctx.language.NOTHING_PLAYING, ctx, true);
             return new Error(FLAG.NO_DISPATCHER, memberPermissions);
         }
 
         if (dispatcher && botVc) {
             if (!memberVc) {
                 if (isSpawnAttempt) {
-                    if (ctx) this.sendError("Already playing in a different channel!", ctx, true);
+                    if (ctx) this.sendError(ctx.language.ALREADY_PLAYING_DIFFERENT_VC, ctx, true);
                     return new Error(FLAG.DISPATCHER_ALREADY_EXISTS, memberPermissions);
                 }
-                if (ctx) this.sendError("You need to be in the same voice channel as the bot to use that command!", ctx, true);
+                if (ctx) this.sendError(ctx.language.NEED_TO_BE_IN_SAME_VC, ctx, true);
                 return new Error(FLAG.NO_AUTHOR_CHANNEL_AND_DISPATCHER_EXISTS, memberPermissions);
             }
             else {
                 if (memberVc.id !== botVc.id) {
                     if (isSpawnAttempt) {
-                        if (ctx) this.sendError("Already playing in a different channel!", ctx, true);
+                        if (ctx) this.sendError(ctx.language.ALREADY_PLAYING_DIFFERENT_VC, ctx, true);
                         return new Error(FLAG.DISPATCHER_ALREADY_EXISTS, memberPermissions);
                     }
-                    if (ctx) this.sendError("You need to be in the same voice channel as the bot to use that command!", ctx, true);
+                    if (ctx) this.sendError(ctx.language.NEED_TO_BE_IN_SAME_VC, ctx, true);
                     return new Error(FLAG.DISPATCHER_IN_DIFFERENT_CHANNEL, memberPermissions);
                 }
                 else {
                     if (isSpawnAttempt) {
-                        if (ctx) this.sendError("Already playing in your voice channel!", ctx, true);
+                        if (ctx) this.sendError(ctx.language.ALREADY_PLAYING_YOUR_VC, ctx, true);
                         return new Error(FLAG.DISPATCHER_ALREADY_EXISTS_SAME_CHANNEL, memberPermissions);
                     }
                     const vcMemberCount = memberVc.members.filter(m => !m.user.bot).size;
@@ -89,7 +89,7 @@ export class MusicUtil {
             const hasPerms = !missingPerms || missingPerms.length === 0;
             if (hasPerms) {
                 if (isSpawnAttempt && !memberVc) {
-                    if (ctx) this.sendError("You need to be in a voice channel to use that command!", ctx, true);
+                    if (ctx) this.sendError(ctx.language.NEED_TO_BE_IN_VC, ctx, true);
                     return new Error(FLAG.NO_VOICE_CHANNEL, memberPermissions);
                 }
                 if (isSpawnAttempt) return new Success(FLAG.HAS_PERMS_TO_SPAWN_DISPATCHER, memberPermissions, memberVc!);
@@ -98,7 +98,7 @@ export class MusicUtil {
             else {
                 if (isSpawnAttempt) {
                     if (!memberVc) {
-                        if (ctx) this.sendError("You need to be in a voice channel to use that command!", ctx, true);
+                        if (ctx) this.sendError(ctx.language.NEED_TO_BE_IN_VC, ctx, true);
                         return new Error(FLAG.NO_VOICE_CHANNEL, memberPermissions);
                     }
                     else {
@@ -113,7 +113,7 @@ export class MusicUtil {
                 else {
                     if (allowViewOnly) return new Success(FLAG.VIEW_ONLY, memberPermissions);
                     else {
-                        if (ctx) this.sendError("There is nothing playing right now!", ctx, true);
+                        if (ctx) this.sendError(ctx.language.NOTHING_PLAYING, ctx, true);
                         return new Error(FLAG.NO_PERMS_AND_NO_DISPATCHER, memberPermissions);
                     }
                 }

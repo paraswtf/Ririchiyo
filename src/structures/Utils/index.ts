@@ -1,5 +1,6 @@
 import RirichiyoClient from '../RirichiyoClient';
 import { Snowflake } from '@sapphire/snowflake';
+import { Collection, Util as DCUtil } from 'discord.js';
 
 export class Utils {
     public static readonly client: RirichiyoClient;
@@ -42,6 +43,20 @@ export class Utils {
             return args[n];
         });
     };
+
+    /**
+    * Escape markdown
+    * @param {string} string The string to escape markdown from
+    */
+    public static escapeMarkdown(string: string) {
+        return DCUtil.escapeMarkdown(string).replace(/[\[\]\(\)]/g, " ").replace(/\s+/g, " ");
+    };
+}
+
+export class DefinedCollection<K, V> extends Collection<K, V>{
+    get(key: K) {
+        return super.get(key)!;
+    }
 }
 
 export type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<infer ElementType> ? ElementType : never;

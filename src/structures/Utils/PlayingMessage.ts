@@ -1,5 +1,4 @@
 import {
-    Util as DCUtil,
     Message,
     MessageEmbed,
     MessageButton,
@@ -27,6 +26,7 @@ export default class PlayingMessage {
     components: MessageButton[];
     collector?: InteractionCollector<MessageComponentInteraction>;
     skipVotes: Collection<ID, GuildMember> = new Collection();
+    backVotes: Collection<ID, GuildMember> = new Collection();
     // Class props //
 
     constructor(manager: PlayingMessageManager, track: ResolvedTrack) {
@@ -46,7 +46,7 @@ export default class PlayingMessage {
 
         const playingEmbed = new MessageEmbed({
             title: `${CustomEmojiUtils.get("MUSICAL_NOTES")} Started playing! ${CustomEmojiUtils.get("ANIMATED_PLAYING")}`,
-            description: `**[${DCUtil.escapeMarkdown(this.track.displayTitle)}](${this.track.displayURL})**\n\`Added by - \`${this.track.requester}\` \``,
+            description: `**[${this.track.displayTitle}](${this.track.displayURL})**\n\`Added by - \`${this.track.requester}\` \``,
             image: {
                 url: "https://cdn.discordapp.com/attachments/756541902202863740/780739509704327198/1920x1_TP.png"
             },

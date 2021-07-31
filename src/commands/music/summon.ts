@@ -1,24 +1,34 @@
+import {
+    CustomEmojiUtils,
+    EmbedUtils,
+    ThemeUtils
+} from '../../structures/Utils';
+import {
+    MusicUtil,
+    Error,
+    Success,
+    FLAG
+} from '../../structures/Utils/MusicUtil';
+import {
+    ApplicationCommandData,
+    MessageEmbed,
+    TextChannel
+} from 'discord.js';
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
-import { MusicUtil, Error, Success, FLAG } from '../../structures/Utils/MusicUtil';
-import { ApplicationCommandData, MessageEmbed, TextChannel } from 'discord.js';
-import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
 
-export default class SummonCommand extends BaseCommand {
+export default class SummonCommand extends BaseCommand<true, false> {
     constructor() {
         super({
             name: "summon",
-            aliases: ["j", "join"],
             category: "music",
             description: "Make the bot join your voice channel",
-            allowSlashCommand: true,
-            allowMessageCommand: true,
             allowGuildCommand: true,
-            allowDMCommand: false,
+            allowDMCommand: false
         })
     }
 
-    async run(ctx: GuildCTX, opts?: Success | Error): Promise<Success | Error> {
+    async run(ctx: GuildCTX<false>, opts?: Success | Error): Promise<Success | Error> {
         const res = await this.testConditions(ctx, opts);
         if (res.isError) return res;
 
@@ -38,7 +48,7 @@ export default class SummonCommand extends BaseCommand {
             await dispatcher.attemptReconnect(res.authorVoiceChannel!.id).then(
                 //If connected
                 () => {
-                    ctx.editResponse({
+                    ctx.interaction.editReply({
                         embeds: [
                             new MessageEmbed()
                                 .setDescription(`**Reconnected to ${`<#${res.authorVoiceChannel?.id}>` || "your voice channel"}**`)
@@ -49,7 +59,7 @@ export default class SummonCommand extends BaseCommand {
                 //If could not connect
                 (error) => {
                     this.client.logger.error(error);
-                    ctx.editResponse({
+                    ctx.interaction.editReply({
                         embeds: [
                             new MessageEmbed()
                                 .setDescription(
@@ -115,10 +125,8 @@ export default class SummonCommand extends BaseCommand {
         return new Success(FLAG.NULL, undefined, res.authorVoiceChannel);
     }
 
-    get slashCommandData(): ApplicationCommandData {
-        return {
-            name: this.name,
-            description: this.description
-        }
+    slashCommandData: ApplicationCommandData = {
+        name: this.name,
+        description: this.description
     }
 }

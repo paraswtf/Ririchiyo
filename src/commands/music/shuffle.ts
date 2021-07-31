@@ -4,22 +4,19 @@ import { MusicUtil } from '../../structures/Utils/MusicUtil';
 import { EmbedUtils } from '../../structures/Utils';
 import { ApplicationCommandData } from 'discord.js';
 
-export default class ShuffleCommand extends BaseCommand {
+export default class ShuffleCommand extends BaseCommand<true, true> {
     constructor() {
         super({
             name: "shuffle",
-            aliases: ["shuff"],
             category: "music",
             description: "Shuffle the player queue",
-            allowSlashCommand: true,
-            allowMessageCommand: true,
             allowGuildCommand: true,
             allowDMCommand: false,
             allowMessageCommponentInteraction: true
         })
     }
 
-    async run(ctx: GuildCTX) {
+    async run(ctx: GuildCTX<true>) {
         const res = MusicUtil.canPerformAction({
             guild: ctx.guild,
             member: ctx.member,
@@ -29,20 +26,20 @@ export default class ShuffleCommand extends BaseCommand {
         });
         if (res.isError) return;
 
-        if (!res.dispatcher?.queue.current) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })] });
+        if (!res.dispatcher?.queue.current) return await ctx.reply({
+            embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })]
+        });
 
         res.dispatcher.queue.shuffle();
 
-        const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.author} Shuffled the player queue!`)] };
+        const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.user} Shuffled the player queue!`)] };
 
         await ctx.reply(options, { deleteLater: true });
         if (res.dispatcher.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
     }
 
-    get slashCommandData(): ApplicationCommandData {
-        return {
-            name: this.name,
-            description: this.description
-        }
+    slashCommandData: ApplicationCommandData = {
+        name: this.name,
+        description: this.description
     }
 }

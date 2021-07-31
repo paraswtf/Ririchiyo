@@ -4,7 +4,7 @@ import { GuildSettings, GuildSettingsData } from "./GuildSettings";
 import DBUtils from "../../../DBUtils";
 
 const client_831406931205292053: GuildSettingsData = {
-    prefix: "r!",
+    languagePreference: 'EN',
     permissions: {
         members: {},
         roles: {}

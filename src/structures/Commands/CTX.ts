@@ -9,6 +9,7 @@ import {
     MessageComponentInteraction
 } from "discord.js";
 import { message_delete_timeout } from "../../config";
+import translations, { Language, LanguageName } from "../../config/translations";
 import { Guild as GuildData } from "../Data/classes/Guild";
 import { GuildSettings } from "../Data/classes/Guild/settings/GuildSettings";
 import Utils from "../Utils";
@@ -27,6 +28,7 @@ export class CTX<isGuild extends boolean = boolean, allowComponent extends boole
     readonly botPermissionsForChannel: Readonly<Permissions>;
     readonly user: CommandInteraction['user'];
     readonly member: BooleanBasedType<isGuild, GuildMember>;
+    readonly language: Language;
 
     constructor({
         recievedAt,
@@ -34,7 +36,8 @@ export class CTX<isGuild extends boolean = boolean, allowComponent extends boole
         command,
         guildData = null,
         guildSettings = null,
-        botPermissionsForChannel
+        botPermissionsForChannel,
+        language
     }: CTXOptions<isGuild, allowComponent>) {
         this.recievedAt = recievedAt;
         this.interaction = interaction;
@@ -47,6 +50,7 @@ export class CTX<isGuild extends boolean = boolean, allowComponent extends boole
         this.botPermissionsForChannel = botPermissionsForChannel;
         this.user = interaction.user;
         this.member = (interaction.guild ? interaction.guild.members.resolve(this.user) : null) as this['member'];
+        this.language = translations.get(language);
     }
 
     async defer(options?: Parameters<this['interaction']['defer']>[0]) {
@@ -69,11 +73,13 @@ export interface CTXOptions<isGuild extends boolean = boolean, allowComponent ex
     readonly guildData: BooleanBasedType<isGuild, GuildData, null | undefined>,
     readonly guildSettings: BooleanBasedType<isGuild, GuildSettings, null | undefined>,
     //userData: UserData,
-    readonly botPermissionsForChannel: Readonly<Permissions>
+    readonly botPermissionsForChannel: Readonly<Permissions>,
+    readonly language: LanguageName
 }
 
-export type GuildCTX = CTX<true>;
-export type DMCTX = CTX<false>;
+export type GuildCTX<allowComponent extends boolean = false> = CTX<true, allowComponent>;
+export type DMCTX<allowComponent extends boolean = false> = CTX<false, allowComponent>;
+export type AllCTX<allowComponent extends boolean = false> = GuildCTX<allowComponent> | DMCTX<allowComponent>;
 
 export type BooleanBasedType<isTrue, T, TNot = null> = isTrue extends true ? T : TNot;
 

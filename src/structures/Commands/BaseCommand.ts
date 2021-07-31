@@ -80,7 +80,7 @@ export class BaseCommand<isGuild extends boolean = boolean, allowComponent exten
     init(client: RirichiyoClient, filePath: string): any { Object.assign(this, { client, filePath }) };
     async run(ctx: CTX<isGuild, allowComponent>, opts?: any): Promise<any> { };
 
-    readonly slashCommandData?: ApplicationCommandData;
+    readonly slashCommandData!: ApplicationCommandData;
     readonly usage?: string;
 }
 

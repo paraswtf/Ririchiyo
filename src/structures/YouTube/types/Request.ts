@@ -12,6 +12,7 @@ export interface RequestOptions {
 	q?: string;
 	type?: ResourceType;
 	safeSearch?: "strict" | "moderate" | "none";
+	videoDuration?: "short" | "medium" | "long" | "any";
 }
 
 export interface RequestResult {
