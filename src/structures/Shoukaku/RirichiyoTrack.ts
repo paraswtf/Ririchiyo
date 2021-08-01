@@ -24,6 +24,7 @@ export class RirichiyoTrack {
     isLive?: boolean;
     ytURL?: string;
     identifier?: string;
+    radioURL?: string;
     displayTitle: string;
     displayOriginURL: string;
     displayURL: string;
@@ -44,6 +45,7 @@ export class RirichiyoTrack {
             this.isLive = this.data.info.isStream;
             this.ytURL = this.data.info.uri;
             this.identifier = this.data.info.identifier;
+            this.radioURL = `https://www.youtube.com/watch?v=${this.identifier}&list=RD${this.identifier}&start_radio=1`;
             this.displayTitle = Utils.escapeMarkdown(this.title!.length > maxTrackTitleDisplayLength ? this.title!.substring(0, maxTrackTitleDisplayLength) + "..." : this.title!);
             this.displayOriginURL = this.ytURL!;
             this.displayURL = this.ytURL!;
@@ -71,6 +73,7 @@ export class RirichiyoTrack {
         this.isLive = data.info.isStream;
         this.ytURL = data.info.uri;
         this.identifier = data.info.identifier;
+        this.radioURL = `https://www.youtube.com/watch?v=${this.identifier}&list=RD${this.identifier}&start_radio=1`;
         this.displayTitle = Utils.escapeMarkdown(this.title!.length > maxTrackTitleDisplayLength ? this.title!.substring(0, maxTrackTitleDisplayLength) + "..." : this.title!);
         this.displayURL = this.ytURL!;
         this.displayDuration = this.duration!;
@@ -132,6 +135,7 @@ export interface ResolvedTrack {
     isLive: boolean;
     ytURL: string;
     identifier: string;
+    radioURL: string;
     displayTitle: string;
     displayOriginURL: string;
     displayURL: string;
@@ -154,6 +158,7 @@ export interface UnresolvedTrack {
     isLive: undefined;
     ytURL: undefined;
     identifier: undefined;
+    radioURL: undefined;
     displayTitle: string;
     displayOriginURL: string;
     displayURL: string;

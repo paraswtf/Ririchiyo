@@ -3,8 +3,6 @@ import { ExtendedShoukakuPlayer } from '../../structures/Shoukaku/Dispatcher';
 import { PlayerEndEvent as EventData } from 'shoukaku';
 import { EmbedUtils } from '../../structures/Utils';
 import { ResolvedTrack } from '../../structures/Shoukaku/RirichiyoTrack';
-import { Playlist } from '../../structures/YouTube'
-import { SearchResolver } from '../../structures/Shoukaku/SearchResolver';
 
 /** 
  * Emitted when the Lavalink Server sends a TrackEndEvent or TrackStuckEvent, MUST BE HANDLED.
@@ -28,8 +26,7 @@ export default class PlayerEndEvent extends BaseEvent<ExtendedShoukakuPlayer> {
                 if (player.dispatcher.queue.current) await player.dispatcher.play();
                 //If none then handle recommendation
                 else if (endedTrack) {
-                    await player.dispatcher.handleRecommendations(endedTrack.identifier);
-                    console.log(player.dispatcher.queue);
+                    await player.dispatcher.handleRecommendations(endedTrack.radioURL);
                     //If a track was added
                     if (player.dispatcher.queue.current) return await player.dispatcher.play();
                 }

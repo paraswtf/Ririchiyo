@@ -103,8 +103,7 @@ export async function skipTrack(dispatcher: Dispatcher) {
     if (dispatcher.queue.current) await dispatcher.play();
     else {
         //Check recommendations
-        await dispatcher.handleRecommendations(endedTrack.identifier);
-        console.log(dispatcher.queue);
+        await dispatcher.handleRecommendations(endedTrack.radioURL);
         //If a track was added from recommendations
         if (dispatcher.queue.current) await dispatcher.play();
         //Else end the queue

@@ -4,18 +4,19 @@ import { MusicUtil } from '../../structures/Utils/MusicUtil';
 import { EmbedUtils } from '../../structures/Utils';
 import { ApplicationCommandData } from 'discord.js';
 
-export default class ForceBackCommand extends BaseCommand<true, false> {
+export default class BackCommand extends BaseCommand<true, true> {
     constructor() {
         super({
             name: "back",
             category: "music",
             description: "Play the previuos track",
             allowGuildCommand: true,
-            allowDMCommand: false
+            allowDMCommand: false,
+            allowMessageCommponentInteraction: true
         })
     }
 
-    async run(ctx: GuildCTX<false>) {
+    async run(ctx: GuildCTX<true>) {
         const res = MusicUtil.canPerformAction({
             guild: ctx.guild,
             member: ctx.member,

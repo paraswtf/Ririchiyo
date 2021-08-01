@@ -45,9 +45,10 @@ export default class SummonCommand extends BaseCommand<true, false> {
                 await ctx.reply({ embeds: [reconnectedEmbed] });
             }
             //Reconnect
-            await dispatcher.attemptReconnect(res.authorVoiceChannel!.id).then(
+            await dispatcher.attemptReconnect(res.authorVoiceChannel!.id, false).then(
                 //If connected
                 () => {
+                    if (dispatcher?.destroyTimeout) clearTimeout(dispatcher.destroyTimeout);
                     ctx.interaction.editReply({
                         embeds: [
                             new MessageEmbed()

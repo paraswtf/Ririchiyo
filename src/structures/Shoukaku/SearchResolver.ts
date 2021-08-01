@@ -1,8 +1,11 @@
 import { GuildMember } from "discord.js";
 import { Spotify, SpotifyOptions } from "../Spotify";
 import Utils from "../Utils";
-import { ResourcePart, ResourceEndpoint, YouTube } from "../YouTube";
+import { ResourcePart, YouTube } from "../YouTube";
 import { AnyTrack, RirichiyoTrack } from "./RirichiyoTrack";
+const replacements: Record<string, string> = {
+    '&': "and"
+}
 
 const spotifyRegex = /^(?:https:\/\/(?:(?:open|www)\.)?spotify\.com\/|spotify:)(?:.+)?(?<type>track|playlist|album)[\/:](?<id>[A-Za-z0-9]{22})/;
 const youtubeRegex = /^(?:https?:\/\/)(?:www)?\.?(?:youtu\.?be)(?:\.com)?\//;
@@ -28,15 +31,15 @@ export class SearchResolver {
         return null
     }
 
-    static getRadioUrl(trackID: string) {
-        return `https://www.youtube.com/watch?v=${trackID}&list=RD${trackID}&start_radio=1`;
+    static parseQuery(query: string) {
+        return query.replace(/[\&]/g, m => replacements[m]);
     }
 
     /**
      * Search the video and get the url from youtube
      */
     async fetchVideoURL(query: string) {
-        const res = await this.youtube.searchVideos(query, 1, { part: ResourcePart.video, safeSearch: "moderate" }).catch(console.error);
+        const res = await this.youtube.searchVideos(SearchResolver.parseQuery(query), 1, { part: ResourcePart.video, safeSearch: "moderate" }).catch(console.error);
         if (!res || !res[0]?.id) return null;
         return "https://www.youtube.com/watch?v=" + res[0].id;
     }

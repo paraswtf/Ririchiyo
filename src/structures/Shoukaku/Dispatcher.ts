@@ -52,12 +52,16 @@ export class Dispatcher {
     readonly player!: ShoukakuPlayer;
     //The dispatcher queue
     readonly queue: Queue;
+    //The current position in track of the player, should be updated on playerUpdate event
+    position = 0;
     //The playing message manager
     readonly playingMessages = new PlayingMessageManager(null, this);
     //Handle errors
     private readonly errors: Collection<PlayerExceptionEvent['exception']['severity'], number> = new Collection();
     //The inactivity checker for the dispatcher
     readonly inactivityChecker: InactivityChecker;
+    //Destroy timeout
+    destroyTimeout?: NodeJS.Timeout;
 
     constructor(options: DispatcherOptions, firstCtx?: GuildCTX) {
         this.client = Utils.client;
@@ -90,7 +94,9 @@ export class Dispatcher {
     }
 
     async attemptReconnect(voiceChannelID: ID, forceReconnect = false) {
-        return await this.player.voiceConnection.attemptReconnect({ voiceChannelID, forceReconnect });
+        return await this.player.voiceConnection.attemptReconnect({ voiceChannelID, forceReconnect }).then(async p =>
+            p.track ? await p.playTrack(p.track, { startTime: this.position }) : null
+        );
     }
 
     async play(options: ShoukakuPlayOptions = { noReplace: false }) {
@@ -110,11 +116,10 @@ export class Dispatcher {
         return await this.textChannel.send(options).catch(this.client.logger.error);
     }
 
-    async handleRecommendations(endedTrackID: string) {
-        console.log(endedTrackID);
+    async handleRecommendations(radioURL: string) {
         //If recommendations do not exist, fetch and store recommendations
         if (!this.queue.recommendations.length) {
-            const res = await this.client.searchResolver.search({ query: SearchResolver.getRadioUrl(endedTrackID) }).catch(this.client.logger.error);
+            const res = await this.client.searchResolver.search({ query: radioURL }).catch(this.client.logger.error);
 
             //If res then add to cached recs
             if (res?.tracks[1]) {
