@@ -28,6 +28,10 @@ export class SearchResolver {
         return null
     }
 
+    static getRadioUrl(trackID: string) {
+        return `https://www.youtube.com/watch?v=${trackID}&list=RD${trackID}&start_radio=1`;
+    }
+
     /**
      * Search the video and get the url from youtube
      */

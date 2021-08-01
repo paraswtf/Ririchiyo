@@ -6,7 +6,8 @@ import { defaultGuildMusicFiltersSettingsData, GuildMusicFiltersManager, GuildMu
 export const defaultGuildMusicSettingsData: GuildMusicSettingsData = {
     loopState: "DISABLED",
     filters: defaultGuildMusicFiltersSettingsData,
-    stayConnected: false
+    stayConnected: false,
+    recommendations: false
 }
 
 export class GuildMusicSettings extends BaseData {
@@ -58,12 +59,29 @@ export class GuildMusicSettings extends BaseData {
         }
         return this;
     }
+
+    get recommendations() {
+        return this.getCache("recommendations", defaultGuildMusicSettingsData.recommendations);
+    }
+
+    async setRecommendations(value: boolean) {
+        if (value === defaultGuildMusicSettingsData.recommendations) {
+            await this.updateDB("recommendations", null, "$unset");
+            this.updateCache("recommendations", null, "delete");
+        }
+        else {
+            await this.updateDB("recommendations", value);
+            this.updateCache("recommendations", value);
+        }
+        return this;
+    }
 }
 
 export interface GuildMusicSettingsData {
     loopState: GuildMusicSettingsLoopState,
     filters: GuildMusicFiltersSettingsData,
-    stayConnected: boolean
+    stayConnected: boolean,
+    recommendations: boolean
 }
 
 export type GuildMusicSettingsLoopState = "DISABLED" | "QUEUE" | "TRACK";

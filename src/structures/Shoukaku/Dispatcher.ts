@@ -13,6 +13,7 @@ import { ResolvedTrack } from "./RirichiyoTrack";
 import { PlayerExceptionEvent } from 'shoukaku';
 import { encode } from "@lavalink/encoding";
 import { player_inactivity_timeout } from "../../config";
+import { SearchResolver } from "./SearchResolver";
 //Max exception ratelimit
 const maxErrorsPer10Seconds = 3;
 
@@ -107,6 +108,24 @@ export class Dispatcher {
         if (!res.hasAll) return;
 
         return await this.textChannel.send(options).catch(this.client.logger.error);
+    }
+
+    async handleRecommendations(endedTrackID: string) {
+        console.log(endedTrackID);
+        //If recommendations do not exist, fetch and store recommendations
+        if (!this.queue.recommendations.length) {
+            const res = await this.client.searchResolver.search({ query: SearchResolver.getRadioUrl(endedTrackID) }).catch(this.client.logger.error);
+
+            //If res then add to cached recs
+            if (res?.tracks[1]) {
+                res.tracks.shift();
+                this.queue.recommendations.push(...res.tracks);
+            }
+        }
+        if (this.queue.recommendations.length) {
+            this.queue.add(this.queue.recommendations.shift()!);
+            return await this.play();
+        }
     }
 
     checkErrorRatelimitted(severity: PlayerExceptionEvent['exception']['severity']) {

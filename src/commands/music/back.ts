@@ -3,14 +3,13 @@ import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil } from '../../structures/Utils/MusicUtil';
 import { EmbedUtils } from '../../structures/Utils';
 import { ApplicationCommandData } from 'discord.js';
-import { skipTrack } from './skip';
 
-export default class ForceSkipCommand extends BaseCommand<true, false> {
+export default class ForceBackCommand extends BaseCommand<true, false> {
     constructor() {
         super({
-            name: "forceskip",
+            name: "back",
             category: "music",
-            description: "Force Skip the current track",
+            description: "Play the previuos track",
             allowGuildCommand: true,
             allowDMCommand: false
         })
@@ -26,15 +25,18 @@ export default class ForceSkipCommand extends BaseCommand<true, false> {
         });
         if (res.isError) return;
 
-        if (!res.dispatcher?.queue.current) return await ctx.reply({
-            embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })]
+        if (!res.dispatcher?.queue.previousTracks.length) return await ctx.reply({
+            embeds: [EmbedUtils.embedifyString(ctx.guild, "There are no previous tracks!", { isError: true })]
         });
 
+        if (res.dispatcher.queue.current) res.dispatcher.playingMessages.deleteMessage(res.dispatcher.queue.current.id);
 
-        await skipTrack(res.dispatcher);
+        res.dispatcher.queue.setCurrentIndex(res.dispatcher.queue.currentIndex - 1);
+        await res.dispatcher.play();
+
         const options = {
             embeds: [
-                EmbedUtils.embedifyString(ctx.guild, `${ctx.member} Skipped the current song!`)
+                EmbedUtils.embedifyString(ctx.guild, `${ctx.member} Skipped to the previous song!`)
             ]
         };
 

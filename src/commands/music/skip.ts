@@ -1,9 +1,10 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
-import { MusicUtil, Success } from '../../structures/Utils/MusicUtil';
+import { MusicUtil } from '../../structures/Utils/MusicUtil';
 import { EmbedUtils } from '../../structures/Utils';
 import { ApplicationCommandData } from 'discord.js';
 import Dispatcher from '../../structures/Shoukaku/Dispatcher';
+import { ResolvedTrack } from '../../structures/Shoukaku/RirichiyoTrack';
 
 export default class SkipCommand extends BaseCommand<true, true> {
     constructor() {
@@ -91,14 +92,24 @@ export default class SkipCommand extends BaseCommand<true, true> {
 }
 
 //Returns ended message options
-async function skipTrack(dispatcher: Dispatcher) {
+export async function skipTrack(dispatcher: Dispatcher) {
     if (!dispatcher.queue.current) return null;
 
-    dispatcher.playingMessages.deleteMessage(dispatcher.queue.current.id);
+    const endedTrack = dispatcher.queue.current as ResolvedTrack;
+
+    dispatcher.playingMessages.deleteMessage(endedTrack.id);
     dispatcher.queue.next(true);
 
     if (dispatcher.queue.current) await dispatcher.play();
-    else await dispatcher.player.stopTrack();
+    else {
+        //Check recommendations
+        await dispatcher.handleRecommendations(endedTrack.identifier);
+        console.log(dispatcher.queue);
+        //If a track was added from recommendations
+        if (dispatcher.queue.current) await dispatcher.play();
+        //Else end the queue
+        else await dispatcher.player.stopTrack();
+    }
 
     return null;
 }

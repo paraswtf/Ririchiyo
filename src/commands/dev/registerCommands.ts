@@ -3,6 +3,7 @@ import { EmbedUtils } from '../../structures/Utils';
 import { ApplicationCommandData } from 'discord.js';
 import BaseCommand from '../../structures/Commands/BaseCommand';
 import CTX from '../../structures/Commands/CTX'
+import { SearchResolver } from '../../structures/Shoukaku/SearchResolver';
 
 export default class RegisterCommandsCommand extends BaseCommand<boolean, false>{
     constructor() {
@@ -31,7 +32,7 @@ export default class RegisterCommandsCommand extends BaseCommand<boolean, false>
 
         //console.log(await this.client.searchResolver.getRecommendations("Zedd - Clarity ft. Foxes (Official Music Video)"));
 
-        ctx.reply({ content: "TortureNotGud Sed" });
+        ctx.reply({ content: "TortureNotGud Sed", ephemeral: true });
     }
 
     slashCommandData: ApplicationCommandData = {

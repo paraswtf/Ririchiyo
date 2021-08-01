@@ -4,6 +4,7 @@ import { PlayerEndEvent as EventData } from 'shoukaku';
 import { EmbedUtils } from '../../structures/Utils';
 import { ResolvedTrack } from '../../structures/Shoukaku/RirichiyoTrack';
 import { Playlist } from '../../structures/YouTube'
+import { SearchResolver } from '../../structures/Shoukaku/SearchResolver';
 
 /** 
  * Emitted when the Lavalink Server sends a TrackEndEvent or TrackStuckEvent, MUST BE HANDLED.
@@ -27,26 +28,12 @@ export default class PlayerEndEvent extends BaseEvent<ExtendedShoukakuPlayer> {
                 if (player.dispatcher.queue.current) await player.dispatcher.play();
                 //If none then handle recommendation
                 else if (endedTrack) {
-                    if (!player.dispatcher.queue.recommendations.length) {
-                        //get recommendations
-                        const playlists = await player.dispatcher.client.searchResolver.youtube.searchPlaylists(endedTrack.title, 1).catch(player.dispatcher.client.logger.error) as Playlist[] | null;
-                        if (playlists?.length && playlists[0].url) {
-                            const shoukakuTrackList = await player.dispatcher.client.searchResolver.search({ query: playlists[0].url }).catch(player.dispatcher.client.logger.error);
-                            if (shoukakuTrackList) player.dispatcher.queue.recommendations = (shoukakuTrackList.tracks as ResolvedTrack[])
-                                //Shoukld not be same title
-                                .filter(t => t.title !== endedTrack.title)
-                                //Should not be too long or short
-                                .filter(t => t.duration < 300000 && t.duration < 60000)
-                                .filter(t => !/(react)(ion)?/.test(t.title));
-                        }
-                    }
-                    //If there are recommendations
-                    if (player.dispatcher.queue.recommendations.length) {
-                        //Add to queue and play
-                        player.dispatcher.queue.add(player.dispatcher.queue.recommendations.shift()!);
-                        await player.dispatcher.play();
-                    }
+                    await player.dispatcher.handleRecommendations(endedTrack.identifier);
+                    console.log(player.dispatcher.queue);
+                    //If a track was added
+                    if (player.dispatcher.queue.current) return await player.dispatcher.play();
                 }
+
                 //If no track was added at the end
                 if (!player.dispatcher.queue.current) player.dispatcher.sendMessage({
                     embeds: [
