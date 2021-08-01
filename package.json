@@ -49,6 +49,7 @@
     "redis-json": "^6.0.1",
     "shoukaku": "github:Deivu/Shoukaku",
     "source-map-support": "^0.5.19",
+    "string-progressbar": "^1.0.4",
     "veza": "^1.1.0",
     "ws": "^7.5.3"
   }

@@ -8,7 +8,8 @@ export const EN = {
     NEED_TO_BE_IN_VC: "You need to be in a voice channel to use that command!",
     ALREADY_PLAYING_YOUR_VC: "Already playing your channel!",
     ALREADY_PLAYING_DIFFERENT_VC: "Already playing in a different channel!",
-    NEED_TO_BE_IN_SAME_VC: "You need to be in the same voice channel as the bot to use that command!"
+    NEED_TO_BE_IN_SAME_VC: "You need to be in the same voice channel as the bot to use that command!",
+    MISSING_PLAYER_PERMISSIONS_MESSAGE: "You don't have the following permissions to perform that action!\n${0}\nBeing alone in a voice channel with the bot works too."
 
 } as const;
 

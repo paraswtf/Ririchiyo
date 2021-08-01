@@ -8,6 +8,7 @@ export const THUMBNAIL_SIZES: ThumbnailSize[] = ["0", "1", "2", "3", "default", 
 export const validateTrack = (track: any) => track && track instanceof RirichiyoTrack;
 export const validateTrackOrTrackArray = (track: any | any[]) => track && (validateTrack(track) || (Array.isArray(track) && track.every(t => validateTrack(t))));
 export const escapeRegExp = (str: string): string => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+export const radioURL = (id: string): string => `https://www.youtube.com/watch?v=${id}&list=RD${id}&start_radio=1`;
 export const maxTrackTitleDisplayLength = 39;
 
 
@@ -45,7 +46,7 @@ export class RirichiyoTrack {
             this.isLive = this.data.info.isStream;
             this.ytURL = this.data.info.uri;
             this.identifier = this.data.info.identifier;
-            this.radioURL = `https://www.youtube.com/watch?v=${this.identifier}&list=RD${this.identifier}&start_radio=1`;
+            this.radioURL = radioURL(this.identifier!);
             this.displayTitle = Utils.escapeMarkdown(this.title!.length > maxTrackTitleDisplayLength ? this.title!.substring(0, maxTrackTitleDisplayLength) + "..." : this.title!);
             this.displayOriginURL = this.ytURL!;
             this.displayURL = this.ytURL!;
@@ -73,7 +74,7 @@ export class RirichiyoTrack {
         this.isLive = data.info.isStream;
         this.ytURL = data.info.uri;
         this.identifier = data.info.identifier;
-        this.radioURL = `https://www.youtube.com/watch?v=${this.identifier}&list=RD${this.identifier}&start_radio=1`;
+        this.radioURL = radioURL(this.identifier!);
         this.displayTitle = Utils.escapeMarkdown(this.title!.length > maxTrackTitleDisplayLength ? this.title!.substring(0, maxTrackTitleDisplayLength) + "..." : this.title!);
         this.displayURL = this.ytURL!;
         this.displayDuration = this.duration!;

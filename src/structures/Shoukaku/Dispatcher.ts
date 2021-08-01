@@ -13,7 +13,6 @@ import { ResolvedTrack } from "./RirichiyoTrack";
 import { PlayerExceptionEvent } from 'shoukaku';
 import { encode } from "@lavalink/encoding";
 import { player_inactivity_timeout } from "../../config";
-import { SearchResolver } from "./SearchResolver";
 //Max exception ratelimit
 const maxErrorsPer10Seconds = 3;
 
@@ -61,7 +60,7 @@ export class Dispatcher {
     //The inactivity checker for the dispatcher
     readonly inactivityChecker: InactivityChecker;
     //Destroy timeout
-    destroyTimeout?: NodeJS.Timeout;
+    destroyTimeout: NodeJS.Timeout | null = null;
 
     constructor(options: DispatcherOptions, firstCtx?: GuildCTX) {
         this.client = Utils.client;

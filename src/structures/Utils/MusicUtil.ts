@@ -76,7 +76,10 @@ export class MusicUtil {
                     if (hasPerms) return new Success(FLAG.HAS_PERMS, memberPermissions, memberVc, dispatcher);
                     else {
                         if (vcMemberCount > vcMemberAmtForAllPerms) {
-                            if (ctx) this.sendError(`You dont have \`${missingPerms.join("`, `")}\` permission${missingPerms.length > 1 ? `s` : ``} to do that!\nBeing alone in the channel works too!`, ctx, false);
+                            if (ctx) this.sendError(Utils.formatString(
+                                ctx.language.MISSING_PLAYER_PERMISSIONS_MESSAGE,
+                                `•\`${missingPerms.join("`\n•`")}\`\n`
+                            ), ctx, true);
                             return new Error(FLAG.NO_PERMS_AND_NOT_ALONE, memberPermissions);
                         }
                         return new Success(FLAG.NO_PERMS_BUT_ALONE, memberPermissions, memberVc, dispatcher);
@@ -104,7 +107,10 @@ export class MusicUtil {
                     else {
                         const vcMemberCount = memberVc.members.filter(m => !m.user.bot).size;
                         if (vcMemberCount > vcMemberAmtForAllPerms) {
-                            if (ctx) this.sendError(`You dont have \`${missingPerms.join("`, `")}\` permission${missingPerms.length > 1 ? `s` : ``} to do that!\nBeing alone in the channel works too!`, ctx, false);
+                            if (ctx) this.sendError(Utils.formatString(
+                                ctx.language.MISSING_PLAYER_PERMISSIONS_MESSAGE,
+                                `•\`${missingPerms.join("`\n•`")}\`\n`
+                            ), ctx, true);
                             return new Error(FLAG.NO_PERMS_TO_SPAWN_DISPATCHER, memberPermissions);
                         }
                         return new Success(FLAG.NO_PERMS_BUT_ALONE, memberPermissions, memberVc);

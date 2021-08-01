@@ -37,7 +37,7 @@ export default class PlayerExceptionEvent extends BaseEvent<ExtendedShoukakuPlay
                 embeds: [
                     EmbedUtils.embedifyString(
                         player.dispatcher.guild,
-                        `Something went wrong, that's all we know...\nThe player was deleted because of too many errors...\nIf this keeps happening, please contact the developers...`,
+                        `Something went wrong, welp...\nThe player was deleted because of too many errors...\nIf this keeps happening, please contact the developers...`,
                         { isError: true }
                     )
                 ]

@@ -46,7 +46,7 @@ export default class PlayingMessage {
 
         const playingEmbed = new MessageEmbed({
             title: `${CustomEmojiUtils.get("MUSICAL_NOTES")} Started playing! ${CustomEmojiUtils.get("ANIMATED_PLAYING")}`,
-            description: `**[${this.track.displayTitle}](${this.track.displayURL})**\n` + (this.track.requester ? `\`Added by - \`${this.track.requester}\` \`` : `\`Recommended\``),
+            description: `**[${this.track.displayTitle}](${this.track.displayURL})**\n` + (this.track.requester ? `\`Added by - \`${this.track.requester}\` \`` : `\`Recommended based on previous tracks\``),
             image: {
                 url: "https://cdn.discordapp.com/attachments/756541902202863740/780739509704327198/1920x1_TP.png"
             },

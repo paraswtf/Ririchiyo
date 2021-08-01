@@ -22,15 +22,13 @@ export default class RegisterCommandsCommand extends BaseCommand<boolean, false>
             embeds: [EmbedUtils.embedifyString(ctx.guild, "Only the bot owners can use that command!", { isError: true })]
         });
 
-        // const existingCommands = await ctx.guild?.commands.fetch();
-        // const commands = this.client.commands.filter(c => !!c.slashCommandData).map(c => c.slashCommandData!);
-        // for (const command of commands) {
-        //     const existing = existingCommands?.find(c => c.name === command.name);
-        //     if (existing) await ctx.guild?.commands.edit(existing.id, command);
-        //     else await ctx.guild?.commands.create(command);
-        // }
-
-        //console.log(await this.client.searchResolver.getRecommendations("Zedd - Clarity ft. Foxes (Official Music Video)"));
+        const existingCommands = await ctx.guild?.commands.fetch();
+        const commands = this.client.commands.filter(c => !!c.slashCommandData).map(c => c.slashCommandData!);
+        for (const command of commands) {
+            const existing = existingCommands?.find(c => c.name === command.name);
+            if (existing) await ctx.guild?.commands.edit(existing.id, command);
+            else await ctx.guild?.commands.create(command);
+        }
 
         ctx.reply({ content: "TortureNotGud Sed", ephemeral: true });
     }
