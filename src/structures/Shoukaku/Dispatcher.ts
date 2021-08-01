@@ -1,4 +1,4 @@
-import { Collection, Guild, GuildMember, TextChannel } from "discord.js";
+import { Collection, Guild, TextChannel } from "discord.js";
 import { join } from "path";
 import { ShoukakuGroupedFilterOptions, ShoukakuPlayer, ShoukakuPlayOptions, ShoukakuTrackList } from "shoukaku";
 import { GuildCTX } from "../Commands/CTX";
@@ -9,15 +9,10 @@ import RirichiyoClient from "../RirichiyoClient";
 import Utils, { CustomError, ID, PermissionUtils } from "../Utils";
 import PlayingMessageManager from "../Utils/PlayingMessageManager";
 import Queue, { QueueLoopState } from "./Queue";
-import { ResolvedTrack, RirichiyoTrack } from "./RirichiyoTrack";
+import { ResolvedTrack } from "./RirichiyoTrack";
 import { PlayerExceptionEvent } from 'shoukaku';
-import { ResourcePart } from "../YouTube";
 import { encode } from "@lavalink/encoding";
 import { player_inactivity_timeout } from "../../config";
-import { ResultAlbum, ResultPlaylist, ResultTrack, SpotifyRegex } from "../Spotify";
-
-const URL_REGEX = /^((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
-
 //Max exception ratelimit
 const maxErrorsPer10Seconds = 3;
 
@@ -42,57 +37,6 @@ export class DispatcherManager extends Collection<ID, Dispatcher>{
         if (dispatcher?.queue.current) dispatcher.playingMessages.deleteMessage(dispatcher.queue.current.id);
         // dispatcher?.inactivityChecker.stop();
         return this.delete(guildID);
-    }
-
-    //Use this to get the video url
-    async fetchVideoURL(query: string) {
-        const res = await this.client.ytAPI.searchVideos(query, 1, { part: ResourcePart.video, safeSearch: "moderate" }).catch(console.error);
-        if (!res || !res[0]?.id) return null;
-        return "https://www.youtube.com/watch?v=" + res[0].id;
-    }
-
-    async search(input: string, requester: GuildMember) {
-        if (URL_REGEX.test(input)) return await this.searchUrl(input, requester);
-        else return this.searchQuery(input, requester);
-    }
-
-    async searchQuery(query: string, requester: GuildMember, returnSearchList = false) {
-        const videoURL = await this.fetchVideoURL(query);
-        if (!videoURL) return null;
-
-        const res = await this.client.shoukaku.getNode().rest.resolve(videoURL).catch(this.client.logger.error);
-        if (!res) return null;
-
-        return convertShoukakuTrackListToSearchRes(res, requester, returnSearchList = false);
-    }
-
-    async searchUrl(url: string, requester: GuildMember, returnSearchList = false): Promise<SearchRes | null> {
-        //If youtube url
-        if (/(youtu)(be\.com|\.be)/i.test(url)) {
-            const res = await this.client.shoukaku.getNode().rest.resolve(url).catch(this.client.logger.error);
-            if (!res) return null;
-            return convertShoukakuTrackListToSearchRes(res, requester, returnSearchList);
-        }
-        else if (SpotifyRegex.test(url)) {
-            return await this.client.spotifyApi.getRes(url, requester);
-        }
-        else return null;
-    }
-}
-
-function convertShoukakuTrackListToSearchRes(res: ShoukakuTrackList, requester: GuildMember, returnSearchList = false) {
-    switch (res.type) {
-        case "SEARCH":
-            return Object.assign({}, res, { tracks: returnSearchList ? res.tracks.map(t => new RirichiyoTrack(t, requester) as ResolvedTrack) : [new RirichiyoTrack(res.tracks[0], requester) as ResolvedTrack] });
-
-        case "TRACK":
-            return Object.assign({}, res, { tracks: [new RirichiyoTrack(res.tracks[0], requester) as ResolvedTrack] });
-
-        case "PLAYLIST":
-            return Object.assign({}, res, { tracks: res.tracks.map(t => new RirichiyoTrack(t, requester) as ResolvedTrack) });
-
-        default:
-            return Object.assign({}, res, { tracks: res.tracks?.map(t => new RirichiyoTrack(t, requester) as ResolvedTrack) ?? [] });
     }
 }
 
@@ -213,9 +157,6 @@ export class InactivityChecker {
 export type SearchRes = Omit<ShoukakuTrackList, 'tracks'> & {
     tracks: ResolvedTrack[]
 }
-    | ResultTrack
-    | ResultPlaylist
-    | ResultAlbum
 
 export interface DispatcherOptions {
     guild: Guild,

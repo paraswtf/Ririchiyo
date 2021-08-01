@@ -35,6 +35,9 @@ export class Queue extends Array<AnyTrack> {
         return this.slice(this.currentIndex + 1);
     }
 
+    /** Array of YouTube recommendations */
+    public recommendations: AnyTrack[] = [];
+
     /** The index of the current track */
     public readonly currentIndex: number = 0;
 

@@ -6,4 +6,3 @@ export * from './structures/Video';
 export * from './types/Request';
 export * from './types/Resource';
 export * from './util/Util';
-export const YouTubeRegex = /f/;

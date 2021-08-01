@@ -57,7 +57,7 @@ export default class PlayCommand extends BaseCommand<true, false> {
         if (res.isError) return;
 
         //Search first then join
-        const searchRes = await this.client.dispatchers.search(query, ctx.member);
+        const searchRes = await this.client.searchResolver.search({ query, requester: ctx.member });
         if (!searchRes) {
             return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "Could not find any tracks matching your query!", { isError: true })] });
         }

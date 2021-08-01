@@ -1,14 +1,15 @@
 import Axios from "axios";
-import { GuildMember } from "discord.js";
-import { RirichiyoTrack, UnresolvedTrack } from "../Shoukaku/RirichiyoTrack";
+import { UnresolvedTrackData } from "./Shoukaku/RirichiyoTrack";
 import { parse } from 'spotify-uri';
-export const SpotifyRegex = /^(?:https:\/\/(?:(open|www)\.)?spotify\.com\/|spotify:)(?:.+)?(track|playlist|album)[\/:]([A-Za-z0-9]+)/;
+import Utils from "./Utils";
+const spotifyRegex = /^(?:https:\/\/(?:(?:open|www)\.)?spotify\.com\/|spotify:)(?:.+)?(?<type>track|playlist|album)[\/:](?<id>[A-Za-z0-9]{22})/;
 
 const BASE_URL = "https://api.spotify.com/v1";
 
 export class Spotify {
+    readonly client = Utils.client;
     private readonly authorization: string;
-    private token?: string;
+    private readonly token: { key?: string, expiresAt: number } = { expiresAt: 0 };
     private readonly axiosOptions: { headers: { Authorization?: string; "Content-Type": string } };
     private readonly options: SpotifyOptions;
     private readonly fetchMethods: Record<string, Function>;
@@ -17,8 +18,8 @@ export class Spotify {
         this.options = {
             ...options
         }
-        this.authorization = Buffer.from(`${this.options.clientID}:${this.options.clientSecret}`).toString("base64");
-        this.axiosOptions = { headers: { "Content-Type": "application/json", Authorization: this.token } };
+        this.authorization = Buffer.from(`${this.options.clientID}:${this.options.secret}`).toString("base64");
+        this.axiosOptions = { headers: { "Content-Type": "application/json", Authorization: this.token.key } };
         this.fetchMethods = {
             track: this.getTrack.bind(this),
             playlist: this.getPlaylist.bind(this),
@@ -27,68 +28,62 @@ export class Spotify {
     }
 
     /**
-     * Login to spotify and get a auth token
-     */
-    async login() {
-        const expiry = await this.renewToken() ?? null;
-        if (expiry !== null) setTimeout(this.renewAndSetTimeout.bind(this), expiry);
-        return expiry;
-    }
-
-    /**
      * Renew token method, runs internally on expiry
      */
-    private async renewToken(): Promise<number> {
+    private async refreshToken() {
+        if (Date.now() < this.token.expiresAt) return;
+
         const { data: { access_token, expires_in } } = await Axios.post(
             "https://accounts.spotify.com/api/token",
             "grant_type=client_credentials",
             { headers: { Authorization: `Basic ${this.authorization}`, "Content-Type": "application/x-www-form-urlencoded" } }
-        );
+        ).catch(this.client.logger.error) || {};
         if (!access_token) throw new Error("Invalid Spotify client.");
-        this.token = `Bearer ${access_token}`;
-        this.axiosOptions.headers.Authorization = this.token;
-        return expires_in - 10 * 1000;
+
+        this.token.key = `Bearer ${access_token}`;
+        this.token.expiresAt = Date.now() + (expires_in * 1000) - (10 * 1000);
+        this.axiosOptions.headers.Authorization = this.token.key;
     }
-    private async renewAndSetTimeout(): Promise<void> { setTimeout(this.renewAndSetTimeout.bind(this), await this.renewToken()); }
 
     /**
      * Comvert spotify track data to unresolved tracks
      */
-    private static convertSpotifyTrackToUnresolved(data: SpotifyTrack, requester: GuildMember) {
-        return new RirichiyoTrack({
+    private static track(data: SpotifyTrack,): UnresolvedTrackData {
+        return {
             title: data.name,
             artist: data.artists[0].name,
             duration: data.duration_ms,
             originURL: data.external_urls.spotify
-        }, requester) as UnresolvedTrack;
+        };
     }
 
     /**
      * Search basically anything
      */
-    async getRes(input: string, requester: GuildMember): Promise<ResultTrack | ResultPlaylist | ResultAlbum | null> {
-        const parsed = parse(input) as any;
-        if (!parsed || !parsed.type || !parsed.id) return null;
-        if (this.fetchMethods[parsed.type]) return this.fetchMethods[parsed.type](parsed.id, requester);
+    async get(url: string): Promise<SpotifyResult | null> {
+        if (Date.now() >= this.token.expiresAt) await this.refreshToken();
+        const { groups: parsed } = url.match(spotifyRegex) ?? {};
+        if (parsed?.id && parsed.type && this.fetchMethods[parsed.type]) return this.fetchMethods[parsed.type](parsed.id).catch(this.client.logger.error) ?? null;
         return null;
     }
 
     /**
      * Get a playlist using id
      */
-    async getPlaylist(id: string, requester: GuildMember): Promise<ResultPlaylist> {
+    async getPlaylist(id: string): Promise<ResultPlaylist> {
         let { data: playlist } = await Axios.get<Playlist>(`${BASE_URL}/playlists/${id}`, this.axiosOptions);
-        const tracks = playlist.tracks.items.map(item => Spotify.convertSpotifyTrackToUnresolved(item.track, requester));
+        const tracks = playlist.tracks.items.map(item => Spotify.track(item.track));
         let next = playlist.tracks.next, page = 1;
 
         while (next && (!this.options.playlistLimit ? true : page < this.options.playlistLimit)) {
             const { data: nextPage } = await Axios.get<PlaylistTracks>(next, this.axiosOptions);
-            tracks.push(...nextPage.items.map(item => Spotify.convertSpotifyTrackToUnresolved(item.track, requester)));
+            tracks.push(...nextPage.items.map(item => Spotify.track(item.track)));
             next = nextPage.next;
             page++;
         }
 
         return {
+            provider: 'SPOTIFY',
             type: 'PLAYLIST',
             tracks,
             playlistName: playlist.name,
@@ -99,19 +94,20 @@ export class Spotify {
     /**
      * Get an album using id
      */
-    async getAlbum(id: string, requester: GuildMember): Promise<ResultAlbum> {
+    async getAlbum(id: string): Promise<ResultAlbum> {
         const { data: album } = await Axios.get<Album>(`${BASE_URL}/albums/${id}`, this.axiosOptions);
-        const tracks = album.tracks.items.map(item => Spotify.convertSpotifyTrackToUnresolved(item, requester));
+        const tracks = album.tracks.items.map(item => Spotify.track(item));
         let next = album.tracks.next, page = 1;
 
         while (next && (!this.options.albumLimit ? true : page < this.options.albumLimit)) {
             const { data: nextPage } = await Axios.get<AlbumTracks>(next, this.axiosOptions);
-            tracks.push(...nextPage.items.map(item => Spotify.convertSpotifyTrackToUnresolved(item, requester)));
+            tracks.push(...nextPage.items.map(item => Spotify.track(item)));
             next = nextPage.next;
             page++;
         }
 
         return {
+            provider: 'SPOTIFY',
             type: 'ALBUM',
             tracks,
             playlistName: album.name,
@@ -122,39 +118,47 @@ export class Spotify {
     /**
      * Get a track using id
      */
-    async getTrack(id: string, requester: GuildMember): Promise<ResultTrack> {
+    async getTrack(id: string): Promise<ResultTrack> {
         const { data } = await Axios.get<SpotifyTrack>(`${BASE_URL}/tracks/${id}`, this.axiosOptions);
-        const track = Spotify.convertSpotifyTrackToUnresolved(data, requester);
         return {
+            provider: 'SPOTIFY',
             type: 'TRACK',
-            tracks: [track]
+            tracks: [Spotify.track(data)]
         };
     }
 }
 
 export interface SpotifyOptions {
     clientID: string;
-    clientSecret: string;
+    secret: string;
     /** Amount of pages to load, each page having 100 tracks. */
     playlistLimit?: number
     /** Amount of pages to load, each page having 50 tracks. */
     albumLimit?: number
 }
-export interface ResultTrack {
-    type: 'TRACK';
-    tracks: UnresolvedTrack[];
+export type SpotifyResult =
+    | ResultTrack
+    | ResultPlaylist
+    | ResultAlbum;
+export interface BaseSpotifyResult {
+    provider: 'SPOTIFY';
+    type: 'TRACK' | 'PLAYLIST' | 'ALBUM';
 }
-export interface ResultPlaylist {
+export interface ResultTrack extends BaseSpotifyResult {
+    type: 'TRACK';
+    tracks: UnresolvedTrackData[];
+}
+export interface ResultPlaylist extends BaseSpotifyResult {
     type: 'PLAYLIST';
     playlistName: string;
     playlistURL: string;
-    tracks: UnresolvedTrack[];
+    tracks: UnresolvedTrackData[];
 }
-export interface ResultAlbum {
+export interface ResultAlbum extends BaseSpotifyResult {
     type: 'ALBUM';
     playlistName: string;
     playlistURL: string;
-    tracks: UnresolvedTrack[];
+    tracks: UnresolvedTrackData[];
 }
 
 //Spotify API data types

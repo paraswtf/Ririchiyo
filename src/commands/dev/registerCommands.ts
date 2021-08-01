@@ -29,7 +29,7 @@ export default class RegisterCommandsCommand extends BaseCommand<boolean, false>
         //     else await ctx.guild?.commands.create(command);
         // }
 
-        console.log(await this.client.spotifyApi.getRes("https://open.spotify.com/track/4clW7QGXTCYU5F5dTyfFJ2?si=bee88a7b01784d88", ctx.member));
+        //console.log(await this.client.searchResolver.getRecommendations("Zedd - Clarity ft. Foxes (Official Music Video)"));
 
         ctx.reply({ content: "TortureNotGud Sed" });
     }

@@ -29,9 +29,9 @@ export class RirichiyoTrack {
     displayURL: string;
     displayDuration: number;
     displayArtist: string;
-    requester: GuildMember;
+    requester?: GuildMember;
 
-    constructor(data: ShoukakuTrack | UnresolvedTrackData, requester: GuildMember) {
+    constructor(data: ShoukakuTrack | UnresolvedTrackData, requester?: GuildMember) {
         this.id = Utils.snowflake.generate().toString();
         if ((data as ShoukakuTrack).info) {
             this.isResolved = true;
@@ -88,7 +88,7 @@ export class RirichiyoTrack {
 
         if (!res || res.type !== "SEARCH") throw new CustomError("No tracks found matching the query to resolve the track.");
 
-        const channelNames = [this.displayArtist, `${this.displayArtist} - Topic`];
+        const channelNames = [/*this.displayArtist,*/ `${this.displayArtist} - Topic`];
 
         const originalAudio = res.tracks.find(track => {
             if (track.info.author) {
@@ -119,7 +119,6 @@ export class RirichiyoTrack {
 }
 
 export type AnyTrack = ResolvedTrack | UnresolvedTrack;
-
 export interface ResolvedTrack {
     id: string;
     isResolved: true;
