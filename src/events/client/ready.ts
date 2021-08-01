@@ -1,10 +1,8 @@
 import path from 'path';
 import BaseEvent from '../../structures/Events/BaseEvent';
-import Client from '../../structures/Client';
-import Utils from '../../structures/Utils';
-import { database } from '../../config'
+import RirichiyoClient from '../../structures/RirichiyoClient';
 
-export default class ClientReadyEvent extends BaseEvent<Client> {
+export default class ClientReadyEvent extends BaseEvent<RirichiyoClient> {
     constructor() {
         super({
             name: "ready",
@@ -12,25 +10,45 @@ export default class ClientReadyEvent extends BaseEvent<Client> {
         })
     }
 
-    async run(client: Client) {
-
-        // const presenceUpdater = {
-        //     run: async function () {
-        //         try {
-        //             await client.user?.setActivity({ name: Utils.config.shardingManagerOptions.clientOptions?.presence?.activity?.name, type: Utils.config.shardingManagerOptions.clientOptions?.presence?.activity?.type });
-        //         } catch (err) {
-        //             client.logger.error(err);
-        //         }
-        //         setTimeout(() => this.run(), 1800000);
-        //     }
-        // }
-        // presenceUpdater.run();
-
+    async run(emitter: RirichiyoClient) {
         //Connect to the database first
-        await this.client.db.connect(database.name);
-        //Load all commands
-        this.client.commands.load(path.join(__dirname, "../../commands"));
+        await this.emitter.db.connect();
 
-        client.logger.info("Client ready!");
+        //Load all commands
+        this.emitter.commands.load(path.join(__dirname, "../../commands"));
+
+        //Run the presence updater
+        new PresenceUpdater(this.emitter, 300).run();
+
+        //Finally log that the cliend ready event has completed
+        this.emitter.logger.info("Client ready!");
     }
 }
+
+export class PresenceUpdater {
+    private readonly client: RirichiyoClient;
+    private readonly timeoutSeconds: number;
+    private activityIndex = 0;
+    private readonly activityGenerators: ActivityGenerator[];
+
+    constructor(client: RirichiyoClient, timeoutSeconds: number) {
+        this.client = client;
+        this.timeoutSeconds = timeoutSeconds;
+        this.activityGenerators = [
+            () => ({ type: 2, name: "/help" })
+        ]
+    }
+
+    run() {
+        try {
+            if (++this.activityIndex >= this.activityGenerators.length) this.activityIndex = 0;
+            this.client.user.setActivity(this.activityGenerators[this.activityIndex]());
+            this.client.logger.log("Client presence updated!");
+        } catch (err) {
+            this.client.logger.error(err);
+        }
+        setTimeout(() => this.run(), 1000 * this.timeoutSeconds);
+    }
+}
+
+export type ActivityGenerator = () => { type: number, name: string, url?: string };

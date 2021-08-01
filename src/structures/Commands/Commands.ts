@@ -1,6 +1,6 @@
 import { Collection } from 'discord.js';
 import BaseCommand from './BaseCommand';
-import Client from '../Client';
+import RirichiyoClient from '../RirichiyoClient';
 import merge from 'deepmerge';
 import path from 'path';
 import fs from 'fs';
@@ -16,11 +16,11 @@ export interface CommandLoadOpts {
 
 export class Commands extends Collection<string, BaseCommand>{
     /** The bot client */
-    client!: Client;
+    client!: RirichiyoClient;
     options: CommandLoadOpts = { exclude: { commands: [], categories: [] } };
     //Class Props//
 
-    constructor(entries?: readonly ([string, BaseCommand])[] | null, client?: Client) {
+    constructor(entries?: readonly ([string, BaseCommand])[] | null, client?: RirichiyoClient) {
         super(entries);
         if (client) this.client = client;
     }

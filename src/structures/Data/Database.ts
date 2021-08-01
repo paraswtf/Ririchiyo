@@ -5,12 +5,11 @@ import {
     MongoClientOptions,
     Collection as DBCollection
 } from 'mongodb';
-import Client from '../Client';
-
+import RirichiyoClient from '../RirichiyoClient';
 import {
     Guild,
     GuildData,
-    defaultData as defaultGuildData
+    defaultGuildData
 } from './classes/Guild';
 
 import {
@@ -19,31 +18,30 @@ import {
 
 export class DB {
     // Class props //
-    client: Client;
+    client: RirichiyoClient;
     mongoClient: MongoClient;
     connection?: DBConnection;
     cache: Cache;
     collections!: Collections;
     // Class props //
 
-    constructor(uri: string, client: Client, options: MongoClientOptions = {}) {
-        if (!uri) throw new TypeError("No uri provided to connect.");
-        this.mongoClient = new MongoClient(uri, Object.assign({ useUnifiedTopology: true }, options));
+    constructor(uriOptions: DBURIOptions, client: RirichiyoClient, options: MongoClientOptions = {}) {
         this.client = client;
+        this.mongoClient = new MongoClient(uriOptions.mongoDBURI, Object.assign({ useUnifiedTopology: true }, options));
         this.cache = {
             guilds: new Collection()
         }
     }
 
-    async connect(databaseName: string): Promise<DBConnection> {
+    async connect(): Promise<DBConnection> {
         try {
             await this.mongoClient.connect();
-            const connection = this.mongoClient.db(databaseName);
+            const connection = this.mongoClient.db();
             this.collections = {
                 guilds: connection.collection(`guilds`)
             };
             this.connection = connection;
-            this.client.logger.info(`Database connected: ${databaseName}`);
+            this.client.logger.info(`Database connected: ${connection.databaseName}`);
 
             return connection;
         } catch {
@@ -78,6 +76,10 @@ export interface Collections {
 
 export interface Cache {
     guilds: Collection<Guild['id'], Guild>
+}
+
+export interface DBURIOptions {
+    mongoDBURI: string
 }
 
 export default DB;

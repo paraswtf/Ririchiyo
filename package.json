@@ -12,24 +12,45 @@
   },
   "author": "Styxo",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheStyxo/Ririchiyo"
+  },
   "devDependencies": {
     "@types/color": "^3.0.1",
+    "@types/ioredis": "^4.26.6",
     "@types/mongodb": "^3.6.20",
+    "@types/ms": "^0.7.31",
     "@types/node": "^15.12.2",
+    "@types/node-fetch": "^2.5.12",
+    "@types/redis": "^2.8.31",
     "@types/source-map-support": "^0.5.4",
     "@types/uuid": "^8.3.1",
     "dotenv": "^10.0.0",
-    "typescript": "^4.3.2"
+    "typescript": "^4.4.0-beta"
   },
   "dependencies": {
+    "@ksoft/api": "^3.1.9",
+    "@lavalink/encoding": "^0.1.1",
     "@sapphire/snowflake": "^1.3.5",
     "axios": "^0.21.1",
     "chalk": "^4.1.1",
     "color": "^3.1.3",
     "deepmerge": "^4.2.2",
+    "discord-markdown": "^2.5.0",
     "discord.js": "^13.0.0-dev.5ca97c9.1626480265",
+    "dot-prop": "^6.0.1",
+    "fuse.js": "^6.4.6",
+    "ioredis": "^4.27.6",
+    "iso8601-duration": "^1.3.0",
     "mongodb": "^3.6.10",
+    "node-fetch": "^2.6.1",
+    "paste.gg": "^1.0.4",
+    "redis-json": "^6.0.1",
     "shoukaku": "github:Deivu/Shoukaku",
-    "source-map-support": "^0.5.19"
+    "source-map-support": "^0.5.19",
+    "string-progressbar": "^1.0.4",
+    "veza": "^1.1.0",
+    "ws": "^7.5.3"
   }
 }

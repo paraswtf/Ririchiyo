@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events';
-import Client from '../Client';
+import RirichiyoClient from '../RirichiyoClient';
 
-export class BaseEvent<T extends EventEmitter = Client> {
+export class BaseEvent<T extends EventEmitter = RirichiyoClient> {
     name: string;
     category: string;
-    public readonly client!: T;
+    public readonly emitter!: T;
     public readonly filePath!: string;
 
     constructor(options: EventProps) {
@@ -13,8 +13,8 @@ export class BaseEvent<T extends EventEmitter = Client> {
         this.category = category;
     }
 
-    init(client: T, filePath: string): any { Object.assign(this, { client, filePath }) };
-    async run(...args: any[]): Promise<any> { };
+    init(emitter: T, filePath: string): any { Object.assign(this, { emitter, filePath }) };
+    async run(emitter?: T, ...args: any[]): Promise<any> { };
 }
 
 export interface EventProps {

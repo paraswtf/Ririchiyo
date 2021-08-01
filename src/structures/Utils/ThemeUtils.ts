@@ -1,12 +1,10 @@
 import Color from 'color';
-import {
-    Collection,
-    Guild
-} from 'discord.js';
+import { Guild } from 'discord.js';
+import { DefinedCollection } from '.';
 import { colors } from "../../config";
 
 export class ThemeUtils {
-    public static readonly colors = new Collection(colors.map(c => [c.type, Color(c.hex, 'hex')]));
+    public static readonly colors = new DefinedCollection(colors.map(c => [c.type, Color(c.hex, 'hex')]));
 
     /**
      * Get the displayed colour of the client in a guild.

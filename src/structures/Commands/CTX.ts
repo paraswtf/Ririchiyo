@@ -1,92 +1,88 @@
 import {
     Guild,
     Permissions,
-    Message,
     CommandInteraction,
-    User,
+    GuildMember,
     TextChannel,
     DMChannel,
-    GuildMember
+    ThreadChannel,
+    MessageComponentInteraction
 } from "discord.js";
+import { message_delete_timeout } from "../../config";
+import translations, { Language, LanguageName } from "../../config/translations";
 import { Guild as GuildData } from "../Data/classes/Guild";
-import { GuildSettings } from "../Data/classes/GuildSettings";
+import { GuildSettings } from "../Data/classes/Guild/settings/GuildSettings";
 import Utils from "../Utils";
+import BaseCommand from "./BaseCommand";
 
-export class BaseCTX {
-    client = Utils.client;
-    args: string[] | null;
-    guild: Guild | null;
-    guildData: GuildData;
-    guildSettings: GuildSettings;
-    channel: TextChannel | DMChannel & { guild: undefined };
-    botPermissionsForChannel: Readonly<Permissions>;
+export class CTX<isGuild extends boolean = boolean, allowComponent extends boolean = false> {
+    readonly client = Utils.client;
+    readonly recievedAt: number;
+    readonly interaction: BooleanBasedType<allowComponent, CommandInteraction | MessageComponentInteraction, CommandInteraction>;
+    readonly command: BaseCommand<isGuild>;
+    readonly options: BooleanBasedType<allowComponent, CommandInteraction['options'] | null, CommandInteraction['options']>;
+    readonly guild: BooleanBasedType<isGuild, Guild>;
+    readonly guildData: BooleanBasedType<isGuild, GuildData>;
+    readonly guildSettings: BooleanBasedType<isGuild, GuildSettings>;
+    readonly channel: TextChannel | DMChannel | ThreadChannel;
+    readonly botPermissionsForChannel: Readonly<Permissions>;
+    readonly user: CommandInteraction['user'];
+    readonly member: BooleanBasedType<isGuild, GuildMember>;
+    readonly language: Language;
 
-    constructor(options: InteractionCTXOptions | MessageCTXOptions) {
-        this.args = options.args;
-        this.guild = options.message.guild;
-        this.guildData = options.guildData;
-        this.guildSettings = options.guildSettings;
-        this.channel = options.message.channel as any;
-        this.botPermissionsForChannel = options.botPermissionsForChannel;
+    constructor({
+        recievedAt,
+        interaction,
+        command,
+        guildData = null,
+        guildSettings = null,
+        botPermissionsForChannel,
+        language
+    }: CTXOptions<isGuild, allowComponent>) {
+        this.recievedAt = recievedAt;
+        this.interaction = interaction;
+        this.command = command;
+        this.options = (interaction.isCommand() ? interaction.options : null) as this['options'];
+        this.guild = interaction.guild as this['guild'];
+        this.guildData = guildData as this['guildData'];
+        this.guildSettings = guildSettings as this['guildSettings'];
+        this.channel = interaction.channel as this['channel'];
+        this.botPermissionsForChannel = botPermissionsForChannel;
+        this.user = interaction.user;
+        this.member = (interaction.guild ? interaction.guild.members.resolve(this.user) : null) as this['member'];
+        this.language = translations.get(language);
+    }
+
+    async defer(options?: Parameters<this['interaction']['defer']>[0]) {
+        return await this.interaction.defer(options);
+    }
+
+    async reply(options: Parameters<this['interaction']['reply']>['0'], { ephemeral = false, deleteTimeout = message_delete_timeout, deleteLater = false } = {}) {
+        if (typeof options === "string") options = { content: options };
+
+        options = Object.assign(options, { ephemeral });
+        if (this.interaction.replied || this.interaction.deferred) await this.interaction.followUp(options);
+        else await this.interaction.reply(options);
+        if (deleteLater && !options.ephemeral) setTimeout(() => this.interaction.deleteReply(), deleteTimeout);
+        return null;
     }
 }
 
-export class InteractionCTX extends BaseCTX {
-    readonly isInteraction = true;
-    readonly isMessage = false;
-    message: CommandInteraction
-    author: User;
-    member: GuildMember | null;
-
-    constructor(options: InteractionCTXOptions) {
-        super(options);
-        this.message = options.message;
-        this.author = options.message.user;
-        this.member = options.message.member as GuildMember | null;
-    }
-}
-
-export class MessageCTX extends BaseCTX {
-    readonly isInteraction = false;
-    readonly isMessage = true;
-    message: Message;
-    author: User;
-    member: GuildMember | null;
-
-    constructor(options: MessageCTXOptions) {
-        super(options);
-        this.message = options.message;
-        this.author = options.message.author;
-        this.member = options.message.member;
-    }
-}
-
-
-export interface BaseCTXOptions {
-    //command: BaseCommand,
-    args: string[] | null,
-    guildData: GuildData,
-    guildSettings: GuildSettings,
+export interface CTXOptions<isGuild extends boolean = boolean, allowComponent extends boolean = false> {
+    readonly recievedAt: number,
+    readonly interaction: BooleanBasedType<allowComponent, CommandInteraction | MessageComponentInteraction, CommandInteraction>,
+    readonly command: BaseCommand<isGuild>,
+    readonly guildData: BooleanBasedType<isGuild, GuildData, null | undefined>,
+    readonly guildSettings: BooleanBasedType<isGuild, GuildSettings, null | undefined>,
     //userData: UserData,
-    botPermissionsForChannel: Readonly<Permissions>
+    readonly botPermissionsForChannel: Readonly<Permissions>,
+    readonly language: LanguageName
 }
 
-export interface InteractionCTXOptions extends BaseCTXOptions {
-    message: CommandInteraction,
-    isInteraction: true
-    isMessage: false
-}
+export type GuildCTX<allowComponent extends boolean = false> = CTX<true, allowComponent>;
+export type DMCTX<allowComponent extends boolean = false> = CTX<false, allowComponent>;
+export type AllCTX<allowComponent extends boolean = false> = GuildCTX<allowComponent> | DMCTX<allowComponent>;
 
-export interface MessageCTXOptions extends BaseCTXOptions {
-    message: Message,
-    isInteraction: false
-    isMessage: true
-}
+export type BooleanBasedType<isTrue, T, TNot = null> = isTrue extends true ? T : TNot;
 
-export type DMMessageCTX = MessageCTX & { guild: null, member: null };
-export type DMInteractionCTX = InteractionCTX & { guild: null, member: null };
-export type DMCTX = DMMessageCTX | DMInteractionCTX;
-
-export type GuildMessageCTX = MessageCTX & { guild: Guild, member: GuildMember };
-export type GuildInteractionCTX = InteractionCTX & { guild: Guild, member: GuildMember };
-export type GuildCTX = GuildMessageCTX | GuildInteractionCTX;
+export default CTX;

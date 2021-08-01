@@ -1,15 +1,16 @@
-import Client from '../Client';
+import RirichiyoClient from '../RirichiyoClient';
 import { Snowflake } from '@sapphire/snowflake';
+import { Collection, Util as DCUtil } from 'discord.js';
 
 export class Utils {
-    public static readonly client: Client;
+    public static readonly client: RirichiyoClient;
     public static readonly snowflake = new Snowflake(new Date('2005-08-07T00:00:00.000Z'));
 
     /**
      * Initialize this class
-     * @param {Client} client the discord.js bot client 
+     * @param {RirichiyoClient} client the discord.js bot client 
      */
-    public static _init(client: Client) {
+    public static _init(client: RirichiyoClient) {
         return Object.assign(this, { client });
     }
 
@@ -28,6 +29,33 @@ export class Utils {
      */
     public static firstLetterCaps(string: string): string {
         return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    /**
+    * Insert variables in a template string, returns a new string
+    * @param {string} template The template string
+    * @param {any[]} args The arguments to add to the string
+    */
+    public static formatString(template: string, ...args: any[]) {
+        return template.substr(0).replace(/\{\{|\}\}|\{(\d+)\}/g, (m, n) => {
+            if (m === "{{") return "{";
+            if (m === "}}") return "}";
+            return args[n];
+        });
+    };
+
+    /**
+    * Escape markdown
+    * @param {string} string The string to escape markdown from
+    */
+    public static escapeMarkdown(string: string) {
+        return DCUtil.escapeMarkdown(string).replace(/[\[\]\(\)]/g, " ").replace(/\s+/g, " ");
+    };
+}
+
+export class DefinedCollection<K, V> extends Collection<K, V>{
+    get(key: K) {
+        return super.get(key)!;
     }
 }
 
