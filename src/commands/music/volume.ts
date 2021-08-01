@@ -3,7 +3,6 @@ import { ApplicationCommandData } from 'discord.js';
 import BaseCommand from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX'
 import { FLAG, MusicUtil } from '../../structures/Utils/MusicUtil';
-import { QueueLoopState } from '../../structures/Shoukaku/Queue';
 
 export default class VolumeCommand extends BaseCommand<true, false>{
     constructor() {
