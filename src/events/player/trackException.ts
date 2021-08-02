@@ -3,6 +3,7 @@ import { Util as DCUtil } from 'discord.js';
 import { ExtendedShoukakuPlayer } from '../../structures/Shoukaku/Dispatcher';
 import { PlayerExceptionEvent as EventData } from 'shoukaku';
 import { EmbedUtils } from '../../structures/Utils';
+import { AnyTrack } from '../../structures/Shoukaku/RirichiyoTrack';
 //TO DO=> Add recommendations on track error too
 /** 
  * Emitted when the Lavalink Server sends a TrackExceptionEvent, Automatically fires TrackEndEvent so handling this is optional, Optional.
@@ -16,6 +17,7 @@ export default class PlayerExceptionEvent extends BaseEvent<ExtendedShoukakuPlay
     }
 
     async run(player: ExtendedShoukakuPlayer, data: EventData) {
+        const erroredTrack = player.dispatcher.queue.current as AnyTrack;
         //Delete the playing message for the current track
         if (player.dispatcher.queue.current) {
             player.dispatcher.playingMessages.deleteMessage(player.dispatcher.queue.current.id);
@@ -46,14 +48,22 @@ export default class PlayerExceptionEvent extends BaseEvent<ExtendedShoukakuPlay
         }
         //If not ratelimitted
         else {
-            player.dispatcher.queue.next(true);
+            player.dispatcher.queue.next();
+            //If there is current then play.
+            if (player.dispatcher.queue.current) await player.dispatcher.play();
+            //If none then handle recommendation
+            else if (erroredTrack && erroredTrack.identifier) {
+                await player.dispatcher.handleRecommendations(erroredTrack.radioURL);
+                //If a track was added
+                if (player.dispatcher.queue.current) return await player.dispatcher.play();
+            }
 
+            //If no track was added at the end
             if (!player.dispatcher.queue.current) player.dispatcher.sendMessage({
                 embeds: [
                     EmbedUtils.embedifyString(player.dispatcher.guild, "The player queue has ended.")
                 ]
             })
-            else await player.dispatcher.play();
         }
     }
 }
