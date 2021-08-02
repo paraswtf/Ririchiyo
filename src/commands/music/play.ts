@@ -74,6 +74,7 @@ export default class PlayCommand extends BaseCommand<true, false> {
         const wasPlaying = dispatcher.queue.current;
 
         dispatcher.queue.add(searchRes.tracks, top ? dispatcher.queue.currentIndex + 1 : undefined);
+        dispatcher.queue.recommendations = [];
 
         //Send the queued message
         const queuedEmbed = new MessageEmbed().setColor(ThemeUtils.getClientColor(ctx.guild));

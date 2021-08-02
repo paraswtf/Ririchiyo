@@ -34,10 +34,10 @@ export default class SkipToCommand extends BaseCommand<true, false> {
             embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })]
         });
 
-        const input = ctx.options.first()!.value as string | number;
+        let input = ctx.options.first()!.value as string | number;
 
         if (typeof input === "number") {
-            if (!res.dispatcher.queue[input]) return await ctx.reply({
+            if (!res.dispatcher.queue[--input]) return await ctx.reply({
                 embeds: [EmbedUtils.embedifyString(ctx.guild, "That track doesn't exist in the queue!", { isError: true })]
             });
             await setIndexAndPlay(res.dispatcher, input);

@@ -10,10 +10,13 @@ export default class ClientInteractionCreateEvent extends BaseEvent<RirichiyoCli
         })
     }
 
-    async run(emitter: RirichiyoClient, interaction: Interaction) {
+    async run(client: RirichiyoClient, interaction: Interaction) {
         switch (interaction.type) {
             case "APPLICATION_COMMAND":
-                this.emitter.commandHandler.handleCommandInteraction(interaction as CommandInteraction, Date.now());
+                client.commandHandler.handleCommandInteraction(interaction as CommandInteraction, Date.now());
+                break;
+            case "MESSAGE_COMPONENT":
+                client.commandHandler.handleComponentInteraction(interaction as MessageComponentInteraction, Date.now());
                 break;
         }
     }

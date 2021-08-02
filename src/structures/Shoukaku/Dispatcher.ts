@@ -116,6 +116,8 @@ export class Dispatcher {
     }
 
     async handleRecommendations(radioURL: string) {
+        if (!this.guildSettings.music.autoPlay) return;
+
         //If recommendations do not exist, fetch and store recommendations
         if (!this.queue.recommendations.length) {
             const res = await this.client.searchResolver.search({ query: radioURL }).catch(this.client.logger.error);

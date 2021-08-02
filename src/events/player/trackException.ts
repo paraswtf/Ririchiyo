@@ -3,7 +3,7 @@ import { Util as DCUtil } from 'discord.js';
 import { ExtendedShoukakuPlayer } from '../../structures/Shoukaku/Dispatcher';
 import { PlayerExceptionEvent as EventData } from 'shoukaku';
 import { EmbedUtils } from '../../structures/Utils';
-
+//TO DO=> Add recommendations on track error too
 /** 
  * Emitted when the Lavalink Server sends a TrackExceptionEvent, Automatically fires TrackEndEvent so handling this is optional, Optional.
  */
