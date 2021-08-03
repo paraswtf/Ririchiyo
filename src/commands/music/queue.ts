@@ -1,7 +1,7 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
-import CTX, { GuildCTX } from '../../structures/Commands/CTX';
+import { GuildCTX } from '../../structures/Commands/CTX';
 import { CustomEmojiUtils, ThemeUtils } from '../../structures/Utils';
-import { ApplicationCommandData, Guild, MessageButton, MessageEmbed } from 'discord.js';
+import { ApplicationCommandData, Guild, MessageButton, MessageEmbed, Permissions } from 'discord.js';
 import Dispatcher from '../../structures/Shoukaku/Dispatcher';
 const tracksPerPage = 25;
 
@@ -13,7 +13,8 @@ export default class QueueCommand extends BaseCommand<true, true> {
             description: "View the player queue",
             allowGuildCommand: true,
             allowDMCommand: false,
-            allowMessageCommponentInteraction: true
+            allowMessageCommponentInteraction: true,
+            webhookPermsRequired: new Permissions(["USE_EXTERNAL_EMOJIS"])
         })
     }
 
