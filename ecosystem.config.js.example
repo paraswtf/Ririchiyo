@@ -1,0 +1,36 @@
+const fs = require('fs');
+
+const filePath = path.join("."); //The path for the command folder
+const directory = fs.readdirSync(filePath, { withFileTypes: true }) //This may be a file or a folder
+const folderNames = []
+for (const index in directory) {
+    const file = directory[index];
+    if (file.isDirectory() && /ririchiyo-(dev|main)-build-\d+/.test(file.name)) folderNames.push(file.name);
+}
+const folder = folderNames.filter(n => {
+    const numAtEnd = n.split("-")[3];
+    return !!numAtEnd && !Number.isNaN(numAtEnd);
+}).sort((a, b) => parseInt(b.split("-")[3]) - parseInt(a.split("-")[3]))[0];
+
+module.exports = {
+    apps: [{
+        name: `Ririchiyo-${folder.split("-").slice(1).join("-")}`,
+        script: `${folder}/src/main/index.js`,
+        error_file: `${folder}/err.log`,
+        out_file: `${folder}out.log`,
+        log_file: `${folder}logs.log`,
+        interpreter: "node",
+        log_date_format: "DD-MM-YYYY hh:mma Z",
+        exec_interpreter: "node",
+        exec_mode: "fork",
+        env: {
+            NODE_ENV: "development",
+            DISCORD_TOKEN: "",
+            MONGODB_URI: "",
+            YOUTUBE_API_KEY: "",
+            SPOTIFY_CLIENT_ID: "",
+            SPOTIFY_CLIENT_SECRET: "",
+            KSOFT_API_TOKEN: ""
+        }
+    }]
+}
