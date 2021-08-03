@@ -60,7 +60,7 @@ export const support_server_url = "";
 export const redirect_uri = "";
 export const premium_uri = "";
 export const message_delete_timeout = 6000;
-export const player_inactivity_timeout = 500000;
+export const player_inactivity_timeout = 300000;
 export const player_disconnect_destroy_timeout = 150000;
 
 export const shoukakuOptions: ShoukakuOptions = {};
