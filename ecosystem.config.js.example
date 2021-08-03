@@ -1,21 +1,18 @@
 const fs = require('fs');
-const path = require('path');
 
-const filePath = path.join("."); //The path for the command folder
-const directory = fs.readdirSync(filePath, { withFileTypes: true }) //This may be a file or a folder
+const directory = fs.readdirSync(".", { withFileTypes: true }) //This may be a file or a folder
 const folderNames = []
-for (const index in directory) {
-    const file = directory[index];
-    if (file.isDirectory() && /ririchiyo-(dev|main)-build-\d+/.test(file.name)) folderNames.push(file.name);
-}
-const folder = folderNames.filter(n => {
-    const numAtEnd = n.split("-")[3];
-    return !!numAtEnd && !Number.isNaN(numAtEnd);
-}).sort((a, b) => parseInt(b.split("-")[3]) - parseInt(a.split("-")[3]))[0];
+for (const file of directory) if (file.isDirectory() && /ririchiyo-(dev|main)-build-\d+/.test(file.name)) folderNames.push(file.name);
+
+const folder = folderNames
+    .filter(n => !Number.isNaN(n.split("-")[3]))
+    .sort((a, b) => parseInt(b.split("-")[3]) - parseInt(a.split("-")[3]))[0];
+
+const splitName = folder.split("-");
 
 module.exports = {
     apps: [{
-        name: `Ririchiyo-${folder.split("-").slice(1).join("-")}`,
+        name: `Ririchiyo-${splitName[1]} #${splitName[3]}`,
         script: `${folder}/src/main/index.js`,
         error_file: `${folder}/err.log`,
         out_file: `${folder}out.log`,
