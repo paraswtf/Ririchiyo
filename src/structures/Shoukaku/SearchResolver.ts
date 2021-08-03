@@ -1,6 +1,6 @@
 import { KSoftClient } from "@ksoft/api";
 import { GuildMember } from "discord.js";
-import { Spotify, SpotifyOptions } from "../Spotify";
+import { Spotify, SpotifyOptions, spotifyRegex } from "../Spotify";
 import Utils from "../Utils";
 import { ResourcePart, YouTube } from "../YouTube";
 import { AnyTrack, RirichiyoTrack } from "./RirichiyoTrack";
@@ -8,7 +8,6 @@ const replacements: Record<string, string> = {
     '&': "and"
 }
 
-const spotifyRegex = /^(?:https:\/\/(?:(?:open|www)\.)?spotify\.com\/|spotify:)(?:.+)?(?<type>track|playlist|album)[\/:](?<id>[A-Za-z0-9]{22})/;
 const youtubeRegex = /^(?:https?:\/\/)(?:www)?\.?(?:youtu\.?be)(?:\.com)?\//;
 
 export class SearchResolver {
@@ -71,12 +70,13 @@ export class SearchResolver {
                             provider: parsedUrl.provider,
                             type: res.type,
                             playlistName: res.playlistName!,
-                            tracks: res.tracks.map(d => new RirichiyoTrack(d, options.requester) as AnyTrack)
+                            tracks: res.tracks.map(d => new RirichiyoTrack(d, options.requester) as AnyTrack),
+                            playlistUrl: parsedUrl.url
                         }
                         case "TRACK": return {
                             provider: parsedUrl.provider,
                             type: res.type,
-                            tracks: res.tracks.map(d => new RirichiyoTrack(d, options.requester) as AnyTrack)
+                            tracks: res.tracks.map(d => new RirichiyoTrack(d, options.requester) as AnyTrack),
                         }
                         default: return null;
                     }
@@ -98,6 +98,20 @@ export class SearchResolver {
                             type: res.type,
                             tracks: res.tracks.map(d => new RirichiyoTrack(d, options.requester) as AnyTrack)
                         }
+                        case "ALBUM": return {
+                            provider: parsedUrl.provider,
+                            type: res.type,
+                            tracks: res.tracks.map(d => new RirichiyoTrack(d, options.requester) as AnyTrack),
+                            playlistName: res.albumName,
+                            playlistUrl: res.albumURL
+                        }
+                        case "ARTIST": return {
+                            provider: parsedUrl.provider,
+                            type: res.type,
+                            tracks: res.tracks.map(d => new RirichiyoTrack(d, options.requester) as AnyTrack),
+                            playlistName: res.artistName,
+                            playlistUrl: res.artistURL
+                        }
                         default: return null;
                     }
                 }
@@ -114,6 +128,7 @@ export class SearchResolver {
 export interface SearchResolverOptions {
     youtubeKey: string;
     spotify: SpotifyOptions;
+    ksoftToken: string;
 }
 
 export interface SearchOptions {
@@ -133,7 +148,7 @@ export interface ParseUrlResult {
 }
 
 export type SearchProvider = 'SPOTIFY' | 'YOUTUBE';
-export type ResultType = 'TRACK' | 'PLAYLIST' | 'ALBUM' | 'ARTIST_TOP' | 'RADIO';
+export type ResultType = 'TRACK' | 'PLAYLIST' | 'ALBUM' | 'ARTIST' | 'RADIO';
 
 export interface BaseSearchResolverResult {
     provider: SearchProvider;
@@ -155,7 +170,7 @@ export interface TrackSpotifyResolveResult extends BaseSpotifyResolveResult {
 }
 
 export interface PlaylistOrAlbumSpotifyResolveResult extends BaseSpotifyResolveResult {
-    type: 'PLAYLIST' | 'ALBUM' | 'ARTIST_TOP';
+    type: 'PLAYLIST' | 'ALBUM' | 'ARTIST';
     tracks: AnyTrack[];
     playlistName: string,
     playlistUrl: string
@@ -176,7 +191,7 @@ export interface TrackYoutubeResolveResult extends BaseYoutubeResolveResult {
 export interface PlaylistYoutubeResolveResult extends BaseYoutubeResolveResult {
     type: 'PLAYLIST';
     playlistName: string;
-    playlistUrl?: undefined;
+    playlistUrl: string;
 }
 
 export type SearchResolverResult =
