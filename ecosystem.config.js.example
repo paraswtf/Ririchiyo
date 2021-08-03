@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const filePath = path.join("."); //The path for the command folder
 const directory = fs.readdirSync(filePath, { withFileTypes: true }) //This may be a file or a folder

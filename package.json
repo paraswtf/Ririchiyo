@@ -47,7 +47,7 @@
     "node-fetch": "2.6.1",
     "paste.gg": "1.0.4",
     "redis-json": "6.0.1",
-    "shoukaku": "github:Deivu/Shoukaku",
+    "shoukaku": "github:Deivu/Shoukaku#2714ef5dcb8414df2f9d62cb7779c3f2a9b0a7c1",
     "source-map-support": "0.5.19",
     "string-progressbar": "1.0.4",
     "veza": "1.1.0",
