@@ -1,3 +1,4 @@
+import { KSoftClient } from "@ksoft/api";
 import { GuildMember } from "discord.js";
 import { Spotify, SpotifyOptions } from "../Spotify";
 import Utils from "../Utils";
@@ -15,10 +16,12 @@ export class SearchResolver {
     readonly client = Utils.client;
     readonly youtube: YouTube;
     readonly spotify: Spotify;
+    readonly ksoft: KSoftClient;
 
-    constructor({ youtubeKey, spotify }: SearchResolverOptions) {
+    constructor({ youtubeKey, spotify, ksoftToken }: SearchResolverOptions) {
         this.youtube = new YouTube(youtubeKey);
         this.spotify = new Spotify(spotify);
+        this.ksoft = new KSoftClient(ksoftToken);
     }
 
     /**
