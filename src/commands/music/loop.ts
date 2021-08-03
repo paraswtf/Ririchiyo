@@ -33,7 +33,9 @@ export default class LoopCommand extends BaseCommand<true, true>{
         const input = ctx.options?.get("value")?.value as QueueLoopState | undefined;
         let loop = res.dispatcher?.queue.loopState || ctx.guildSettings.music.loopState;
 
-        if (res.flag === FLAG.VIEW_ONLY) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, `The loop is currently set to ${loop}!`)] });
+        if (res.flag === FLAG.VIEW_ONLY) return await ctx.reply({
+            embeds: [EmbedUtils.embedifyString(ctx.guild, `The loop is currently set to ${loop}!`)]
+        }, { deleteLater: !!res.dispatcher?.queue.current });
 
         switch (input || getNextLoopState(loop)) {
             case "QUEUE":
@@ -56,7 +58,9 @@ export default class LoopCommand extends BaseCommand<true, true>{
 
         if (res.dispatcher?.queue.current) await res.dispatcher.playingMessages.get(res.dispatcher.queue.current.id)?.setLoopState(loop);
 
-        const options = { embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.member} Set the loop to ${loop.toLowerCase()}.`)] };
+        const options = {
+            embeds: [EmbedUtils.embedifyString(ctx.guild, `${ctx.member} Set the loop to ${loop.toLowerCase()}.`)]
+        };
 
         await ctx.reply(options, { deleteLater: !!res.dispatcher });
         if (res.dispatcher?.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);

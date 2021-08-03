@@ -28,7 +28,10 @@ export default class NowPlayingCommand extends BaseCommand<true, true> {
         });
         if (res.isError) return;
 
-        if (!res.dispatcher?.queue.current) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })] });
+        if (!res.dispatcher?.queue.current) return await ctx.reply({
+            embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })],
+            ephemeral: true
+        });
 
         const track = res.dispatcher.queue.current as ResolvedTrack;
 

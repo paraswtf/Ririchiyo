@@ -59,7 +59,10 @@ export default class PlayCommand extends BaseCommand<true, false> {
         //Search first then join
         const searchRes = await this.client.searchResolver.search({ query, requester: ctx.member });
         if (!searchRes) {
-            return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "Could not find any tracks matching your query!", { isError: true })] });
+            return await ctx.reply({
+                embeds: [EmbedUtils.embedifyString(ctx.guild, "Could not find any tracks matching your query!", { isError: true })],
+                ephemeral: true
+            });
         }
 
         //If no player summon one

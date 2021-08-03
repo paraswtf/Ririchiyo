@@ -30,14 +30,16 @@ export default class SkipCommand extends BaseCommand<true, true> {
 
         const clientVoiceChannel = ctx.guild.me?.voice.channel;
         if (!res.dispatcher?.queue.current || !clientVoiceChannel) return await ctx.reply({
-            embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })]
+            embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })],
+            ephemeral: true
         });
 
         const playingMessage = res.dispatcher.playingMessages.get(res.dispatcher.queue.current.id);
         if (!playingMessage) return;
 
         if (playingMessage.skipVotes.has(ctx.user.id)) return await ctx.reply({
-            embeds: [EmbedUtils.embedifyString(ctx.guild, "You have already voted to skip!", { isError: true })]
+            embeds: [EmbedUtils.embedifyString(ctx.guild, "You have already voted to skip!", { isError: true })],
+            ephemeral: true
         });
         else {
             let requiredVoteCount = Math.floor(clientVoiceChannel.members.filter(m => m.user.bot).size / 3);

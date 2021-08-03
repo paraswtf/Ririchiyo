@@ -34,7 +34,8 @@ export const clientOptions: Client['options'] = {
                 name: "Starting big-brain.exe"
             }
         ]
-    }
+    },
+    partials: ['CHANNEL']
 }
 
 export const shardingManagerOptions: SharderOptions = {
@@ -43,7 +44,7 @@ export const shardingManagerOptions: SharderOptions = {
     clusterCount: 2,
     client: Client,
     clientOptions,
-    ipcSocket: process.env.ENVIORNMENT === "DEVELOPMENT" ? 8888 : 9999
+    ipcSocket: process.env.ENVIORNMENT === "DEVELOPMENT" ? 8888 : 9999,
 }
 
 export const shoukakuNodes: ShoukakuNodeOptions[] = [

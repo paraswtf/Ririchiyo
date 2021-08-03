@@ -33,9 +33,10 @@ export default class VolumeCommand extends BaseCommand<true, false>{
 
         if (typeof input !== "number" || res.flag === FLAG.VIEW_ONLY) return await ctx.reply({
             embeds: [EmbedUtils.embedifyString(ctx.guild, `The player volume is currently set to ${volume * 100}%.`)]
-        });
+        }, { deleteLater: !!res.dispatcher });
         else if (input > 500 || input < 0) return await ctx.reply({
-            embeds: [EmbedUtils.embedifyString(ctx.guild, "Please provide a numeric value between 0 and 500 to set the volume to!", { isError: true })]
+            embeds: [EmbedUtils.embedifyString(ctx.guild, "Please provide a numeric value between 0 and 500 to set the volume to!", { isError: true })],
+            ephemeral: true
         });
 
         const finalVolume = Math.min(5, Math.max(0, input / 100));
