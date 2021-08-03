@@ -7,7 +7,7 @@ import DB from './Data/Database';
 import path from 'path';
 import Shoukaku from './Shoukaku';
 
-import { mongodb, shoukakuNodes, shoukakuOptions, spotify, youtube } from '../config';
+import { ksoft, mongodb, shoukakuNodes, shoukakuOptions, spotify, youtube } from '../config';
 import { DispatcherManager } from './Shoukaku/Dispatcher';
 import { SearchResolver } from './Shoukaku/SearchResolver';
 
@@ -29,7 +29,7 @@ export class RirichiyoClient extends DiscordClient {
         this.logger = new Logger(this);
         this.db = new DB({ mongoDBURI: mongodb.uri }, this);
         this.shoukaku = new Shoukaku(this, shoukakuNodes, shoukakuOptions);
-        this.searchResolver = new SearchResolver({ youtubeKey: youtube.APIKey, spotify });
+        this.searchResolver = new SearchResolver({ youtubeKey: youtube.APIKey, spotify, ksoftToken: ksoft.token });
         this.dispatchers = new DispatcherManager();
         this.events = new Events(null, this).load(path.join(__dirname, "../events/client"));
         this.commands = new Commands(null, this);
