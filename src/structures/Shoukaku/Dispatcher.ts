@@ -116,7 +116,7 @@ export class Dispatcher {
     }
 
     async handleRecommendations(radioURL: string) {
-        if (!this.guildSettings.music.autoPlay) return;
+        if (!this.guildSettings.music.autoPlay || !this.guildData.premium.isValid) return;
 
         //If recommendations do not exist, fetch and store recommendations
         if (!this.queue.recommendations.length) {
