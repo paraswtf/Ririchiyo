@@ -43,7 +43,7 @@ export const shardingManagerOptions: SharderOptions = {
     clusterCount: 2,
     client: Client,
     clientOptions,
-    ipcSocket: 8888
+    ipcSocket: process.env.IPC_SOCKET
 }
 
 export const shoukakuNodes: ShoukakuNodeOptions[] = [
