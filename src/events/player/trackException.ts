@@ -17,6 +17,8 @@ export default class PlayerExceptionEvent extends BaseEvent<ExtendedShoukakuPlay
     }
 
     async run(player: ExtendedShoukakuPlayer, data: EventData) {
+        player.dispatcher.client.logger.error(this.name + "\n" + data);
+
         const erroredTrack = player.dispatcher.queue.current as AnyTrack;
         //Delete the playing message for the current track
         if (player.dispatcher.queue.current) {
