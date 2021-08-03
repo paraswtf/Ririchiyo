@@ -6,7 +6,7 @@
             "error_file": "err.log",
             "out_file": "out.log",
             "log_file": "logs.log",
-            "interpreter_args": [],
+            "args": "-r dotenv/config . dotenv_config_path=../.env",
             "watch": [],
             "interpreter": "node",
             "log_date_format": "DD-MM-YYYY hh:mma Z",
