@@ -79,13 +79,13 @@ export default class PlayCommand extends BaseCommand<true, false> {
         //Send the queued message
         const queuedEmbed = new MessageEmbed().setColor(ThemeUtils.getClientColor(ctx.guild));
         switch (searchRes.type) {
-            case "PLAYLIST":
-                queuedEmbed.setDescription(`**[${searchRes.playlistName ?? "Unknown Playlist"}](${/*searchRes.playlist?.uri*/0}) \n(${searchRes.tracks.length} Tracks)**\n\`Added playlist to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
+            case "TRACK":
+                queuedEmbed.setDescription(`**[${searchRes.tracks[0].displayTitle}](${searchRes.tracks[0].displayURL})**\n\`Added track to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
                 await ctx.reply({ embeds: [queuedEmbed] });
                 if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.sendMessage({ embeds: [queuedEmbed] });
                 break;
             default:
-                queuedEmbed.setDescription(`**[${searchRes.tracks[0].displayTitle}](${searchRes.tracks[0].displayURL})**\n\`Added track to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
+                queuedEmbed.setDescription(`**[${searchRes.playlistName ?? "Unknown Name"}](${searchRes.playlistUrl ?? 0}) \n(${searchRes.tracks.length} Tracks)**\n\`Added ${searchRes.type.toLowerCase()} to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
                 await ctx.reply({ embeds: [queuedEmbed] });
                 if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.sendMessage({ embeds: [queuedEmbed] });
                 break;
