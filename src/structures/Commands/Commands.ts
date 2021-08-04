@@ -55,7 +55,7 @@ export class Commands extends Collection<string, BaseCommand>{
             let isReload = false;
             if (this.has(cmd.name)) isReload = true;
             this.set(cmd.name, cmd);
-            this.client.logger.log(`${isReload ? "Rel" : "L"}oaded command from ${chalk.underline(filePath)} -> [${cmd.category}|${cmd.name}]`);
+            this.client.logger.debug(`${isReload ? "Rel" : "L"}oaded command from ${chalk.underline(filePath)} -> [${cmd.category}|${cmd.name}]`);
         }
 
         return this;

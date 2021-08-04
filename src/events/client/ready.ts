@@ -18,7 +18,7 @@ export default class ClientReadyEvent extends BaseEvent<RirichiyoClient> {
         this.emitter.commands.load(path.join(__dirname, "../../commands"));
 
         //Run the presence updater
-        new PresenceUpdater(this.emitter, 600000).run();
+        new PresenceUpdater(this.emitter, 1800000).run();
 
         // if (client.shard.id === 0) {
         //     const existingCommands = await client.application!.commands.fetch();
@@ -60,7 +60,7 @@ export class PresenceUpdater {
         try {
             if (++this.activityIndex >= this.activityGenerators.length) this.activityIndex = 0;
             this.client.user.setActivity(this.activityGenerators[this.activityIndex]());
-            this.client.logger.log("Client presence updated!");
+            this.client.logger.debug("Client presence updated!");
         } catch (err) {
             this.client.logger.error(err);
         }

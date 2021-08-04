@@ -12,6 +12,15 @@ const client_831406931205292053: GuildSettingsData = {
     }
 }
 
+//Ririchiyo Staging
+const client_870271857218158612: GuildSettingsData = {
+    languagePreference: 'EN',
+    permissions: {
+        members: {},
+        roles: {}
+    }
+}
+
 //Ririchiyo Development
 const client_870271951128645664: GuildSettingsData = {
     languagePreference: 'EN',
@@ -23,6 +32,7 @@ const client_870271951128645664: GuildSettingsData = {
 
 export const defaultGuildSettingsData = {
     "831406931205292053": client_831406931205292053,
+    "870271857218158612": client_870271857218158612,
     "870271951128645664": client_870271951128645664
 };
 
