@@ -1,6 +1,6 @@
 const directory = require('fs').readdirSync(".", { withFileTypes: true }) //This may be a file or a folder
 const folderNames = []
-for (const file of directory) if (file.isDirectory() && /ririchiyo-(dev|nightly|beta|main)-build-\d+/.test(file.name)) folderNames.push(file.name);
+for (const file of directory) if (file.isDirectory() && /ririchiyo-\w+-build-\d+/.test(file.name)) folderNames.push(file.name);
 const folder = folderNames.filter(n => n && !Number.isNaN(n.split("-")[3])).sort((a, b) => parseInt(b.split("-")[3]) - parseInt(a.split("-")[3]))[0];
 const splitName = folder.split("-");
 
