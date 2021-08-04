@@ -29,6 +29,7 @@ module.exports = {
             SPOTIFY_CLIENT_ID: "",
             SPOTIFY_CLIENT_SECRET: "",
             KSOFT_API_TOKEN: "",
+            IPC_SOCKET="",
             LAVALINK_NODES: [{
                 name: 'DEV',
                 host: 'localhost',
