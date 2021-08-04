@@ -4,6 +4,7 @@ import { ExtendedShoukakuPlayer } from '../../structures/Shoukaku/Dispatcher';
 import { PlayerExceptionEvent as EventData } from 'shoukaku';
 import { EmbedUtils } from '../../structures/Utils';
 import { AnyTrack } from '../../structures/Shoukaku/RirichiyoTrack';
+import { inspect } from 'util';
 //TO DO=> Add recommendations on track error too
 /** 
  * Emitted when the Lavalink Server sends a TrackExceptionEvent, Automatically fires TrackEndEvent so handling this is optional, Optional.
@@ -17,7 +18,7 @@ export default class PlayerExceptionEvent extends BaseEvent<ExtendedShoukakuPlay
     }
 
     async run(player: ExtendedShoukakuPlayer, data: EventData) {
-        player.dispatcher.client.logger.error(this.name + "\n" + data);
+        player.dispatcher.client.logger.error(this.name + "\n" + inspect(data));
 
         const erroredTrack = player.dispatcher.queue.current as AnyTrack;
         //Delete the playing message for the current track

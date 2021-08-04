@@ -66,8 +66,8 @@ export class Events<T extends EventEmitter & { logger?: Logger } = RirichiyoClie
             this.set(evt.name, evt);
             this.emitter.on(evt.name, evt.run.bind(evt, this.emitter));
 
-            if (this.logger) this.logger.log(`${isReload ? "Rel" : "L"}oaded event from ${chalk.underline(filePath)} -> [${evt.category}|${evt.name}]`);
-            else console.log(`${isReload ? "Rel" : "L"}oaded event from ${chalk.underline(filePath)} -> [${evt.category}|${evt.name}]`);
+            if (this.logger) this.logger.debug(`${isReload ? "Rel" : "L"}oaded event from ${chalk.underline(filePath)} -> [${evt.category}|${evt.name}]`);
+            else console.debug(`${isReload ? "Rel" : "L"}oaded event from ${chalk.underline(filePath)} -> [${evt.category}|${evt.name}]`);
         }
 
         return this;
@@ -82,8 +82,8 @@ export class Events<T extends EventEmitter & { logger?: Logger } = RirichiyoClie
 
         this.delete(evt.name);
 
-        if (this.logger) this.logger.log(`Unoaded event from ${chalk.underline(evt.filePath)} -> [${evt.category}|${evt.name}]`);
-        else console.log(`Unoaded event from ${chalk.underline(evt.filePath)} -> [${evt.category}|${evt.name}]`);
+        if (this.logger) this.logger.debug(`Unoaded event from ${chalk.underline(evt.filePath)} -> [${evt.category}|${evt.name}]`);
+        else console.debug(`Unoaded event from ${chalk.underline(evt.filePath)} -> [${evt.category}|${evt.name}]`);
     }
 
     removeAllListeners() {
