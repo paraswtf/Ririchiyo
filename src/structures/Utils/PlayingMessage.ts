@@ -66,13 +66,6 @@ export default class PlayingMessage {
             ]
         }).catch(Utils.client.logger.error);
 
-        if (!this.message) return;
-
-        this.collector = this.message.createMessageComponentCollector({ componentType: "BUTTON", interactionType: "MESSAGE_COMPONENT" })
-            .on("collect", async (interaction): Promise<void> => {
-                this.manager.dispatcher.client.commandHandler.handleComponentInteraction(interaction, Date.now());
-            })
-
         if (this.doNotSend) return this.delete();
     }
 

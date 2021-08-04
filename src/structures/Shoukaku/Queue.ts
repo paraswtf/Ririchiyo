@@ -121,13 +121,21 @@ export class Queue extends Array<AnyTrack> {
 
     /** Removes an amount of tracks using a inclusive start and inclusive end index, returning the removed tracks, EXCLUDING THE `current` TRACK. */
     public remove(startOrPosition = this.currentIndex + 1, end?: number): AnyTrack[] {
-        if (startOrPosition < this.currentIndex) throw new RangeError(`The "start" cannot be less than ${this.currentIndex}.`);
-        if (end) {
-            if (startOrPosition >= end) throw new RangeError("Start can not be bigger than end.");
-            if (startOrPosition >= this.length) throw new RangeError(`Start can not be bigger than ${this.length}.`);
+        if (startOrPosition === this.currentIndex ||
+            startOrPosition >= this.length ||
+            (end &&
+                (
+                    end >= this.length ||
+                    end === this.currentIndex ||
+                    startOrPosition >= end ||
+                    (startOrPosition < this.currentIndex && end > this.currentIndex)
+                )
+            )
+        ) throw new RangeError(`Invalid range.`);
+        //If tracks before the current index were removed
+        if (startOrPosition < this.currentIndex) this.setCurrentIndex(end ? this.currentIndex - ((end - startOrPosition) + 1) : this.currentIndex - 1);
 
-            return this.splice(startOrPosition, (end - startOrPosition) + 1);
-        }
+        if (end) return this.splice(startOrPosition, (end - startOrPosition) + 1);
         return this.splice(startOrPosition, 1);
     }
 

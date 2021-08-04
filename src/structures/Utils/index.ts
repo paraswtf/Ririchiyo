@@ -50,6 +50,17 @@ export class Utils {
     */
     public static escapeMarkdown(string: string) {
         return DCUtil.escapeMarkdown(string).replace(/[\[\]\(\)]/g, " ").replace(/\s+/g, " ");
+    }
+
+    /**
+     * Limit the length of a string to a specified value and optionally append it with some characters
+     * @param string The string to limit length of
+     * @param opts Options
+     */
+    public static limitLength(text: string, { maxLength = 2000, splitAt = '\n', prepend = '', append = '...' }: LimitLengthOpts = {}): string {
+        if (typeof text !== 'string') throw new TypeError("The provided value for 'text' is not a 'String'");
+        if (typeof maxLength !== 'number') throw new TypeError("The provided value for 'maxLength' is not a 'Number'");
+        return DCUtil.splitMessage(text, { maxLength, char: splitAt, prepend, append })[0];
     };
 }
 
@@ -61,6 +72,12 @@ export class DefinedCollection<K, V> extends Collection<K, V>{
 
 export type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<infer ElementType> ? ElementType : never;
 export type ID = `${bigint}`;
+interface LimitLengthOpts {
+    maxLength?: number;
+    splitAt?: string;
+    prepend?: string;
+    append?: string;
+}
 
 export default Utils;
 

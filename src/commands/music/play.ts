@@ -59,7 +59,10 @@ export default class PlayCommand extends BaseCommand<true, false> {
         //Search first then join
         const searchRes = await this.client.searchResolver.search({ query, requester: ctx.member });
         if (!searchRes) {
-            return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "Could not find any tracks matching your query!", { isError: true })] });
+            return await ctx.reply({
+                embeds: [EmbedUtils.embedifyString(ctx.guild, "Could not find any tracks matching your query!", { isError: true })],
+                ephemeral: true
+            });
         }
 
         //If no player summon one
@@ -74,17 +77,18 @@ export default class PlayCommand extends BaseCommand<true, false> {
         const wasPlaying = dispatcher.queue.current;
 
         dispatcher.queue.add(searchRes.tracks, top ? dispatcher.queue.currentIndex + 1 : undefined);
+        dispatcher.queue.recommendations = [];
 
         //Send the queued message
         const queuedEmbed = new MessageEmbed().setColor(ThemeUtils.getClientColor(ctx.guild));
         switch (searchRes.type) {
-            case "PLAYLIST":
-                queuedEmbed.setDescription(`**[${searchRes.playlistName ?? "Unknown Playlist"}](${/*searchRes.playlist?.uri*/0}) \n(${searchRes.tracks.length} Tracks)**\n\`Added playlist to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
+            case "TRACK":
+                queuedEmbed.setDescription(`**[${searchRes.tracks[0].displayTitle}](${searchRes.tracks[0].displayURL})**\n\`Added track to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
                 await ctx.reply({ embeds: [queuedEmbed] });
                 if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.sendMessage({ embeds: [queuedEmbed] });
                 break;
             default:
-                queuedEmbed.setDescription(`**[${searchRes.tracks[0].displayTitle}](${searchRes.tracks[0].displayURL})**\n\`Added track to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
+                queuedEmbed.setDescription(`**[${searchRes.playlistName ?? "Unknown Name"}](${searchRes.playlistUrl ?? 0}) \n(${searchRes.tracks.length} Tracks)**\n\`Added ${searchRes.type.toLowerCase()} to the queue ${top ? "top " : ""}by - \`${searchRes.tracks[0].requester}\` \``);
                 await ctx.reply({ embeds: [queuedEmbed] });
                 if (dispatcher.textChannel && ctx.channel.id !== dispatcher.textChannel.id) dispatcher.sendMessage({ embeds: [queuedEmbed] });
                 break;

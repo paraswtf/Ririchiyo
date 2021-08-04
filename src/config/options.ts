@@ -34,7 +34,8 @@ export const clientOptions: Client['options'] = {
                 name: "Starting big-brain.exe"
             }
         ]
-    }
+    },
+    partials: ['CHANNEL']
 }
 
 export const shardingManagerOptions: SharderOptions = {
@@ -42,24 +43,19 @@ export const shardingManagerOptions: SharderOptions = {
     shardCount: 4,
     clusterCount: 2,
     client: Client,
-    clientOptions
+    clientOptions,
+    ipcSocket: process.env.IPC_SOCKET,
 }
 
-export const shoukakuNodes: ShoukakuNodeOptions[] = [
-    {
-        name: 'DEV',
-        host: 'localhost',
-        port: 9000,
-        auth: 'youshallnotpassdev',
-    }
-]
+export const shoukakuNodes: ShoukakuNodeOptions[] = typeof process.env.LAVALINK_NODES === "string" ? JSON.parse(process.env.LAVALINK_NODES) : process.env.LAVALINK_NODES;
 
 export const inviteGenerateOptions: InviteGenerationOptions = { permissions: 2192960584n, scopes: ["bot", "applications.commands"] };
+export const website_url = "";
 export const support_server_url = "";
 export const redirect_uri = "";
 export const premium_uri = "";
 export const message_delete_timeout = 6000;
-export const player_inactivity_timeout = 500000;
+export const player_inactivity_timeout = 300000;
 export const player_disconnect_destroy_timeout = 150000;
 
 export const shoukakuOptions: ShoukakuOptions = {};

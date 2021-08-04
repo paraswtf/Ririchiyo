@@ -27,7 +27,8 @@ export default class BackCommand extends BaseCommand<true, true> {
         if (res.isError) return;
 
         if (!res.dispatcher?.queue.previousTracks.length) return await ctx.reply({
-            embeds: [EmbedUtils.embedifyString(ctx.guild, "There are no previous tracks!", { isError: true })]
+            embeds: [EmbedUtils.embedifyString(ctx.guild, "There are no previous tracks!", { isError: true })],
+            ephemeral: true
         });
 
         if (res.dispatcher.queue.current) res.dispatcher.playingMessages.deleteMessage(res.dispatcher.queue.current.id);

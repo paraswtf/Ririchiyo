@@ -2,7 +2,7 @@ import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { MusicUtil } from '../../structures/Utils/MusicUtil';
 import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
-import { ApplicationCommandData, MessageEmbed } from 'discord.js';
+import { ApplicationCommandData, MessageEmbed, Permissions } from 'discord.js';
 import { ResolvedTrack } from '../../structures/Shoukaku/RirichiyoTrack';
 import { filledBar } from 'string-progressbar';
 
@@ -13,7 +13,8 @@ export default class NowPlayingCommand extends BaseCommand<true, true> {
             category: "music",
             description: "View the currently playing track",
             allowGuildCommand: true,
-            allowDMCommand: false
+            allowDMCommand: false,
+            webhookPermsRequired: new Permissions(["USE_EXTERNAL_EMOJIS"])
         })
     }
 
@@ -27,7 +28,10 @@ export default class NowPlayingCommand extends BaseCommand<true, true> {
         });
         if (res.isError) return;
 
-        if (!res.dispatcher?.queue.current) return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })] });
+        if (!res.dispatcher?.queue.current) return await ctx.reply({
+            embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })],
+            ephemeral: true
+        });
 
         const track = res.dispatcher.queue.current as ResolvedTrack;
 
