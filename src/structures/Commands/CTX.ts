@@ -57,13 +57,11 @@ export class CTX<isGuild extends boolean = boolean, allowComponent extends boole
         return await this.interaction.defer(options);
     }
 
-    async reply(options: Parameters<this['interaction']['reply']>['0'], { ephemeral = false, deleteTimeout = message_delete_timeout, deleteLater = false } = {}) {
+    async reply(options: Parameters<this['interaction']['reply']>['0'], { deleteTimeout = message_delete_timeout, deleteLater = false } = {}) {
         if (typeof options === "string") options = { content: options };
-
-        options = Object.assign(options, { ephemeral });
         if (this.interaction.replied || this.interaction.deferred) await this.interaction.followUp(options);
         else await this.interaction.reply(options);
-        if (deleteLater && !options.ephemeral) setTimeout(() => this.interaction.deleteReply(), deleteTimeout);
+        if (deleteLater && !(options as any).ephemeral) setTimeout(() => this.interaction.deleteReply(), deleteTimeout);
         return null;
     }
 }

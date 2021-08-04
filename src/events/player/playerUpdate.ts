@@ -14,8 +14,8 @@ export default class PlayerUpdateEvent extends BaseEvent<ExtendedShoukakuPlayer>
     }
 
     async run(player: ExtendedShoukakuPlayer, data: EventData['state']) {
-        console.log(this.name);
-        console.log(data);
+        //console.log(this.name);
+        //.log(data);
         player.dispatcher.position = data.position;
     }
 }

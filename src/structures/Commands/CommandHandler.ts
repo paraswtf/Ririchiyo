@@ -87,8 +87,8 @@ export class CommandHandler {
                         ctx.language.COMMAND_RATELIMITED,
                         (cooldown.timeLeft / 1000).toFixed(1),
                         command.name), { isError: true })
-                ]
-            }, { ephemeral: true }).catch(this.client.logger.error);
+                ], ephemeral: true
+            }).catch(this.client.logger.error);
         };
 
         await command.run(ctx).catch(async (err) => {
@@ -103,7 +103,10 @@ export class CommandHandler {
 
     async handleComponentInteraction(interaction: MessageComponentInteraction, recievedAt: number) {
         //Find the requested command
-        const command = this.client.commands.get(interaction.customId);
+        const args = interaction.customId.split(":");
+        if (!args.length) return;
+
+        const command = this.client.commands.get(args.shift()!);
 
         //Check if command exists and meets the requirements to run
         if (
@@ -143,8 +146,8 @@ export class CommandHandler {
         if (command.ownerOnly && !owners.find(o => o.id === interaction.user.id)) return await ctx.reply({
             embeds: [
                 EmbedUtils.embedifyString(interaction.guild, ctx.language.COMMAND_OWNER_ONLY, { isError: true })
-            ]
-        }, { ephemeral: true })
+            ], ephemeral: true
+        })
 
         //Handle cooldown
         const cooldown = this.checkCooldown(recievedAt, command, interaction.user.id);
@@ -155,11 +158,11 @@ export class CommandHandler {
                         ctx.language.COMMAND_RATELIMITED,
                         (cooldown.timeLeft / 1000).toFixed(1),
                         command.name), { isError: true })
-                ]
-            }, { ephemeral: true }).catch(this.client.logger.error)
+                ], ephemeral: true
+            }).catch(this.client.logger.error)
         };
 
-        await command.run(ctx).catch(async (err) => {
+        await command.run(ctx, args).catch(async (err) => {
             this.client.logger.error(err);
             await ctx.reply({
                 embeds: [

@@ -31,21 +31,24 @@ export default class SkipToCommand extends BaseCommand<true, false> {
         if (res.isError) return;
 
         if (!res.dispatcher?.queue.length) return await ctx.reply({
-            embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })]
+            embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })],
+            ephemeral: true
         });
 
-        const input = ctx.options.first()!.value as string | number;
+        let input = ctx.options.first()!.value as string | number;
 
         if (typeof input === "number") {
-            if (!res.dispatcher.queue[input]) return await ctx.reply({
-                embeds: [EmbedUtils.embedifyString(ctx.guild, "That track doesn't exist in the queue!", { isError: true })]
+            if (!res.dispatcher.queue[--input]) return await ctx.reply({
+                embeds: [EmbedUtils.embedifyString(ctx.guild, "That track doesn't exist in the queue!", { isError: true })],
+                ephemeral: true
             });
             await setIndexAndPlay(res.dispatcher, input);
         }
         else {
             const found = res.dispatcher.queue.findByQuery(input);
             if (found < 0) return await ctx.reply({
-                embeds: [EmbedUtils.embedifyString(ctx.guild, "Could not find that track in the queue!", { isError: true })]
+                embeds: [EmbedUtils.embedifyString(ctx.guild, "Could not find that track in the queue!", { isError: true })],
+                ephemeral: true
             });
             await setIndexAndPlay(res.dispatcher, found);
         }

@@ -16,7 +16,7 @@ import Dispatcher from "../Shoukaku/Dispatcher";
 
 export class MusicUtil {
     private static async sendError(error: string, ctx: CTX<true, boolean>, ephemeral: boolean) {
-        return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, error, { isError: true })] }, { ephemeral });
+        return await ctx.reply({ embeds: [EmbedUtils.embedifyString(ctx.guild, error, { isError: true })], ephemeral });
     }
 
     public static canPerformAction(options: CanPerformActionrOptions): Success | Error {

@@ -27,7 +27,8 @@ export default class ForceSkipCommand extends BaseCommand<true, false> {
         if (res.isError) return;
 
         if (!res.dispatcher?.queue.current) return await ctx.reply({
-            embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })]
+            embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })],
+            ephemeral: true
         });
 
 

@@ -38,6 +38,11 @@ export const customEmojis = [
         "animated": false
     },
     {
+        "name": "RELOAD_BUTTON",
+        "id": "871546544279662633",
+        "animated": false
+    },
+    {
         "name": "LOOP_DISABLED_BUTTON",
         "id": "869680667850600479",
         "animated": false
@@ -60,6 +65,11 @@ export const customEmojis = [
     {
         "name": "MUSICAL_NOTES",
         "id": "869682299933974608",
+        "animated": false
+    },
+    {
+        "name": "QUEUE_LIST",
+        "id": "871667443527974932",
         "animated": false
     },
     {
