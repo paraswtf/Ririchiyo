@@ -26,28 +26,28 @@ export class Logger {
 
 function log(this: Logger, message: string | Error | CustomError) {
     console.log(this.identifier + ((message as Error | CustomError).message || message));
-    return;
+    return undefined;
 }
 
 function debug(this: Logger, message: string | Error | CustomError) {
     if (isProduction) return;
     console.log(this.identifier + chalk.cyan((message as Error | CustomError).message || message));
-    return;
+    return undefined;
 }
 
 function info(this: Logger, message: string | Error | CustomError) {
     console.log(this.identifier + chalk.cyan((message as Error | CustomError).message || message));
-    return;
+    return undefined;
 }
 
 function error(this: Logger, message: string | Error | CustomError) {
     console.trace("\b\b\b\b\b\b\b" + this.identifier + chalk.redBright((message as Error | CustomError).message || message));
-    return;
+    return undefined;
 }
 
 function warn(this: Logger, message: string | Error | CustomError) {
     console.trace("\b\b\b\b\b\b\b" + this.identifier + chalk.yellowBright((message as Error | CustomError).message || message));
-    return;
+    return undefined;
 }
 
 export default Logger;
