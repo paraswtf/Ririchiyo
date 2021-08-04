@@ -50,6 +50,7 @@ export const shardingManagerOptions: SharderOptions = {
 export const shoukakuNodes: ShoukakuNodeOptions[] = typeof process.env.LAVALINK_NODES === "string" ? JSON.parse(process.env.LAVALINK_NODES) : process.env.LAVALINK_NODES;
 
 export const inviteGenerateOptions: InviteGenerationOptions = { permissions: 2192960584n, scopes: ["bot", "applications.commands"] };
+export const website_url = "";
 export const support_server_url = "";
 export const redirect_uri = "";
 export const premium_uri = "";
