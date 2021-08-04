@@ -47,16 +47,7 @@ export const shardingManagerOptions: SharderOptions = {
     ipcSocket: process.env.IPC_SOCKET,
 }
 
-console.log(process.env.LAVALINK_NODES);
-
-export const shoukakuNodes: ShoukakuNodeOptions[] = [
-    {
-        name: 'DEV',
-        host: 'localhost',
-        port: 9000,
-        auth: 'youshallnotpassdev',
-    }
-]
+export const shoukakuNodes: ShoukakuNodeOptions[] = typeof process.env.LAVALINK_NODES === "string" ? JSON.parse(process.env.LAVALINK_NODES) : process.env.LAVALINK_NODES;
 
 export const inviteGenerateOptions: InviteGenerationOptions = { permissions: 2192960584n, scopes: ["bot", "applications.commands"] };
 export const support_server_url = "";
