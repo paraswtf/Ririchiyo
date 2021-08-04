@@ -44,8 +44,10 @@ export const shardingManagerOptions: SharderOptions = {
     clusterCount: 2,
     client: Client,
     clientOptions,
-    ipcSocket: process.env.NODE_ENV === "development" ? 8888 : 9999,
+    ipcSocket: process.env.IPC_SOCKET,
 }
+
+console.log(process.env.LAVALINK_NODES);
 
 export const shoukakuNodes: ShoukakuNodeOptions[] = [
     {
