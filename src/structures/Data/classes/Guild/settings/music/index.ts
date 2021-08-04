@@ -7,7 +7,7 @@ export const defaultGuildMusicSettingsData: GuildMusicSettingsData = {
     loopState: "DISABLED",
     filters: defaultGuildMusicFiltersSettingsData,
     stayConnected: false,
-    recommendations: false
+    autoPlay: false
 }
 
 export class GuildMusicSettings extends BaseData {
@@ -44,8 +44,9 @@ export class GuildMusicSettings extends BaseData {
         return this;
     }
 
+    //Is premium feature so also check premium
     get stayConnected() {
-        return this.getCache("stayConnected", defaultGuildMusicSettingsData.stayConnected);
+        return this.getCache("stayConnected", defaultGuildMusicSettingsData.stayConnected) && this.guild.premium.isValid;
     }
 
     async setStayConnected(value: boolean) {
@@ -60,18 +61,19 @@ export class GuildMusicSettings extends BaseData {
         return this;
     }
 
-    get recommendations() {
-        return this.getCache("recommendations", defaultGuildMusicSettingsData.recommendations);
+    //Is premium feature so also check premium
+    get autoPlay() {
+        return this.getCache("autoPlay", defaultGuildMusicSettingsData.autoPlay) && this.guild.premium.isValid;
     }
 
-    async setRecommendations(value: boolean) {
-        if (value === defaultGuildMusicSettingsData.recommendations) {
-            await this.updateDB("recommendations", null, "$unset");
-            this.updateCache("recommendations", null, "delete");
+    async setAutoPlay(value: boolean) {
+        if (value === defaultGuildMusicSettingsData.autoPlay) {
+            await this.updateDB("autoPlay", null, "$unset");
+            this.updateCache("autoPlay", null, "delete");
         }
         else {
-            await this.updateDB("recommendations", value);
-            this.updateCache("recommendations", value);
+            await this.updateDB("autoPlay", value);
+            this.updateCache("autoPlay", value);
         }
         return this;
     }
@@ -81,7 +83,7 @@ export interface GuildMusicSettingsData {
     loopState: GuildMusicSettingsLoopState,
     filters: GuildMusicFiltersSettingsData,
     stayConnected: boolean,
-    recommendations: boolean
+    autoPlay: boolean
 }
 
 export type GuildMusicSettingsLoopState = "DISABLED" | "QUEUE" | "TRACK";

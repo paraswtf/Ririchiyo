@@ -3,17 +3,56 @@ import Guild from "..";
 import { GuildSettings, GuildSettingsData } from "./GuildSettings";
 import DBUtils from "../../../DBUtils";
 
-const client_831406931205292053: GuildSettingsData = {
-    languagePreference: 'EN',
-    permissions: {
-        members: {},
-        roles: {}
-    }
-}
-
 export const defaultGuildSettingsData = {
-    "831406931205292053": client_831406931205292053
-};
+    //Ririchiyo
+    "831406931205292053": {
+        languagePreference: 'EN',
+        permissions: {
+            members: {},
+            roles: {}
+        }
+    } as GuildSettingsData,
+    //Ririchiyo 2
+    "870270773019947069": {
+        languagePreference: 'EN',
+        permissions: {
+            members: {},
+            roles: {}
+        }
+    } as GuildSettingsData,
+    //Ririchiyo 3
+    "870271367940046848": {
+        languagePreference: 'EN',
+        permissions: {
+            members: {},
+            roles: {}
+        }
+    } as GuildSettingsData,
+    //Ririchiyo Beta
+    "870271619896049754": {
+        languagePreference: 'EN',
+        permissions: {
+            members: {},
+            roles: {}
+        }
+    } as GuildSettingsData,
+    //Ririchiyo Staging
+    "870271857218158612": {
+        languagePreference: 'EN',
+        permissions: {
+            members: {},
+            roles: {}
+        }
+    } as GuildSettingsData,
+    //Ririchiyo Development
+    "870271951128645664": {
+        languagePreference: 'EN',
+        permissions: {
+            members: {},
+            roles: {}
+        }
+    } as GuildSettingsData
+}
 
 export type GuildSettingsCollectionData = typeof defaultGuildSettingsData;
 export type AllowedClientID = keyof GuildSettingsCollectionData;

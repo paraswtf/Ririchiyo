@@ -15,7 +15,11 @@ export const spotify: SpotifyCredentials = {
     secret: process.env.SPOTIFY_CLIENT_SECRET as string,
 }
 
-export default { discord, mongodb, youtube, spotify };
+export const ksoft: KSoftCredentials = {
+    token: process.env.KSOFT_API_TOKEN as string
+} as const
+
+export default { discord, mongodb, youtube, spotify, ksoft };
 
 export interface DiscordCredentials {
     readonly token: string
@@ -29,4 +33,7 @@ export interface YouTubeCredentials {
 export interface SpotifyCredentials {
     readonly clientID: string,
     readonly secret: string
+}
+export interface KSoftCredentials {
+    readonly token: string
 }

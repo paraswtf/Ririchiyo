@@ -25,8 +25,7 @@
         "src",
         "typings",
         "config",
-        "package.json",
-        "process.json"
+        "package.json"
     ],
     "exclude": [
         "package-lock.json",
