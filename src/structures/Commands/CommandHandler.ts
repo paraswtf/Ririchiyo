@@ -87,8 +87,8 @@ export class CommandHandler {
                         ctx.language.COMMAND_RATELIMITED,
                         (cooldown.timeLeft / 1000).toFixed(1),
                         command.name), { isError: true })
-                ]
-            }, { ephemeral: true }).catch(this.client.logger.error);
+                ], ephemeral: true
+            }).catch(this.client.logger.error);
         };
 
         await command.run(ctx).catch(async (err) => {
@@ -146,8 +146,8 @@ export class CommandHandler {
         if (command.ownerOnly && !owners.find(o => o.id === interaction.user.id)) return await ctx.reply({
             embeds: [
                 EmbedUtils.embedifyString(interaction.guild, ctx.language.COMMAND_OWNER_ONLY, { isError: true })
-            ]
-        }, { ephemeral: true })
+            ], ephemeral: true
+        })
 
         //Handle cooldown
         const cooldown = this.checkCooldown(recievedAt, command, interaction.user.id);
@@ -158,8 +158,8 @@ export class CommandHandler {
                         ctx.language.COMMAND_RATELIMITED,
                         (cooldown.timeLeft / 1000).toFixed(1),
                         command.name), { isError: true })
-                ]
-            }, { ephemeral: true }).catch(this.client.logger.error)
+                ], ephemeral: true
+            }).catch(this.client.logger.error)
         };
 
         await command.run(ctx, args).catch(async (err) => {
