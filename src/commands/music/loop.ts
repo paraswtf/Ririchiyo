@@ -25,6 +25,7 @@ export default class LoopCommand extends BaseCommand<true, true>{
             requiredPermissions: ["MANAGE_PLAYER"],
             memberPermissions: ctx.guildSettings.permissions.members.getFor(ctx.member).calculatePermissions(),
             noDispatcherRequired: true,
+            noVoiceChannelRequired: true,
             allowViewOnly: !ctx.options?.size
         });
 

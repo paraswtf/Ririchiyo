@@ -50,6 +50,7 @@ export default class PlayCommand extends BaseCommand<true, false> {
             member: ctx.member,
             ctx,
             noDispatcherRequired: !dispatcherExists,
+            noVoiceChannelRequired: true,
             isSpawnAttempt: !dispatcherExists,
             requiredPermissions,
             memberPermissions: ctx.guildSettings.permissions.members.getFor(ctx.member).calculatePermissions()

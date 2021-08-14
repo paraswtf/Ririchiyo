@@ -23,6 +23,7 @@ export default class VolumeCommand extends BaseCommand<true, false>{
             requiredPermissions: ["MANAGE_PLAYER"],
             memberPermissions: ctx.guildSettings.permissions.members.getFor(ctx.member).calculatePermissions(),
             noDispatcherRequired: true,
+            noVoiceChannelRequired: true,
             allowViewOnly: !ctx.options?.size
         });
 

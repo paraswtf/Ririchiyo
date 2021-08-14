@@ -69,15 +69,15 @@ export default class SkipToCommand extends BaseCommand<true, false> {
         description: this.description,
         options: [
             {
-                name: "query",
-                description: "Search and skip to a song",
-                type: "STRING",
-                required: false
-            },
-            {
                 name: "index",
                 description: "The index of the song to skip to",
                 type: "INTEGER",
+                required: false
+            },
+            {
+                name: "query",
+                description: "Search and skip to a song",
+                type: "STRING",
                 required: false
             }
         ]
