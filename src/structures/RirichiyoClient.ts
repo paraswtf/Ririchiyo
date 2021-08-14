@@ -10,10 +10,12 @@ import Shoukaku from './Shoukaku';
 import { ksoft, mongodb, shoukakuNodes, shoukakuOptions, spotify, youtube } from '../config';
 import { DispatcherManager } from './Shoukaku/Dispatcher';
 import { SearchResolver } from './Shoukaku/SearchResolver';
+import RirichiyoAPI from './RirichiyoAPI/RirichiyoAPI';
 
 export class RirichiyoClient extends DiscordClient {
     logger: Logger;
     db: DB;
+    rapi: RirichiyoAPI;
     events: Events<this>;
     commands: Commands;
     commandHandler: CommandHandler;
@@ -28,6 +30,7 @@ export class RirichiyoClient extends DiscordClient {
         Utils._init(this);
         this.logger = new Logger(this);
         this.db = new DB({ mongoDBURI: mongodb.uri }, this);
+        this.rapi = new RirichiyoAPI(this, { host: "localhost", port: 2100 });
         this.shoukaku = new Shoukaku(this, shoukakuNodes, shoukakuOptions);
         this.searchResolver = new SearchResolver({ youtubeKey: youtube.APIKey, spotify, ksoftToken: ksoft.token });
         this.dispatchers = new DispatcherManager();
@@ -48,6 +51,14 @@ export class RirichiyoClient extends DiscordClient {
     }
 
     async postLogin() {
+        this.rapi.connect({
+            appID: "ADMIN",
+            token: "612f1cca-0cc9-4e96-8627-66442cded569",
+            clientID: this.user.id,
+            clusterID: this.shard.id,
+            shards: this.shard.shards,
+            shardCount: this.shard.shardCount
+        });
     }
 
     /** Send data function for lavalink */

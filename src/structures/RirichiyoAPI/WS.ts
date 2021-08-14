@@ -1,10 +1,11 @@
 import { EventEmitter } from "events";
 import WebSocket from "ws";
-import { CustomError } from "./Utils";
+import { CustomError } from "../Utils";
 
-export class BaseWSClient extends EventEmitter {
+export class RirichiyoWSClient extends EventEmitter {
     readonly host: string;
-    readonly options: BaseWSClientOptions;
+    readonly options: RirichiyoWSClientOptions;
+    private connectOptions: Partial<ConnectOptions> = {};
     private reconnectTimeout?: NodeJS.Timeout;
     private reconnectAttempts = 1;
     readonly stats: APIStats;
@@ -12,10 +13,13 @@ export class BaseWSClient extends EventEmitter {
     /** The socket for the node. */
     public socket: WebSocket | null = null;
 
-    constructor(host: string, options: BaseWSClientOptions) {
+    constructor(options: RirichiyoWSClientOptions) {
         super();
-        this.host = host;
-        this.options = options;
+        this.host = options.host;
+        this.options = Object.assign({
+            retryAmount: 5,
+            retryDelay: 30e3
+        }, options);
         this.stats = {
             totalPlayers: 0
         }
@@ -28,31 +32,38 @@ export class BaseWSClient extends EventEmitter {
     }
 
     /** Connects to the Server. */
-    public connect(): void {
+    public connect(options?: ConnectOptions): void {
         if (this.connected) return;
 
-        const headers = {
-            "Authorization": this.options.authorization,
-            "ClientID": this.options.clientID,
-            "ShardCount": String(this.options.shardCount),
-            "ClusterID": String(this.options.clusterID),
+        if (options) this.connectOptions = options;
+        if (!this.connectOptions) throw new CustomError("No options provided to connect!");
+
+        const auth: Partial<WSConnectionAuth> = {
+            appID: this.connectOptions.appID,
+            token: this.connectOptions.token,
+            clientid: this.connectOptions.clientID,
+            clusterid: this.connectOptions.clusterID,
+            shards: this.connectOptions.shards,
+            shardCount: this.connectOptions.shardCount
         };
 
+        if (Object.values(auth).some(e => typeof e === 'undefined')) throw new CustomError("Invalid API options passed");
+
         this.socket = new WebSocket(`ws${this.options.secure ? "s" : ""}://${this.options.host}:${this.options.port}/${this.options.path ?? ""}`,
-            { headers }
-        );
+            { headers: { authorization: JSON.stringify(auth) } }
+        )
+        this.socket.on("error", this.error.bind(this));
         this.socket.on("open", this.open.bind(this));
         this.socket.on("close", this.close.bind(this));
         this.socket.on("message", this.message.bind(this));
-        this.socket.on("error", this.error.bind(this));
     }
 
     private reconnect(): void {
         this.reconnectTimeout = setTimeout(() => {
-            if (this.reconnectAttempts >= (this.options.retryAmount || 5)) {
+            if (this.reconnectAttempts >= this.options.retryAmount!) {
                 const error = new CustomError(`Unable to connect after ${this.options.retryAmount} attempts.`);
 
-                this.emit("connect_error", error);
+                this.emit("error", error);
                 return this.destroy();
             }
             this.socket?.removeAllListeners();
@@ -60,7 +71,7 @@ export class BaseWSClient extends EventEmitter {
             this.emit("reconnect_attempt");
             this.connect();
             this.reconnectAttempts++;
-        }, this.options.retryDelay);
+        }, this.options.retryDelay!);
     }
 
     /** Destroys the Node and all players connected with it. */
@@ -100,6 +111,7 @@ export class BaseWSClient extends EventEmitter {
 
         if (!payload.op) return;
         this.emit("payload", payload);
+        console.log(payload);
 
         switch (payload.op) {
             case "stats":
@@ -121,7 +133,7 @@ export class BaseWSClient extends EventEmitter {
 
 export const EVENT_HANDLERS: EventHandlers = {
     EVENT_TEST: () => {
-        return;
+        return console.log("test");
     }
 }
 
@@ -179,7 +191,7 @@ export interface APIStats {
     totalPlayers: number,
 }
 
-export interface BaseWSClientOptions {
+export interface RirichiyoWSClientOptions {
     secure?: boolean,
     host: string,
     port: number,
@@ -188,13 +200,33 @@ export interface BaseWSClientOptions {
     retryAmount?: number;
     /** The retryDelay for the connection. */
     retryDelay?: number;
-    authorization: string,
-    clientID: string,
-    shardCount: number,
-    clusterID: string,
 }
 
-export interface BaseWSClient {
+export interface ConnectOptions {
+    appID?: string;
+    token?: string;
+    clientID?: string;
+    clusterID?: number;
+    shards?: string[];
+    shardCount?: number;
+}
+
+export interface WSConnectionAuth {
+    //The api token  
+    token: string;
+    //The application ID
+    appID: string;
+    //The DiscordID of the client
+    clientid: string;
+    //The ClusterID of the client
+    clusterid: number;
+    //The shardIDs of the client cluster
+    shards: string[];
+    //The shardCount of the client
+    shardCount: number;
+}
+
+export interface RirichiyoWSClient {
     /** Emitted when the ws is connected. */
     on(
         event: "connect",
@@ -204,11 +236,6 @@ export interface BaseWSClient {
     on(
         event: "disconnect",
         listener: () => void
-    ): this;
-    /** Emitted when a connection error occurs. */
-    on(
-        event: "connect_error",
-        listener: (error: CustomError | Error) => void
     ): this;
     /** Emitted when a reconnection is attempted. */
     on(
@@ -226,3 +253,5 @@ export interface BaseWSClient {
         listener: (payload: any) => void
     ): this;
 }
+
+export default RirichiyoWSClient;
