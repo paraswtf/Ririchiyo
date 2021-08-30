@@ -17,6 +17,10 @@ export interface CommandProps {
     allowGuildCommand?: boolean;
     /** If the command can be called in DMs */
     allowDMCommand?: boolean;
+    /** If the command requires user premium */
+    requiresUserPremium?: boolean;
+    /** If the command requires guild premium */
+    requiresGuildPremium?: boolean;
     /** Permissions that the bot needs on the server in order to run this command */
     serverPermsRequired?: Permissions;
     /** Permissions that the bot needs in the channel in order to run this command */
@@ -30,18 +34,20 @@ export interface CommandProps {
 }
 
 export class BaseCommand<isGuild extends boolean = boolean, allowComponent extends boolean = boolean> {
-    name: CommandProps['name'];
-    description: CommandProps['description'];
-    category: CommandProps['category'];
-    cooldown: number;
-    hidden: boolean;
-    allowGuildCommand: boolean;
-    allowDMCommand: boolean;
-    serverPermsRequired: CommandProps['serverPermsRequired'];
-    channelPermsRequired: CommandProps['channelPermsRequired'];
-    webhookPermsRequired: CommandProps['webhookPermsRequired'];
-    ownerOnly: boolean;
-    allowMessageCommponentInteraction: boolean;
+    readonly name: CommandProps['name'];
+    readonly description: CommandProps['description'];
+    readonly category: CommandProps['category'];
+    readonly cooldown: number;
+    readonly hidden: boolean;
+    readonly allowGuildCommand: boolean;
+    readonly allowDMCommand: boolean;
+    readonly requiresUserPremium: boolean;
+    readonly requiresGuildPremium: boolean;
+    readonly serverPermsRequired: CommandProps['serverPermsRequired'];
+    readonly channelPermsRequired: CommandProps['channelPermsRequired'];
+    readonly webhookPermsRequired: CommandProps['webhookPermsRequired'];
+    readonly ownerOnly: boolean;
+    readonly allowMessageCommponentInteraction: boolean;
     /** The bot client */
     public readonly client!: RirichiyoClient;
     /** FilePath */
@@ -57,6 +63,8 @@ export class BaseCommand<isGuild extends boolean = boolean, allowComponent exten
             hidden,
             allowGuildCommand,
             allowDMCommand,
+            requiresUserPremium,
+            requiresGuildPremium,
             serverPermsRequired,
             channelPermsRequired,
             webhookPermsRequired,
@@ -70,6 +78,8 @@ export class BaseCommand<isGuild extends boolean = boolean, allowComponent exten
         this.hidden = hidden || false;
         this.allowGuildCommand = allowGuildCommand ?? true;
         this.allowDMCommand = allowDMCommand ?? true;
+        this.requiresUserPremium = requiresUserPremium ?? false;
+        this.requiresGuildPremium = requiresGuildPremium ?? false;
         this.serverPermsRequired = serverPermsRequired;
         this.channelPermsRequired = channelPermsRequired;
         this.webhookPermsRequired = webhookPermsRequired;
@@ -103,6 +113,10 @@ function check(options?: CommandProps): CommandProps {
     if (typeof options.allowGuildCommand !== 'undefined' && typeof options.allowGuildCommand !== 'boolean') throw new TypeError("Command option 'allowGuildCommand' must be of type 'boolean'.");
 
     if (typeof options.allowDMCommand !== 'undefined' && typeof options.allowDMCommand !== 'boolean') throw new TypeError("Command option 'allowDMCommand' must be of type 'boolean'.");
+
+    if (typeof options.requiresUserPremium !== 'undefined' && typeof options.requiresUserPremium !== 'boolean') throw new TypeError("Command option 'requiresUserPremium' must be of type 'boolean'.");
+
+    if (typeof options.requiresGuildPremium !== 'undefined' && typeof options.requiresGuildPremium !== 'boolean') throw new TypeError("Command option 'requiresGuildPremium' must be of type 'boolean'.");
 
     if (typeof options.serverPermsRequired !== 'undefined' && !(options.serverPermsRequired instanceof Permissions)) throw new TypeError("Command option 'botPermsRequired' must be of type 'Discord.Permission'.");
 

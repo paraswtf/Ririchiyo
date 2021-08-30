@@ -62,6 +62,42 @@ export class Utils {
         if (typeof maxLength !== 'number') throw new TypeError("The provided value for 'maxLength' is not a 'Number'");
         return DCUtil.splitMessage(text, { maxLength, char: splitAt, prepend, append })[0];
     };
+
+    /**
+     * Generate a buttonID for discord
+     * Looks like loop-q:a:n-2132321332112
+     * @param command The name of the command to run
+     * @param args The arguments to pass the command
+     */
+    public static generateButtonID(command: string, args?: string[]): string {
+        const test = `${command}-${args ? args.join(':') : 'null'}-${this.snowflake.generate()}${Math.random().toFixed(5).toString().split(".")[1]}`;
+        console.log(test);
+        return test;
+    };
+
+    /**
+     * Generate a buttonID for discord
+     * @param command The name of the command to run
+     * @param args The arguments to pass the command
+     */
+    public static decodeButtonID(buttonID: string): { id: string, commandName: string, args: string[] | null } | null {
+        const splitID = buttonID.split('-');
+        if (splitID.length !== 3) return null;
+        return {
+            id: splitID[2],
+            commandName: splitID[0],
+            args: splitID[1] === 'null' ? null : splitID[1].split(':')
+        };
+    };
+
+    /**
+     * Remove an element from an array with a given value
+     * @param value The value to remove
+     */
+    public static removeKnownElement<T extends Array<unknown>>(array: T, value: ElementType<T>): ElementType<T> | null {
+        if (!array.includes(value)) return null;
+        return array.splice(array.indexOf(value), 1)[0] as ElementType<T>;
+    };
 }
 
 export class DefinedCollection<K, V> extends Collection<K, V>{
@@ -71,7 +107,6 @@ export class DefinedCollection<K, V> extends Collection<K, V>{
 }
 
 export type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<infer ElementType> ? ElementType : never;
-export type ID = `${bigint}`;
 interface LimitLengthOpts {
     maxLength?: number;
     splitAt?: string;
@@ -81,10 +116,10 @@ interface LimitLengthOpts {
 
 export default Utils;
 
-export * from './CustomEmojiUtils';
+export * from './ui/CustomEmojiUtils';
 export * from './CustomError';
-export * from './DirectMessageUtils';
-export * from './EmbedUtils';
+export * from './ui/DirectMessageUtils';
+export * from './ui/EmbedUtils';
 export * from './Logger';
 export * from './PermissionUtils';
-export * from './ThemeUtils';
+export * from './ui/ThemeUtils';

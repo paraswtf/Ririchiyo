@@ -5,11 +5,12 @@ const folder = folderNames.filter(n => n && !Number.isNaN(n.split("-")[3])).sort
 const splitName = folder.split("-");
 
 const app = {
-    name: `Ririchiyo-${splitName[1]} #${splitName[3]}`,
+    name: `Ririchiyo #${splitName[3]}`,
     script: `${folder}/src/main/index.js`,
-    error_file: `${folder}/err.log`,
-    out_file: `${folder}out.log`,
-    log_file: `${folder}logs.log`,
+    watch: false,
+    error_file: `${folder}/logs/err.log`,
+    out_file: `${folder}/logs/out.log`,
+    log_file: `${folder}/logs/logs.log`,
     interpreter: "node",
     log_date_format: "DD-MM-YYYY hh:mma Z",
     exec_interpreter: "node",

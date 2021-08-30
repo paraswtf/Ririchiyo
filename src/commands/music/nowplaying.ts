@@ -1,6 +1,6 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
-import { MusicUtil } from '../../structures/Utils/MusicUtil';
+import { MusicUtil } from '../../structures/Utils/music/MusicUtil';
 import { CustomEmojiUtils, EmbedUtils, ThemeUtils } from '../../structures/Utils';
 import { ApplicationCommandData, MessageEmbed, Permissions } from 'discord.js';
 import { ResolvedTrack } from '../../structures/Shoukaku/RirichiyoTrack';

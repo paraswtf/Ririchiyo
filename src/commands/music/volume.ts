@@ -2,7 +2,7 @@ import { EmbedUtils } from '../../structures/Utils';
 import { ApplicationCommandData } from 'discord.js';
 import BaseCommand from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX'
-import { FLAG, MusicUtil } from '../../structures/Utils/MusicUtil';
+import { FLAG, MusicUtil } from '../../structures/Utils/music/MusicUtil';
 
 export default class VolumeCommand extends BaseCommand<true, false>{
     constructor() {
@@ -16,6 +16,8 @@ export default class VolumeCommand extends BaseCommand<true, false>{
     }
 
     async run(ctx: GuildCTX<false>) {
+        //Get user input
+        const input = ctx.options?.get("value")?.value as number | undefined;
         const res = MusicUtil.canPerformAction({
             guild: ctx.guild,
             member: ctx.member,
@@ -23,12 +25,12 @@ export default class VolumeCommand extends BaseCommand<true, false>{
             requiredPermissions: ["MANAGE_PLAYER"],
             memberPermissions: ctx.guildSettings.permissions.members.getFor(ctx.member).calculatePermissions(),
             noDispatcherRequired: true,
-            allowViewOnly: !ctx.options?.size
+            noVoiceChannelRequired: true,
+            allowViewOnly: typeof input !== 'number'
         });
 
         if (res.isError) return;
 
-        const input = ctx.options.get("value")?.value as number | undefined;
         let volume = res.dispatcher?.player.filters.volume || ctx.guildSettings.music.filters.volume;
 
         if (typeof input !== "number" || res.flag === FLAG.VIEW_ONLY) return await ctx.reply({

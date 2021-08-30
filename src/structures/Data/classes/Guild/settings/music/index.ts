@@ -7,7 +7,7 @@ export const defaultGuildMusicSettingsData: GuildMusicSettingsData = {
     loopState: "DISABLED",
     filters: defaultGuildMusicFiltersSettingsData,
     stayConnected: false,
-    autoPlay: false
+    autoPlay: true
 }
 
 export class GuildMusicSettings extends BaseData {

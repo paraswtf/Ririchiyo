@@ -1,6 +1,6 @@
 import Client from "../structures/RirichiyoClient";
-import { ShoukakuNodeOptions, ShoukakuOptions } from "shoukaku";
-import credentials from "./credentials";
+import { ShoukakuOptions } from "shoukaku";
+import env from "./env";
 import { SharderOptions } from "../structures/Sharder";
 import { InviteGenerationOptions } from "discord.js";
 import { CustomEmojiName } from "./customEmojis";
@@ -39,7 +39,7 @@ export const clientOptions: Client['options'] = {
 }
 
 export const shardingManagerOptions: SharderOptions = {
-    token: credentials.discord.token,
+    token: env.discord.token,
     shardCount: 4,
     clusterCount: 2,
     client: Client,
@@ -47,8 +47,7 @@ export const shardingManagerOptions: SharderOptions = {
     ipcSocket: process.env.IPC_SOCKET,
 }
 
-export const shoukakuNodes: ShoukakuNodeOptions[] = typeof process.env.LAVALINK_NODES === "string" ? JSON.parse(process.env.LAVALINK_NODES) : process.env.LAVALINK_NODES;
-
+export const mainBotUserID = '831406931205292053';
 export const inviteGenerateOptions: InviteGenerationOptions = { permissions: 2192960584n, scopes: ["bot", "applications.commands"] };
 export const website_url = "";
 export const support_server_url = "";

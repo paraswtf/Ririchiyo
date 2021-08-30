@@ -7,15 +7,12 @@ import {
     Collection,
     GuildMember
 } from 'discord.js';
-import { ResolvedTrack } from '../Shoukaku/RirichiyoTrack';
-import {
-    Utils,
-    ID
-} from '../Utils';
-import CustomEmojiUtils from './CustomEmojiUtils';
-import ThemeUtils from './ThemeUtils';
+import { ResolvedTrack } from '../../Shoukaku/RirichiyoTrack';
+import Utils from '..';
+import CustomEmojiUtils from '../ui/CustomEmojiUtils';
+import ThemeUtils from '../ui/ThemeUtils';
 import PlayingMessageManager from './PlayingMessageManager';
-import { QueueLoopState } from '../Shoukaku/Queue';
+import { QueueLoopState } from '../../Shoukaku/Queue';
 
 export default class PlayingMessage {
     // Class props //
@@ -25,19 +22,39 @@ export default class PlayingMessage {
     doNotSend: boolean = false;
     components: MessageButton[];
     collector?: InteractionCollector<MessageComponentInteraction>;
-    skipVotes: Collection<ID, GuildMember> = new Collection();
-    backVotes: Collection<ID, GuildMember> = new Collection();
+    skipVotes: Collection<string, GuildMember> = new Collection();
+    backVotes: Collection<string, GuildMember> = new Collection();
     // Class props //
 
     constructor(manager: PlayingMessageManager, track: ResolvedTrack) {
         this.manager = manager;
         this.track = track;
         this.components = [
-            new MessageButton().setCustomId("shuffle").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("SHUFFLE_BUTTON").identifier),
-            new MessageButton().setCustomId("back").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("PREVIOUS_BUTTON").identifier),
-            new MessageButton().setCustomId("pause").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("PAUSE_BUTTON").identifier),
-            new MessageButton().setCustomId("skip").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get("NEXT_BUTTON").identifier),
-            new MessageButton().setCustomId("loop").setStyle("PRIMARY").setEmoji(CustomEmojiUtils.get(getLoopStateButtonName(this.manager.dispatcher.queue.loopState)).identifier)
+            new MessageButton({
+                customId: Utils.generateButtonID('shuffle'),
+                style: 'PRIMARY',
+                emoji: CustomEmojiUtils.get("SHUFFLE_BUTTON").identifier
+            }),
+            new MessageButton({
+                customId: Utils.generateButtonID('back'),
+                style: 'PRIMARY',
+                emoji: CustomEmojiUtils.get("PREVIOUS_BUTTON").identifier
+            }),
+            new MessageButton({
+                customId: Utils.generateButtonID('pause'),
+                style: 'PRIMARY',
+                emoji: CustomEmojiUtils.get("PAUSE_BUTTON").identifier
+            }),
+            new MessageButton({
+                customId: Utils.generateButtonID('skip'),
+                style: 'PRIMARY',
+                emoji: CustomEmojiUtils.get("NEXT_BUTTON").identifier
+            }),
+            new MessageButton({
+                customId: Utils.generateButtonID('loop'),
+                style: 'PRIMARY',
+                emoji: CustomEmojiUtils.get(getLoopStateButtonName(this.manager.dispatcher.queue.loopState)).identifier
+            })
         ];
     }
 
@@ -71,7 +88,7 @@ export default class PlayingMessage {
 
     async setPause(value: boolean, editMessage = true) {
         this.components[2]
-            .setCustomId(value ? "resume" : "pause")
+            .setCustomId(Utils.generateButtonID(value ? 'resume' : 'pause'))
             .setEmoji(CustomEmojiUtils.get(value ? "RESUME_BUTTON" : "PAUSE_BUTTON").identifier);
 
         if (editMessage) await this.message?.edit({
