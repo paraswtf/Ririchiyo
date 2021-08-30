@@ -9,6 +9,7 @@ import {
     GuildRenewalData,
     RenewalInvalidated
 } from './renewals/GuildRenewal';
+import { isDevelopment } from '../../../../../config';
 
 export const defaultGuildPremiumData = {
     renewals: []
@@ -33,7 +34,7 @@ export class GuildPremium {
     }
 
     get isValid() {
-        return true || this.latestRenewal.isValid;
+        return isDevelopment ? true : this.latestRenewal.isValid;
     }
 
     get isInvalid() {

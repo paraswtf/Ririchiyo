@@ -10,6 +10,7 @@ import {
     RenewalInvalidated
 } from './renewals/UserRenewal';
 import { Guild as DiscordGuild } from 'discord.js';
+import { isDevelopment } from '../../../../../config';
 
 export const defaultUserPremiumData = {
     renewals: [],
@@ -39,7 +40,7 @@ export class UserPremium {
     }
 
     get isValid() {
-        return true || this.latestRenewal.isValid;
+        return isDevelopment ? true : this.latestRenewal.isValid;
     }
 
     get isInvalid() {
