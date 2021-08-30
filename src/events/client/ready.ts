@@ -24,19 +24,19 @@ export default class ClientReadyEvent extends BaseEvent<RirichiyoClient> {
 
         if (client.shard.id === 0) {
             const existingCommands = await client.application!.commands.fetch();
-            console.log("================================= Existing commands below =================================");
-            console.log(existingCommands.map(c => c.name).join("\n"));
-            console.log("================================= Existing commands above =================================");
+            // console.log("================================= Existing commands below =================================");
+            // console.log(existingCommands.map(c => c.name).join("\n"));
+            // console.log("================================= Existing commands above =================================");
             const commands = client.commands.filter(c => !!c.slashCommandData).map(c => c.slashCommandData!);
             for (const command of commands) {
                 const existing = existingCommands?.find(c => c.name === command.name);
                 if (existing) await client.application!.commands.edit(existing.id, command);
                 else await client.application!.commands.create(command);
             }
-            const finalCommands = await client.application!.commands.fetch();
-            console.log("================================= Final commands below =================================");
-            console.log(finalCommands.map(c => c.name).join("\n"));
-            console.log("================================= Final commands above =================================");
+            // const finalCommands = await client.application!.commands.fetch();
+            // console.log("================================= Final commands below =================================");
+            // console.log(finalCommands.map(c => c.name).join("\n"));
+            // console.log("================================= Final commands above =================================");
         }
 
         //Finally log that the client ready event has completed
