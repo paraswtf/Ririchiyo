@@ -1,7 +1,7 @@
 import Color from 'color';
 import { Guild } from 'discord.js';
-import { DefinedCollection } from '.';
-import { colors } from "../../config";
+import { DefinedCollection } from '..';
+import { colors } from "../../../config";
 
 export class ThemeUtils {
     public static readonly colors = new DefinedCollection(colors.map(c => [c.type, Color(c.hex, 'hex')]));

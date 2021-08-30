@@ -17,6 +17,7 @@ import BaseCommand from '../../structures/Commands/BaseCommand';
 import CTX from '../../structures/Commands/CTX'
 import { version } from '../../../package.json';
 import time from 'ms';
+import { RawUserData } from 'discord.js/typings/rawDataTypes';
 
 export default class InfoCommand extends BaseCommand<boolean, false>{
     constructor() {
@@ -64,7 +65,7 @@ export default class InfoCommand extends BaseCommand<boolean, false>{
 
     async generateDisplayOwnerText(owner: OwnerObject, hasPermission = false) {
         const fetchedData = await this.client.shard.fetchUser(owner.id).catch(this.client.logger.error) || null;
-        const user = fetchedData ? new User(this.client, fetchedData) : null;
+        const user = fetchedData ? new User(this.client, fetchedData as RawUserData) : null;
         return `**[${user?.username ?? owner.displayName}](${owner.clickableLink})** ${owner.emoji && hasPermission ? ` ${CustomEmojiUtils.get(owner.emoji)}` : ""}`;
     }
 

@@ -1,17 +1,17 @@
-import Utils from "./";
+import Utils from "..";
 import {
     Guild,
     GuildMember,
     StageChannel,
     VoiceChannel
 } from "discord.js";
-import CTX from "../Commands/CTX";
-import EmbedUtils from "./EmbedUtils";
+import CTX from "../../Commands/CTX";
+import EmbedUtils from "../ui/EmbedUtils";
 import {
     InternalPermissionResolvable,
     InternalPermissions
 } from "./InternalPermissions";
-import Dispatcher from "../Shoukaku/Dispatcher";
+import Dispatcher from "../../Shoukaku/Dispatcher";
 
 
 export class MusicUtil {
@@ -28,6 +28,7 @@ export class MusicUtil {
             requiredPermissions,
             vcMemberAmtForAllPerms,
             noDispatcherRequired,
+            noVoiceChannelRequired,
             isSpawnAttempt,
             allowViewOnly
         } = Object.assign({
@@ -47,7 +48,12 @@ export class MusicUtil {
             return new Error(FLAG.NO_DISPATCHER, memberPermissions);
         }
 
-        if (dispatcher && botVc) {
+        if (!noVoiceChannelRequired && !botVc) {
+            if (ctx) this.sendError(ctx.language.VOICE_DISCONNECTED, ctx, true);
+            return new Error(FLAG.VOICE_DISCONNECTED, memberPermissions);
+        }
+
+        if (dispatcher) {
             if (!memberVc) {
                 if (isSpawnAttempt) {
                     if (ctx) this.sendError(ctx.language.ALREADY_PLAYING_DIFFERENT_VC, ctx, true);
@@ -57,7 +63,7 @@ export class MusicUtil {
                 return new Error(FLAG.NO_AUTHOR_CHANNEL_AND_DISPATCHER_EXISTS, memberPermissions);
             }
             else {
-                if (memberVc.id !== botVc.id) {
+                if (botVc && (memberVc.id !== botVc.id)) {
                     if (isSpawnAttempt) {
                         if (ctx) this.sendError(ctx.language.ALREADY_PLAYING_DIFFERENT_VC, ctx, true);
                         return new Error(FLAG.DISPATCHER_ALREADY_EXISTS, memberPermissions);
@@ -136,6 +142,7 @@ export interface CanPerformActionrOptions {
     requiredPermissions: InternalPermissionResolvable,
     vcMemberAmtForAllPerms?: number,
     noDispatcherRequired?: boolean,
+    noVoiceChannelRequired?: boolean,
     isSpawnAttempt?: boolean,
     allowViewOnly?: boolean
 }
@@ -161,6 +168,7 @@ export enum FLAG {
     NO_BOT_PERMS_VIEW_CHANNEL = 1 << 17,
     NO_BOT_PERMS_CONNECT = 1 << 18,
     NO_BOT_PERMS_SPEAK = 1 << 19,
+    VOICE_DISCONNECTED = 1 << 20,
 }
 
 export class Error {

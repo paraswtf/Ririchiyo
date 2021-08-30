@@ -1,6 +1,6 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
-import { MusicUtil } from '../../structures/Utils/MusicUtil';
+import { MusicUtil } from '../../structures/Utils/music/MusicUtil';
 import { EmbedUtils } from '../../structures/Utils';
 import { ApplicationCommandData } from 'discord.js';
 import Dispatcher from '../../structures/Shoukaku/Dispatcher';
@@ -18,8 +18,11 @@ export default class SkipToCommand extends BaseCommand<true, false> {
 
 
     async run(ctx: GuildCTX<false>) {
+        //Get user input
+        let input = (ctx.options.get('index') || ctx.options.get('query'))?.value as string | number | undefined;
+
         //Use forceSkip if no options provided
-        if (!ctx.options.size) return this.client.commands.get("forceskip")!.run(ctx);
+        if (typeof input === 'undefined') return this.client.commands.get("forceskip")!.run(ctx);
 
         const res = MusicUtil.canPerformAction({
             guild: ctx.guild,
@@ -34,8 +37,6 @@ export default class SkipToCommand extends BaseCommand<true, false> {
             embeds: [EmbedUtils.embedifyString(ctx.guild, "There is nothing playing right now!", { isError: true })],
             ephemeral: true
         });
-
-        let input = ctx.options.first()!.value as string | number;
 
         if (typeof input === "number") {
             if (!res.dispatcher.queue[--input]) return await ctx.reply({
@@ -69,15 +70,15 @@ export default class SkipToCommand extends BaseCommand<true, false> {
         description: this.description,
         options: [
             {
-                name: "query",
-                description: "Search and skip to a song",
-                type: "STRING",
-                required: false
-            },
-            {
                 name: "index",
                 description: "The index of the song to skip to",
                 type: "INTEGER",
+                required: false
+            },
+            {
+                name: "query",
+                description: "Search and skip to a song",
+                type: "STRING",
                 required: false
             }
         ]

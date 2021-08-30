@@ -1,12 +1,13 @@
-import Utils from '.';
+import Utils from '..';
 import {
     Collection,
-    Emoji
+    Emoji,
+    UserFlagsString
 } from 'discord.js';
 import {
     customEmojis,
     CustomEmojiName
-} from '../../config';
+} from '../../../config';
 
 
 export class CustomEmojiUtils {
@@ -21,6 +22,10 @@ export class CustomEmojiUtils {
      */
     public static get(name: CustomEmojiName) {
         return this.customEmojis.get(name) ?? this.customEmojis.get("NOT_FOUND_EMOJI")!;
+    }
+
+    public static getForFlag(flag: UserFlagsString) {
+        return this.customEmojis.get(flag as any) ?? null;
     }
 }
 
