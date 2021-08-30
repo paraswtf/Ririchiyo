@@ -24,17 +24,19 @@ export default class PingCommand extends BaseCommand<boolean, false> {
     }
 
     async run(ctx: CTX<boolean, false>) {
+        //Get the user input
+        const query = (ctx.options.get('query')?.value as string | undefined)?.toLowerCase();
         const helpEmbed = new MessageEmbed();
 
         //Get viewable commands
         const commands = (owners.find(u => u.id === ctx.user.id)
             ? this.client.commands
-            : this.client.commands.filter(cmd => !cmd.hidden)).array();
+            : this.client.commands.filter(cmd => !cmd.hidden)).map(e => e);
 
         //Get command categories
         const commandCategories = new Set(commands.map(c => c.category));
 
-        if (!ctx.options.size) {
+        if (!query) {
             helpEmbed.setAuthor(ctx.client.user.username, ctx.client.user.avatarURL() || "https://cdn.discordapp.com/embed/avatars/4.png", website_url)
                 .setDescription(`A feature rich and easy to use discord music bot.\n\nMy prefix is \`/\`\n\n**List of all commands-**`)
                 .setColor(ThemeUtils.getClientColor(ctx.guild));
@@ -52,8 +54,6 @@ export default class PingCommand extends BaseCommand<boolean, false> {
                 })** for more help.\nAdd me to another server- **[invite](${this.client.generateInvite(inviteGenerateOptions)})**`);
         }
         else {
-            const query = (ctx.options.get("query")!.value as string).toLowerCase();
-
             const command = this.client.commands.get(query);
 
             //if command is not found, check categories

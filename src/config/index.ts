@@ -1,4 +1,4 @@
 export * from './colors';
-export * from './credentials';
+export * from './env';
 export * from './customEmojis';
 export * from './options';

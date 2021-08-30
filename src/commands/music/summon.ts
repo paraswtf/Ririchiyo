@@ -8,7 +8,7 @@ import {
     Error,
     Success,
     FLAG
-} from '../../structures/Utils/MusicUtil';
+} from '../../structures/Utils/music/MusicUtil';
 import {
     ApplicationCommandData,
     MessageEmbed,
@@ -108,6 +108,7 @@ export default class SummonCommand extends BaseCommand<true, false> {
             ctx,
             isSpawnAttempt: true,
             noDispatcherRequired: true,
+            noVoiceChannelRequired: true,
             requiredPermissions: ["SUMMON_PLAYER"],
             memberPermissions: ctx.guildSettings.permissions.members.getFor(ctx.member).calculatePermissions(),
         });

@@ -1,6 +1,6 @@
 import Axios from "axios";
-import { UnresolvedTrackData } from "./Shoukaku/RirichiyoTrack";
-import Utils, { DefinedCollection } from "./Utils";
+import { UnresolvedTrackData } from "../Shoukaku/RirichiyoTrack";
+import Utils, { DefinedCollection } from "../Utils";
 export const spotifyRegex = /^(?:https:\/\/(?:(?:open|www)\.)?spotify\.com\/|spotify:)(?:.+)?(?<type>track|playlist|album|artist)[\/:](?<id>[A-Za-z0-9]{22})/;
 
 const BASE_URL = "https://api.spotify.com/v1";

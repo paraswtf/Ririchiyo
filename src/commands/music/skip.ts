@@ -1,6 +1,6 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
-import { MusicUtil } from '../../structures/Utils/MusicUtil';
+import { MusicUtil } from '../../structures/Utils/music/MusicUtil';
 import { EmbedUtils } from '../../structures/Utils';
 import { ApplicationCommandData } from 'discord.js';
 import Dispatcher from '../../structures/Shoukaku/Dispatcher';

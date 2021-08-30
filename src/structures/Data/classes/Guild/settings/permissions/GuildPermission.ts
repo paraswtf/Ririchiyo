@@ -1,6 +1,6 @@
 import Guild from '../..';
 import { BitField, GuildMember, Role } from 'discord.js';
-import { InternalPermissions, InternalPermissionResolvable } from '../../../../../Utils/InternalPermissions';
+import { InternalPermissions, InternalPermissionResolvable } from '../../../../../Utils/music/InternalPermissions';
 import { GuildSettings } from '../GuildSettings';
 import { GuildPermissionsManager } from '.';
 import { owners } from '../../../../../../config';

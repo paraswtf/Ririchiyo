@@ -19,7 +19,7 @@ export default class LyricsCommand extends BaseCommand<boolean, false> {
     async run(ctx: AllCTX<false>) {
         const dispatcher = ctx.guild ? this.client.dispatchers.get(ctx.guild.id) : null;
 
-        const query = ctx.options.first()?.value as string ?? dispatcher?.queue.current?.title;
+        const query = ctx.options.get('query')?.value as string ?? dispatcher?.queue.current?.title;
 
         if (!query) return await ctx.reply({
             embeds: [EmbedUtils.embedifyString(ctx.guild, ctx.guild ? "There is nothing playing right now!" : "Please provide a query to search for", { isError: true })],

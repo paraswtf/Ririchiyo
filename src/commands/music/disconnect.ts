@@ -1,8 +1,9 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
-import { MusicUtil } from '../../structures/Utils/MusicUtil';
+import { MusicUtil } from '../../structures/Utils/music/MusicUtil';
 import { EmbedUtils } from '../../structures/Utils';
 import { ApplicationCommandData } from 'discord.js';
+import { inspect } from 'util';
 
 export default class DisconnectCommand extends BaseCommand<true, false> {
     constructor() {
@@ -21,6 +22,7 @@ export default class DisconnectCommand extends BaseCommand<true, false> {
             member: ctx.member,
             ctx,
             requiredPermissions: ["MANAGE_PLAYER", "MANAGE_QUEUE"],
+            noVoiceChannelRequired: true,
             memberPermissions: ctx.guildSettings.permissions.members.getFor(ctx.member).calculatePermissions()
         });
         if (res.isError) return;
@@ -34,7 +36,7 @@ export default class DisconnectCommand extends BaseCommand<true, false> {
         };
 
         await ctx.reply(options);
-        if (res.dispatcher!.textChannel && ctx.channel.id !== res.dispatcher!.textChannel.id) await res.dispatcher!.sendMessage(options);
+        if (res.dispatcher?.textChannel && ctx.channel.id !== res.dispatcher.textChannel.id) await res.dispatcher.sendMessage(options);
 
     }
 

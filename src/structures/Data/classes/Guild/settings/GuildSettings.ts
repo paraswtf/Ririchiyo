@@ -3,7 +3,7 @@ import { AllowedClientID, defaultGuildSettingsData, GuildSettingsManager } from 
 import { GuildPermissionsManager, GuildPermissionsData } from "./permissions";
 import DBUtils, { BaseData } from "../../../DBUtils";
 import { GuildMember, Role } from "discord.js";
-import { GuildMusicSettings } from "./music";
+import { GuildMusicSettings, GuildMusicSettingsData } from "./music";
 import { LanguageName } from "../../../../../config/translations";
 
 export class GuildSettings extends BaseData {
@@ -49,10 +49,11 @@ export class GuildSettings extends BaseData {
 }
 
 export interface GuildSettingsData {
-    languagePreference: LanguageName,
+    languagePreference: LanguageName;
+    music: GuildMusicSettingsData;
     permissions: {
-        members: GuildPermissionsData,
-        roles: GuildPermissionsData
+        members: GuildPermissionsData;
+        roles: GuildPermissionsData;
     }
 }
 

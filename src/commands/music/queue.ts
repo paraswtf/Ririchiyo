@@ -1,6 +1,6 @@
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX';
-import { CustomEmojiUtils, ThemeUtils } from '../../structures/Utils';
+import { Utils, CustomEmojiUtils, ThemeUtils } from '../../structures/Utils';
 import { ApplicationCommandData, Guild, MessageButton, MessageEmbed, Permissions } from 'discord.js';
 import Dispatcher from '../../structures/Shoukaku/Dispatcher';
 const tracksPerPage = 25;
@@ -18,10 +18,14 @@ export default class QueueCommand extends BaseCommand<true, true> {
         })
     }
 
-    async run(ctx: GuildCTX<true>, args: string[]) {
+    async run(ctx: GuildCTX<true>, args: string[] | null) {
         const dispatcher = this.client.dispatchers.get(ctx.guild.id);
 
-        if (ctx.interaction.isButton()) return await ctx.interaction.update(getResponse(ctx.guild, { dispatcher, page: args[0] ? parseInt(args[0]) : undefined, autoPlay: ctx.guildSettings.music.autoPlay }));
+        if (ctx.interaction.isButton()) return await ctx.interaction.update(getResponse(ctx.guild, {
+            dispatcher,
+            page: args ? (args[0] ? parseInt(args[0]) : undefined) : undefined,
+            autoPlay: ctx.guildSettings.music.autoPlay
+        }));
         else await ctx.interaction.reply(getResponse(ctx.guild, { dispatcher, autoPlay: ctx.guildSettings.music.autoPlay }));
     }
 
@@ -55,9 +59,27 @@ export function getResponse(guild: Guild, { dispatcher, page, autoPlay }: GetRes
             {
                 type: 1,
                 components: [
-                    new MessageButton().setCustomId(`queue:${Math.min(maxPageIndex, Math.max(0, pageNumber - 1))}`).setStyle("SECONDARY").setEmoji(CustomEmojiUtils.get("ARROW_LEFT_BUTTON").identifier),
-                    new MessageButton().setCustomId(`queue:${Math.min(maxPageIndex, Math.max(0, pageNumber))}`).setStyle("SECONDARY").setEmoji(CustomEmojiUtils.get("RELOAD_BUTTON").identifier),
-                    new MessageButton().setCustomId(`queue:${Math.min(maxPageIndex, Math.max(0, pageNumber + 1))}`).setStyle("SECONDARY").setEmoji(CustomEmojiUtils.get("ARROW_RIGHT_BUTTON").identifier)
+                    new MessageButton({
+                        customId: Utils.generateButtonID('queue', [
+                            Math.min(maxPageIndex, Math.max(0, pageNumber - 1)).toString()
+                        ]),
+                        style: 'SECONDARY',
+                        emoji: CustomEmojiUtils.get("ARROW_LEFT_BUTTON").identifier
+                    }),
+                    new MessageButton({
+                        customId: Utils.generateButtonID('queue', [
+                            Math.min(maxPageIndex, Math.max(0, pageNumber)).toString()
+                        ]),
+                        style: 'SECONDARY',
+                        emoji: CustomEmojiUtils.get("RELOAD_BUTTON").identifier
+                    }),
+                    new MessageButton({
+                        customId: Utils.generateButtonID('queue', [
+                            Math.min(maxPageIndex, Math.max(0, pageNumber + 1)).toString()
+                        ]),
+                        style: 'SECONDARY',
+                        emoji: CustomEmojiUtils.get("ARROW_RIGHT_BUTTON").identifier
+                    })
                 ]
             }
         ]

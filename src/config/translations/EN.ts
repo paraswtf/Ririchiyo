@@ -5,6 +5,7 @@ export const EN = {
     COMMAND_RATELIMITED: "Please wait ${0} more seconds before reusing the \`${1}\` command.",
     COMMAND_OWNER_ONLY: "This command can only be used by the bot owners!",
     NOTHING_PLAYING: "There is nothing playing right now!",
+    VOICE_DISCONNECTED: "I'm not connected to a voice channel, use /summon to connect me to a voice channel!",
     NEED_TO_BE_IN_VC: "You need to be in a voice channel to use that command!",
     ALREADY_PLAYING_YOUR_VC: "Already playing your channel!",
     ALREADY_PLAYING_DIFFERENT_VC: "Already playing in a different channel!",

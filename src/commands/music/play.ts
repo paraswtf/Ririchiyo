@@ -11,10 +11,10 @@ import {
     MusicUtil,
     Error,
     Success
-} from '../../structures/Utils/MusicUtil';
+} from '../../structures/Utils/music/MusicUtil';
 import { GuildCTX } from '../../structures/Commands/CTX';
 import { BaseCommand } from '../../structures/Commands/BaseCommand';
-import { InternalPermissionResolvable } from '../../structures/Utils/InternalPermissions';
+import { InternalPermissionResolvable } from '../../structures/Utils/music/InternalPermissions';
 
 export default class PlayCommand extends BaseCommand<true, false> {
     constructor() {
@@ -50,6 +50,7 @@ export default class PlayCommand extends BaseCommand<true, false> {
             member: ctx.member,
             ctx,
             noDispatcherRequired: !dispatcherExists,
+            noVoiceChannelRequired: true,
             isSpawnAttempt: !dispatcherExists,
             requiredPermissions,
             memberPermissions: ctx.guildSettings.permissions.members.getFor(ctx.member).calculatePermissions()

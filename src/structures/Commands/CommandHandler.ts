@@ -4,7 +4,6 @@ import { owners } from "../../config";
 import CTX from './CTX';
 import { Collection, TextChannel, CommandInteraction, MessageComponentInteraction } from "discord.js";
 import Utils, { EmbedUtils, PermissionUtils } from "../Utils";
-import translations from "../../config/translations";
 
 export class CommandHandler {
     client: RirichiyoClient;
@@ -45,6 +44,7 @@ export class CommandHandler {
         if (!command || (interaction.guild && !command.allowGuildCommand) || (!interaction.guild && !command.allowDMCommand)) return;
 
         const guildData = await this.client.db.getGuild(interaction.guild);
+        const userData = await this.client.db.getUser(interaction.user);
         const guildSettings = guildData.settings.getSettings();
         const lang = guildSettings.languagePreference;
 
@@ -54,6 +54,7 @@ export class CommandHandler {
             interaction,
             command,
             guildData,
+            userData,
             guildSettings,
             botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel),
             language: lang
@@ -102,11 +103,10 @@ export class CommandHandler {
     }
 
     async handleComponentInteraction(interaction: MessageComponentInteraction, recievedAt: number) {
-        //Find the requested command
-        const args = interaction.customId.split(":");
-        if (!args.length) return;
+        const commandInfo = Utils.decodeButtonID(interaction.customId);
+        if (!commandInfo) return;
 
-        const command = this.client.commands.get(args.shift()!);
+        const command = this.client.commands.get(commandInfo.commandName);
 
         //Check if command exists and meets the requirements to run
         if (
@@ -117,6 +117,7 @@ export class CommandHandler {
         ) return;
 
         const guildData = await this.client.db.getGuild(interaction.guild);
+        const userData = await this.client.db.getUser(interaction.user);
         const guildSettings = guildData.settings.getSettings();
         const lang = guildSettings.languagePreference;
 
@@ -126,6 +127,7 @@ export class CommandHandler {
             interaction,
             command,
             guildData,
+            userData,
             guildSettings,
             botPermissionsForChannel: PermissionUtils.getPermissionsForChannel(interaction.channel as TextChannel),
             language: lang
@@ -162,7 +164,7 @@ export class CommandHandler {
             }).catch(this.client.logger.error)
         };
 
-        await command.run(ctx, args).catch(async (err) => {
+        await command.run(ctx, commandInfo.args).catch(async (err) => {
             this.client.logger.error(err);
             await ctx.reply({
                 embeds: [

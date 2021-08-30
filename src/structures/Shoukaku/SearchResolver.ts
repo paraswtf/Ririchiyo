@@ -1,8 +1,8 @@
 import { KSoftClient } from "@ksoft/api";
 import { GuildMember } from "discord.js";
-import { Spotify, SpotifyOptions, spotifyRegex } from "../Spotify";
+import { Spotify, SpotifyOptions, spotifyRegex } from "../SpotifyAPI/Spotify";
 import Utils from "../Utils";
-import { ResourcePart, YouTube } from "../YouTube";
+import { ResourcePart, YouTube } from "../YouTubeAPI";
 import { AnyTrack, RirichiyoTrack } from "./RirichiyoTrack";
 const replacements: Record<string, string> = {
     '&': "and"
