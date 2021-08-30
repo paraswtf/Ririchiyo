@@ -8,7 +8,7 @@ import {
     Error,
     Success,
     FLAG
-} from '../../structures/Utils/MusicUtil';
+} from '../../structures/Utils/music/MusicUtil';
 import {
     ApplicationCommandData,
     MessageEmbed,

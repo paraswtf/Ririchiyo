@@ -11,6 +11,7 @@ import {
 import { message_delete_timeout } from "../../config";
 import translations, { Language, LanguageName } from "../../config/translations";
 import { Guild as GuildData } from "../Data/classes/Guild";
+import { User as UserData } from "../Data/classes/User";
 import { GuildSettings } from "../Data/classes/Guild/settings/GuildSettings";
 import Utils from "../Utils";
 import BaseCommand from "./BaseCommand";
@@ -22,6 +23,7 @@ export class CTX<isGuild extends boolean = boolean, allowComponent extends boole
     readonly command: BaseCommand<isGuild>;
     readonly options: BooleanBasedType<allowComponent, CommandInteraction['options'] | null, CommandInteraction['options']>;
     readonly guild: BooleanBasedType<isGuild, Guild>;
+    readonly userData: UserData;
     readonly guildData: BooleanBasedType<isGuild, GuildData>;
     readonly guildSettings: BooleanBasedType<isGuild, GuildSettings>;
     readonly channel: TextChannel | DMChannel | ThreadChannel;
@@ -34,6 +36,7 @@ export class CTX<isGuild extends boolean = boolean, allowComponent extends boole
         recievedAt,
         interaction,
         command,
+        userData,
         guildData = null,
         guildSettings = null,
         botPermissionsForChannel,
@@ -44,6 +47,7 @@ export class CTX<isGuild extends boolean = boolean, allowComponent extends boole
         this.command = command;
         this.options = (interaction.isCommand() ? interaction.options : null) as this['options'];
         this.guild = interaction.guild as this['guild'];
+        this.userData = userData as this['userData'];
         this.guildData = guildData as this['guildData'];
         this.guildSettings = guildSettings as this['guildSettings'];
         this.channel = interaction.channel as this['channel'];
@@ -53,8 +57,8 @@ export class CTX<isGuild extends boolean = boolean, allowComponent extends boole
         this.language = translations.get(language);
     }
 
-    async defer(options?: Parameters<this['interaction']['defer']>[0]) {
-        return await this.interaction.defer(options);
+    async defer(options?: Parameters<this['interaction']['deferReply']>[0]) {
+        return await this.interaction.deferReply(options);
     }
 
     async reply(options: Parameters<this['interaction']['reply']>['0'], { deleteTimeout = message_delete_timeout, deleteLater = false } = {}) {
@@ -70,9 +74,9 @@ export interface CTXOptions<isGuild extends boolean = boolean, allowComponent ex
     readonly recievedAt: number,
     readonly interaction: BooleanBasedType<allowComponent, CommandInteraction | MessageComponentInteraction, CommandInteraction>,
     readonly command: BaseCommand<isGuild>,
+    readonly userData: UserData,
     readonly guildData: BooleanBasedType<isGuild, GuildData, null | undefined>,
     readonly guildSettings: BooleanBasedType<isGuild, GuildSettings, null | undefined>,
-    //userData: UserData,
     readonly botPermissionsForChannel: Readonly<Permissions>,
     readonly language: LanguageName
 }

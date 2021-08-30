@@ -1,6 +1,5 @@
 import {
-    Utils,
-    ID
+    Utils
 } from '.';
 import {
     Guild,
@@ -143,7 +142,7 @@ export class PermissionUtils {
         }
     }
 
-    public static getErrorString(returnValue: GetPermissionsResult, checkingChannelID: ID, sentChannelID: ID) {
+    public static getErrorString(returnValue: GetPermissionsResult, checkingChannelID: string, sentChannelID: string) {
         const errors = [];
         if (returnValue.missingChannelPermissions) errors.push(this.generateNoPermsMessage(returnValue.missingChannelPermissions, {
             channelID: sentChannelID === checkingChannelID ? undefined : checkingChannelID, type: "CHANNEL"
@@ -155,7 +154,7 @@ export class PermissionUtils {
 }
 
 export interface GenerateNoPermsMessageOptions {
-    channelID?: ID,
+    channelID?: string,
     type: "GUILD" | "CHANNEL" | "WEBHOOK"
 }
 

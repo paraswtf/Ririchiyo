@@ -1,21 +1,24 @@
 import { EventEmitter } from "events";
 import WebSocket from "ws";
 import { CustomError } from "../Utils";
+import { APIEvent, APIStats, Payload } from "./API_typings";
+import RirichiyoAPI from "./RirichiyoAPI";
 
 export class RirichiyoWSClient extends EventEmitter {
-    readonly host: string;
+    readonly api: RirichiyoAPI;
     readonly options: RirichiyoWSClientOptions;
-    private connectOptions: Partial<ConnectOptions> = {};
+    private token?: string;
     private reconnectTimeout?: NodeJS.Timeout;
     private reconnectAttempts = 1;
     readonly stats: APIStats;
+    private readonly inactivityHandler: InactivityHandler;
 
     /** The socket for the node. */
     public socket: WebSocket | null = null;
 
-    constructor(options: RirichiyoWSClientOptions) {
+    constructor(api: RirichiyoAPI, options: RirichiyoWSClientOptions) {
         super();
-        this.host = options.host;
+        this.api = api;
         this.options = Object.assign({
             retryAmount: 5,
             retryDelay: 30e3
@@ -23,6 +26,7 @@ export class RirichiyoWSClient extends EventEmitter {
         this.stats = {
             totalPlayers: 0
         }
+        this.inactivityHandler = new InactivityHandler(this);
     }
 
     /** Returns if connected to the Node. */
@@ -32,24 +36,24 @@ export class RirichiyoWSClient extends EventEmitter {
     }
 
     /** Connects to the Server. */
-    public connect(options?: ConnectOptions): void {
+    public connect(token?: string): void {
         if (this.connected) return;
 
-        if (options) this.connectOptions = options;
-        if (!this.connectOptions) throw new CustomError("No options provided to connect!");
+        if (token) this.token = token;
+        if (!this.token) throw new CustomError("No token provided to connect!");
 
         const auth: Partial<WSConnectionAuth> = {
-            appID: this.connectOptions.appID,
-            token: this.connectOptions.token,
-            clientid: this.connectOptions.clientID,
-            clusterid: this.connectOptions.clusterID,
-            shards: this.connectOptions.shards,
-            shardCount: this.connectOptions.shardCount
+            appID: this.api.appID,
+            token: this.token,
+            clientid: this.api.client.user.id,
+            clusterid: this.api.client.shard.id,
+            shards: this.api.client.shard.shards,
+            shardCount: this.api.client.shard.shardCount
         };
 
         if (Object.values(auth).some(e => typeof e === 'undefined')) throw new CustomError("Invalid API options passed");
 
-        this.socket = new WebSocket(`ws${this.options.secure ? "s" : ""}://${this.options.host}:${this.options.port}/${this.options.path ?? ""}`,
+        this.socket = new WebSocket(`ws${this.options.secure ? "s" : ""}://${this.api.host}:${typeof this.api.port !== 'undefined' ? `:${this.api.port}` : ''}/${this.options.path ?? ""}`,
             { headers: { authorization: JSON.stringify(auth) } }
         )
         this.socket.on("error", this.error.bind(this));
@@ -88,37 +92,48 @@ export class RirichiyoWSClient extends EventEmitter {
         this.emit("disconnect");
     }
 
-    protected open(): void {
+    private open(): void {
         if (this.reconnectTimeout) clearTimeout(this.reconnectTimeout);
         this.emit("connect");
+        //Start checking the inactivity
+        this.inactivityHandler.init();
     }
 
-    protected close(code: number, reason: string): void {
+    private close(code: number, reason: string): void {
+        this.inactivityHandler.pause();
         this.emit("disconnect", { code, reason });
         if (code !== 1000 || reason !== "destroy") this.reconnect();
     }
 
-    protected error(error: Error): void {
+    private error(error: Error): void {
         if (!error) return;
         this.emit("error", error);
     }
 
-    protected message(d: Buffer | string): void {
+    private message(d: Buffer | string): void {
         if (Array.isArray(d)) d = Buffer.concat(d);
         else if (d instanceof ArrayBuffer) d = Buffer.from(d);
 
         const payload = JSON.parse(d.toString()) as Payload;
 
         if (!payload.op) return;
-        this.emit("payload", payload);
-        console.log(payload);
+        this.api.emit("payload", payload);
 
         switch (payload.op) {
+            case "ping":
+                //Play ping pong with api
+                this.socket?.send(JSON.stringify({ "op": "pong", "data": "Client response to ping request from server..." }));
+                break;
+            case "pong": this.inactivityHandler.pong();
+                break;
             case "stats":
                 Object.assign(this, { stats: { ...payload.data } });
                 break;
+            case "vote":
+                this.api.emit('vote', payload.data);
+                break;
             case "apiEvent":
-                this.handleApiEvent(payload);
+                this.api.emit('apiEvent', payload);
                 break;
             default:
                 this.emit("error", new CustomError(`Unexpected op "${payload.op}" with data: ${payload}`));
@@ -126,89 +141,59 @@ export class RirichiyoWSClient extends EventEmitter {
         }
     }
 
-    protected handleApiEvent(payload: APIEventPayload) {
-        if (EVENT_HANDLERS[`EVENT_${payload.data.event}`]) EVENT_HANDLERS[`EVENT_${payload.data.event}`](payload);
+    async send(data: APIEvent, options: SendOptions): Promise<true> {
+        return new Promise((resolve, reject) => {
+            this.socket?.send({
+                op: 'send',
+                data: {
+                    options,
+                    data
+                }
+            }, (err) => err ? reject(err) : resolve(true))
+        })
     }
 }
 
-export const EVENT_HANDLERS: EventHandlers = {
-    EVENT_TEST: () => {
-        return console.log("test");
+export class InactivityHandler {
+    readonly client: RirichiyoWSClient;
+    private receivedPong: boolean;
+    initialized: boolean;
+    private timeout?: NodeJS.Timeout;
+    constructor(client: RirichiyoWSClient) {
+        this.client = client;
+        this.receivedPong = true;
+        this.initialized = false;
     }
-}
-
-export type EventHandlers = {
-    [key in `EVENT_${APIEventPayload['data']['event']}`]: (d: APIEventPayload) => void;
-};
-
-export interface BasePayload {
-    op: PayloadOP,
-    data: any
-}
-
-export type PayloadOP =
-    //This is for stats IDK
-    | "stats"
-    //This is for basically everything
-    | "apiEvent"
-
-export interface StatsPayload extends BasePayload {
-    op: "stats",
-    data: Partial<APIStats>
-}
-
-export interface APIEventPayload extends BasePayload {
-    op: "apiEvent",
-    data: APIEvent
-}
-
-export interface UnknownPayload {
-    op: "unknown",
-    data: any
-}
-
-export type Payload =
-    | StatsPayload
-    | APIEventPayload
-    | UnknownPayload
-
-export interface BaseAPIEventData {
-    event: string,
-    payload: any
-}
-
-export interface APIEvent_TEST extends BaseAPIEventData {
-    event: "TEST",
-    payload: {
-        test: "hello world!"
+    init() {
+        this.initialized = true;
+        this.run();
+        return this;
     }
-}
-
-export type APIEvent =
-    | APIEvent_TEST
-
-export interface APIStats {
-    totalPlayers: number,
+    pause() {
+        this.initialized = false;
+        if (this.timeout) clearTimeout(this.timeout);
+        return this;
+    }
+    run() {
+        if (this.receivedPong) {
+            if (this.client.socket?.readyState === 1) this.client.socket.send(JSON.stringify({ op: "ping", data: "Client requesting ping from server..." }), (err) => err ? console.error(err) : undefined);
+            this.receivedPong = false;
+            this.timeout = setTimeout(this.run.bind(this), 30e3);
+        }
+        else this.client.socket?.close();
+    }
+    pong() {
+        this.receivedPong = true;
+    }
 }
 
 export interface RirichiyoWSClientOptions {
     secure?: boolean,
-    host: string,
-    port: number,
     path?: string,
     /** The retryAmount for the connection. */
     retryAmount?: number;
     /** The retryDelay for the connection. */
     retryDelay?: number;
-}
-
-export interface ConnectOptions {
-    appID?: string;
-    token?: string;
-    clientID?: string;
-    clusterID?: number;
-    shards?: string[];
-    shardCount?: number;
 }
 
 export interface WSConnectionAuth {
@@ -224,6 +209,16 @@ export interface WSConnectionAuth {
     shards: string[];
     //The shardCount of the client
     shardCount: number;
+}
+
+export interface SendOptions {
+    appIDs: string[],
+    clientIDs?: string[]
+    //Use one of the below to determine the shard
+    guildIDs?: string[];
+    //Array of shardIDs for each client
+    shardIDs?: bigint[];
+    clusterIDs?: number[];
 }
 
 export interface RirichiyoWSClient {

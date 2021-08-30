@@ -1,4 +1,8 @@
-import { Collection } from 'discord.js';
+import {
+    Collection,
+    Guild as DiscordGuild,
+    User as DiscordUser
+} from 'discord.js';
 import {
     Db as DBConnection,
     MongoClient,
@@ -11,10 +15,10 @@ import {
     GuildData,
     defaultGuildData
 } from './classes/Guild';
-
 import {
-    Guild as DiscordGuild
-} from 'discord.js';
+    User,
+    UserData
+} from './classes/User';
 
 export class DB {
     // Class props //
@@ -29,7 +33,8 @@ export class DB {
         this.client = client;
         this.mongoClient = new MongoClient(uriOptions.mongoDBURI, Object.assign({ useUnifiedTopology: true }, options));
         this.cache = {
-            guilds: new Collection()
+            guilds: new Collection(),
+            users: new Collection()
         }
     }
 
@@ -38,7 +43,8 @@ export class DB {
             await this.mongoClient.connect();
             const connection = this.mongoClient.db();
             this.collections = {
-                guilds: connection.collection(`guilds`)
+                guilds: connection.collection(`guilds`),
+                users: connection.collection(`users`)
             };
             this.connection = connection;
             this.client.logger.info(`Database connected: ${connection.databaseName}`);
@@ -68,14 +74,29 @@ export class DB {
 
         return this.cache.guilds.get(guild.id)!;
     }
+
+    async getUser(user: DiscordUser): Promise<User> {
+        //if no cached instance exists create one
+        if (!this.cache.users.has(user.id)) this.cache.users.set(user.id,
+            new User(
+                this,
+                user,
+                await this.collections.users.findOne({ _id: user.id }) || { _id: user.id }
+            )
+        );
+
+        return this.cache.users.get(user.id)!;
+    }
 }
 
 export interface Collections {
-    guilds: DBCollection<GuildData>
+    guilds: DBCollection<GuildData>,
+    users: DBCollection<UserData>
 }
 
 export interface Cache {
     guilds: Collection<Guild['id'], Guild>
+    users: Collection<User['id'], User>
 }
 
 export interface DBURIOptions {

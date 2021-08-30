@@ -1,17 +1,17 @@
-import Utils from "./";
+import Utils from "..";
 import {
     Guild,
     GuildMember,
     StageChannel,
     VoiceChannel
 } from "discord.js";
-import CTX from "../Commands/CTX";
-import EmbedUtils from "./EmbedUtils";
+import CTX from "../../Commands/CTX";
+import EmbedUtils from "../ui/EmbedUtils";
 import {
     InternalPermissionResolvable,
     InternalPermissions
 } from "./InternalPermissions";
-import Dispatcher from "../Shoukaku/Dispatcher";
+import Dispatcher from "../../Shoukaku/Dispatcher";
 
 
 export class MusicUtil {

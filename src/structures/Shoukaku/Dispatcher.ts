@@ -6,8 +6,8 @@ import { Guild as GuildData } from "../Data/classes/Guild";
 import { GuildSettings } from "../Data/classes/Guild/settings";
 import Events from "../Events/Events";
 import RirichiyoClient from "../RirichiyoClient";
-import Utils, { CustomError, ID, PermissionUtils } from "../Utils";
-import PlayingMessageManager from "../Utils/PlayingMessageManager";
+import Utils, { CustomError, PermissionUtils } from "../Utils";
+import PlayingMessageManager from "../Utils/music/PlayingMessageManager";
 import Queue, { QueueLoopState } from "./Queue";
 import { ResolvedTrack } from "./RirichiyoTrack";
 import { PlayerExceptionEvent } from 'shoukaku';
@@ -16,9 +16,9 @@ import { player_inactivity_timeout } from "../../config";
 //Max exception ratelimit
 const maxErrorsPer10Seconds = 3;
 
-export class DispatcherManager extends Collection<ID, Dispatcher>{
+export class DispatcherManager extends Collection<string, Dispatcher>{
     readonly client: RirichiyoClient;
-    constructor(entries?: readonly ([ID, Dispatcher])[] | null) {
+    constructor(entries?: readonly ([string, Dispatcher])[] | null) {
         super(entries);
         this.client = Utils.client;
     }
@@ -31,7 +31,7 @@ export class DispatcherManager extends Collection<ID, Dispatcher>{
         return dispatcher;
     }
 
-    async destroy(guildID: ID) {
+    async destroy(guildID: string) {
         const dispatcher = this.get(guildID);
         dispatcher?.player.disconnect();
         if (dispatcher?.queue.current) dispatcher.playingMessages.deleteMessage(dispatcher.queue.current.id);
@@ -92,7 +92,7 @@ export class Dispatcher {
         return this;
     }
 
-    async attemptReconnect(voiceChannelID: ID, forceReconnect = false) {
+    async attemptReconnect(voiceChannelID: string, forceReconnect = false) {
         return await this.player.voiceConnection.attemptReconnect({ voiceChannelID, forceReconnect }).then(async p =>
             p.track ? await p.playTrack(p.track, { startTime: this.position }) : null
         );
@@ -193,7 +193,7 @@ export interface DispatcherOptions {
 export interface DispatcherCreateOptions {
     guild: Guild,
     textChannel: TextChannel & { guild: Guild },
-    voiceChannelID: ID,
+    voiceChannelID: string,
     filterOptions?: ShoukakuGroupedFilterOptions,
     loopState?: QueueLoopState,
     deaf?: boolean,

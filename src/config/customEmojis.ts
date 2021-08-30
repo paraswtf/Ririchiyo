@@ -141,6 +141,76 @@ export const customEmojis = [
         "name": "PING_PONG",
         "id": "869691029350125578",
         "animated": false
+    },
+    {
+        "name": "BOT",
+        "id": "878875694858403870",
+        "animated": false
+    },
+    {
+        "name": "BUGHUNTER_LEVEL_1",
+        "id": "878875694522847344",
+        "animated": false
+    },
+    {
+        "name": "BUGHUNTER_LEVEL_2",
+        "id": "878875694921285662",
+        "animated": false
+    },
+    {
+        "name": "DISCORD_CERTIFIED_MODERATOR",
+        "id": "878875694845808700",
+        "animated": false
+    },
+    {
+        "name": "DISCORD_EMPLOYEE",
+        "id": "878875694694801440",
+        "animated": false
+    },
+    {
+        "name": "EARLY_SUPPORTER",
+        "id": "878875694917091378",
+        "animated": false
+    },
+    {
+        "name": "EARLY_VERIFIED_BOT_DEVELOPER",
+        "id": "878875694682214422",
+        "animated": false
+    },
+    {
+        "name": "HOUSE_BALANCE",
+        "id": "878875695282012180",
+        "animated": false
+    },
+    {
+        "name": "HOUSE_BRAVERY",
+        "id": "878875694854197258",
+        "animated": false
+    },
+    {
+        "name": "HOUSE_BRILLIANCE",
+        "id": "878875694803865650",
+        "animated": false
+    },
+    {
+        "name": "HYPESQUAD_EVENTS",
+        "id": "878875694845788251",
+        "animated": false
+    },
+    {
+        "name": "NITRO_SUBSCRIBER",
+        "id": "878875695026159616",
+        "animated": false
+    },
+    {
+        "name": "PARTNERED_SERVER_OWNER",
+        "id": "878875694875152394",
+        "animated": false
+    },
+    {
+        "name": "VERIFIED_BOT",
+        "id": "878875694849994822",
+        "animated": false
     }
 ] as const;
 

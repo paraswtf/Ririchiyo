@@ -2,7 +2,7 @@ import { EmbedUtils } from '../../structures/Utils';
 import { ApplicationCommandData } from 'discord.js';
 import BaseCommand from '../../structures/Commands/BaseCommand';
 import { GuildCTX } from '../../structures/Commands/CTX'
-import { FLAG, MusicUtil } from '../../structures/Utils/MusicUtil';
+import { FLAG, MusicUtil } from '../../structures/Utils/music/MusicUtil';
 import { QueueLoopState } from '../../structures/Shoukaku/Queue';
 
 export default class LoopCommand extends BaseCommand<true, true>{
@@ -18,6 +18,9 @@ export default class LoopCommand extends BaseCommand<true, true>{
     }
 
     async run(ctx: GuildCTX<true>) {
+        //Get user input
+        const input = ctx.options?.get("value")?.value as QueueLoopState | undefined;
+
         const res = MusicUtil.canPerformAction({
             guild: ctx.guild,
             member: ctx.member,
@@ -26,12 +29,11 @@ export default class LoopCommand extends BaseCommand<true, true>{
             memberPermissions: ctx.guildSettings.permissions.members.getFor(ctx.member).calculatePermissions(),
             noDispatcherRequired: true,
             noVoiceChannelRequired: true,
-            allowViewOnly: !ctx.options?.size
+            allowViewOnly: !input
         });
 
         if (res.isError) return;
 
-        const input = ctx.options?.get("value")?.value as QueueLoopState | undefined;
         let loop = res.dispatcher?.queue.loopState || ctx.guildSettings.music.loopState;
 
         if (res.flag === FLAG.VIEW_ONLY) return await ctx.reply({

@@ -1,11 +1,11 @@
-import Utils from '.';
+import Utils from '..';
 import {
     Message,
     MessageOptions,
     MessagePayload,
     UserResolvable
 } from 'discord.js';
-import CustomError from './CustomError';
+import CustomError from '../CustomError';
 
 
 export class DirectMessageUtils {
